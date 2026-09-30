@@ -8,8 +8,8 @@ sst-env.d.ts
 .env.*
 !.env.example
 coverage/
-ios/
-android/
+/apps/mobile/ios/
+/apps/mobile/android/
 web-build/
 .DS_Store
 *.log
