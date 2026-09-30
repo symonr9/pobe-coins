@@ -67,13 +67,13 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       name: 'Pobe Coins',
       shortName: 'Pobe',
       themeColor: THEMES.Pink,
-      backgroundColor: '#FFF5F8',
+      backgroundColor: '#F4F4F6',
     },
     plugins: [
       'expo-router',
       [
         'expo-splash-screen',
-        { backgroundColor: '#FFF5F8', image: './assets/icons/splash.png', imageWidth: 180, dark: { backgroundColor: '#1E1418' } },
+        { backgroundColor: '#F4F4F6', image: './assets/icons/splash.png', imageWidth: 180, dark: { backgroundColor: '#000000' } },
       ],
       ['expo-notifications', { icon: './assets/icons/notification.png', color: '#B83E6A', sounds: ['./assets/sounds/coin.wav'] }],
       'expo-secure-store',

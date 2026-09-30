@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
-import { DEFAULT_THEME, MOTION, RADIUS, SPACE, THEMES, type Palette, type ThemeName } from '@pobe/core';
+import { DEFAULT_THEME, ELEVATION, MOTION, RADIUS, SPACE, THEMES, type ElevationLevel, type Palette, type ThemeName } from '@pobe/core';
+import type { ViewStyle } from 'react-native';
 import { usePrefs } from '@/lib/prefs-context';
 
 export const FONTS = {
@@ -56,4 +57,24 @@ export function useStyles<T>(factory: (t: AppTheme) => T): T {
   const t = useTheme();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => factory(t), [t]);
+}
+
+/**
+ * Elevation style for a surface. Light: layered shadow, no border. Dark: shadows don't read on
+ * black, so higher levels use the raised surface color and a hairline instead.
+ */
+export function elevation(t: AppTheme, level: ElevationLevel = 1): ViewStyle {
+  if (t.dark) {
+    return {
+      backgroundColor: level >= 2 ? t.c.surfaceRaised : t.c.surface,
+      borderWidth: level === 0 ? 0 : 1,
+      borderColor: t.c.line,
+    };
+  }
+  return {
+    backgroundColor: t.c.surface,
+    borderWidth: level === 0 ? 1 : 0,
+    borderColor: t.c.line,
+    boxShadow: ELEVATION.light[level],
+  } as ViewStyle;
 }

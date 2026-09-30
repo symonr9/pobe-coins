@@ -1,20 +1,22 @@
 /**
- * Pastel design tokens. Pastels are used for surfaces and fills; text always uses the
- * theme's deep "ink" tones so it passes WCAG AA (4.5:1) on every surface.
- * Checked by theme.test.ts.
+ * Design tokens. Every palette has a clean neutral base (soft white by day, true black by night)
+ * with its pastel used as the accent: primary buttons, the purse card, selected states, tints.
+ * Text uses neutral inks that pass WCAG AA (4.5:1) on every surface; checked by theme.test.ts.
  */
 
 export type ThemeName = 'pink' | 'blue' | 'purple' | 'yellow' | 'green';
 export type ColorMode = 'light' | 'dark';
 
 export interface Palette {
-  /** App background. */
+  /** App background (neutral). */
   bg: string;
-  /** Cards and sheets. */
+  /** Cards. */
   surface: string;
-  /** Tinted panels, chips, input fills. */
+  /** Floating things above cards: sheets, dialogs, tab bar. In dark mode, lighter = higher. */
+  surfaceRaised: string;
+  /** Soft tint of the theme hue: chips, input fills, highlighted rows. */
   surfaceAlt: string;
-  /** Signature pastel: primary buttons, selected tabs, progress fills. */
+  /** Signature pastel: primary buttons, selected tabs, progress fills, the purse card. */
   primary: string;
   /** Text/icons placed on `primary`. */
   onPrimary: string;
@@ -25,11 +27,12 @@ export interface Palette {
   onSecondary: string;
   ink: string;
   inkSoft: string;
+  /** Hairlines and dividers. */
   line: string;
   success: string;
   warning: string;
   danger: string;
-  /** Soft shadow color. */
+  /** Shadow color (light mode elevation). */
   shadow: string;
 }
 
@@ -40,9 +43,32 @@ export interface Theme {
   dark: Palette;
 }
 
-const shared = {
-  light: { success: '#1A6B40', warning: '#8A5A00', danger: '#B3261E', shadow: 'rgba(80, 40, 60, 0.12)' },
-  dark: { success: '#8FDCB0', warning: '#F4CF7A', danger: '#FFB4AB', shadow: 'rgba(0, 0, 0, 0.45)' },
+/** Neutral base shared by every palette: Apple-style grouped greys by day, OLED black by night. */
+const base = {
+  light: {
+    bg: '#F4F4F6',
+    surface: '#FFFFFF',
+    surfaceRaised: '#FFFFFF',
+    ink: '#18181B',
+    inkSoft: '#5C5C66',
+    line: '#E6E6EA',
+    success: '#1A6B40',
+    warning: '#8A5A00',
+    danger: '#B3261E',
+    shadow: 'rgba(17, 17, 26, 0.08)',
+  },
+  dark: {
+    bg: '#000000',
+    surface: '#141416',
+    surfaceRaised: '#1F1F23',
+    ink: '#F4F4F5',
+    inkSoft: '#A1A1AA',
+    line: '#2A2A2F',
+    success: '#8FDCB0',
+    warning: '#F4CF7A',
+    danger: '#FFB4AB',
+    shadow: 'rgba(0, 0, 0, 0)',
+  },
 };
 
 export const THEMES: Record<ThemeName, Theme> = {
@@ -50,160 +76,110 @@ export const THEMES: Record<ThemeName, Theme> = {
     name: 'pink',
     label: 'Strawberry milk',
     light: {
-      bg: '#FFF5F8',
-      surface: '#FFFFFF',
-      surfaceAlt: '#FFE6EE',
+      ...base.light,
       primary: '#F9B9CD',
       onPrimary: '#6B1D3A',
       accent: '#B83E6A',
       secondary: '#C9E4F8',
       onSecondary: '#1E4466',
-      ink: '#3A2230',
-      inkSoft: '#6E5462',
-      line: '#F2D3DE',
-      ...shared.light,
+      surfaceAlt: '#FCEEF3',
     },
     dark: {
-      bg: '#1E1418',
-      surface: '#2A1C22',
-      surfaceAlt: '#3A2630',
+      ...base.dark,
       primary: '#F4A9C0',
       onPrimary: '#3A0F21',
       accent: '#FFB3CB',
       secondary: '#9CC8EA',
       onSecondary: '#0F2A42',
-      ink: '#FCEBF1',
-      inkSoft: '#D4B6C2',
-      line: '#4A3440',
-      ...shared.dark,
+      surfaceAlt: '#2A1C22',
     },
   },
   blue: {
     name: 'blue',
     label: 'Sky puddle',
     light: {
-      bg: '#F3F8FD',
-      surface: '#FFFFFF',
-      surfaceAlt: '#DDEEFB',
+      ...base.light,
       primary: '#AAD3F4',
       onPrimary: '#143A5E',
       accent: '#2D6BA3',
       secondary: '#FBD3DF',
       onSecondary: '#6B1D3A',
-      ink: '#1E2A38',
-      inkSoft: '#506070',
-      line: '#D2E3F2',
-      ...shared.light,
+      surfaceAlt: '#EAF3FC',
     },
     dark: {
-      bg: '#11171E',
-      surface: '#1A232D',
-      surfaceAlt: '#25323F',
+      ...base.dark,
       primary: '#9CCBF0',
       onPrimary: '#0C2640',
       accent: '#A8D4FA',
       secondary: '#F4B7C9',
       onSecondary: '#3A0F21',
-      ink: '#E8F2FC',
-      inkSoft: '#AFC2D4',
-      line: '#33424F',
-      ...shared.dark,
+      surfaceAlt: '#19232D',
     },
   },
   purple: {
     name: 'purple',
     label: 'Lavender nap',
     light: {
-      bg: '#F8F4FE',
-      surface: '#FFFFFF',
-      surfaceAlt: '#ECE3FB',
+      ...base.light,
       primary: '#CFBCF5',
       onPrimary: '#3B2270',
       accent: '#6B45B8',
       secondary: '#FDE7A8',
       onSecondary: '#5A4104',
-      ink: '#2A2238',
-      inkSoft: '#5E556E',
-      line: '#E1D6F3',
-      ...shared.light,
+      surfaceAlt: '#F2EDFC',
     },
     dark: {
-      bg: '#17131F',
-      surface: '#221C2D',
-      surfaceAlt: '#2F273D',
+      ...base.dark,
       primary: '#C4AEF0',
       onPrimary: '#241246',
       accent: '#D2BEFF',
       secondary: '#F2D98E',
       onSecondary: '#3A2A02',
-      ink: '#F1EAFD',
-      inkSoft: '#C0B5D3',
-      line: '#3D3450',
-      ...shared.dark,
+      surfaceAlt: '#221C2D',
     },
   },
   yellow: {
     name: 'yellow',
     label: 'Butter toast',
     light: {
-      bg: '#FFFBEC',
-      surface: '#FFFFFF',
-      surfaceAlt: '#FFF1C4',
+      ...base.light,
       primary: '#FBE08C',
       onPrimary: '#533C02',
       accent: '#8A6100',
       secondary: '#BFE7CB',
       onSecondary: '#1A4A2A',
-      ink: '#332A14',
-      inkSoft: '#665B40',
-      line: '#F0E3B8',
-      ...shared.light,
+      surfaceAlt: '#FCF5DA',
     },
     dark: {
-      bg: '#1B1810',
-      surface: '#262116',
-      surfaceAlt: '#342D1D',
+      ...base.dark,
       primary: '#F2D67E',
       onPrimary: '#332400',
       accent: '#FFDB7A',
       secondary: '#9FD8B2',
       onSecondary: '#0E2E19',
-      ink: '#FCF5E0',
-      inkSoft: '#D2C6A4',
-      line: '#453C27',
-      ...shared.dark,
+      surfaceAlt: '#28231A',
     },
   },
   green: {
     name: 'green',
     label: 'Matcha meadow',
     light: {
-      bg: '#F3FAF4',
-      surface: '#FFFFFF',
-      surfaceAlt: '#DAF1E0',
+      ...base.light,
       primary: '#AEE1BD',
       onPrimary: '#17472A',
       accent: '#23693F',
       secondary: '#D9CCF7',
       onSecondary: '#3B2270',
-      ink: '#1E2E24',
-      inkSoft: '#506357',
-      line: '#D0E8D6',
-      ...shared.light,
+      surfaceAlt: '#E9F6EC',
     },
     dark: {
-      bg: '#111A14',
-      surface: '#1A251D',
-      surfaceAlt: '#253329',
+      ...base.dark,
       primary: '#9ED7AF',
       onPrimary: '#0A2A16',
       accent: '#A6E6BA',
       secondary: '#C8B6F2',
       onSecondary: '#241246',
-      ink: '#E7F6EC',
-      inkSoft: '#AEC7B6',
-      line: '#324437',
-      ...shared.dark,
+      surfaceAlt: '#19251D',
     },
   },
 };
@@ -241,8 +217,22 @@ export const TYPE = {
   scale: { xs: 12, sm: 14, md: 16, lg: 19, xl: 23, xxl: 30, hero: 44 },
 } as const;
 
+/**
+ * Elevation. Light mode: layered soft shadows (a tight contact shadow + a wide ambient one).
+ * Dark mode: no shadows (invisible on black); higher surfaces are lighter and get a hairline.
+ */
+export const ELEVATION = {
+  light: {
+    0: 'none',
+    1: '0px 1px 2px rgba(17, 17, 26, 0.04), 0px 4px 14px rgba(17, 17, 26, 0.06)',
+    2: '0px 2px 4px rgba(17, 17, 26, 0.05), 0px 10px 28px rgba(17, 17, 26, 0.09)',
+    3: '0px 4px 8px rgba(17, 17, 26, 0.06), 0px 20px 48px rgba(17, 17, 26, 0.14)',
+  },
+} as const;
+export type ElevationLevel = 0 | 1 | 2 | 3;
+
 export const SPACE = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
-export const RADIUS = { sm: 10, md: 14, lg: 20, pill: 999 } as const;
+export const RADIUS = { sm: 10, md: 14, lg: 22, pill: 999 } as const;
 
 /** Motion tokens (ms / spring configs for Reanimated). */
 export const MOTION = {

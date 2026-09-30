@@ -6,7 +6,7 @@ import { balance, greetingContext, toLocalDate } from '@pobe/core';
 import { useApprovals, useChallenges, useGoals, useMembers, useRefreshAll, useTasks } from '@/api/hooks';
 import { useTranslation } from '@/i18n';
 import { usePrefs } from '@/lib/prefs-context';
-import { useTheme } from '@/theme';
+import { elevation, useTheme } from '@/theme';
 import { useHousehold } from '@/features/useHousehold';
 import { Chubby } from '@/features/chubby/Chubby';
 import { TaskRow } from '@/features/tasks/TaskRow';
@@ -72,10 +72,10 @@ export default function Home() {
 
   const hero = (
     <Animated.View entering={FadeInDown.springify().damping(16)}>
-      <Card style={{ gap: 16, padding: 20, backgroundColor: theme.c.primary, borderColor: theme.c.primary, overflow: 'hidden' }}>
+      <Card level={2} style={{ gap: 18, padding: 22, backgroundColor: theme.c.primary, borderColor: theme.c.primary, overflow: 'hidden' }}>
         <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <View style={{ flex: 1, gap: 2 }}>
-            <Text variant="label" color="onPrimary" style={{ opacity: 0.8 }}>
+            <Text variant="label" color="onPrimary" style={{ opacity: 0.75 }}>
               {t('Your purse')}
             </Text>
             <Row gap={8} style={{ alignItems: 'baseline' }}>
@@ -90,14 +90,14 @@ export default function Home() {
               <View
                 style={{
                   alignSelf: 'flex-start',
-                  backgroundColor: theme.c.surface,
+                  backgroundColor: 'rgba(255,255,255,0.6)',
                   borderRadius: 999,
                   paddingHorizontal: 10,
                   paddingVertical: 4,
                   marginTop: 4,
                 }}
               >
-                <Text variant="smallBold" color="warning">
+                <Text variant="smallBold" color="onPrimary">
                   {t('IOU {{n}} · your next chores pay it back', { n: me.debt })}
                 </Text>
               </View>
@@ -108,48 +108,71 @@ export default function Home() {
             noHaptic
             scaleTo={0.94}
             accessibilityLabel={t('Chubbybara')}
-            style={{ marginTop: -10, marginRight: -8 }}
+            style={{ marginTop: -12, marginRight: -10 }}
           >
-            <Chubby pose={line?.pose ?? 'wave'} accessory={me.equipped.accessory} size={108} />
+            <Chubby pose={line?.pose ?? 'wave'} accessory={me.equipped.accessory} size={104} />
           </Pressy>
         </Row>
-        {line ? (
-          <View
-            style={{
-              backgroundColor: theme.c.surface,
-              borderRadius: 14,
-              borderTopRightRadius: 4,
-              paddingHorizontal: 14,
-              paddingVertical: 12,
-              gap: 2,
-            }}
-          >
-            <Text variant="label" color="soft">
-              {t('Chubbybara says')}
+        <View style={{ borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.55)', paddingTop: 14 }}>
+          {hh.balance > 0 ? (
+            <PurseView purse={me.purse} coinTypes={hh.settings.coinTypes} size={30} compact inkColor={theme.c.onPrimary} />
+          ) : (
+            <Text variant="smallBold" color="onPrimary">
+              {t('Your purse is empty. Chores fill it up!')}
             </Text>
-            <Text variant="body" style={{ fontFamily: theme.fonts.bodySemi }}>
-              {line.text}
-            </Text>
-          </View>
-        ) : null}
-        <View style={{ backgroundColor: theme.c.surface, borderRadius: 14, padding: 12 }}>
-          <PurseView purse={me.purse} coinTypes={hh.settings.coinTypes} size={34} />
+          )}
         </View>
-        <Row gap={8}>
-          <Button small kind="soft" icon="shop" title={t('Spend')} style={{ flex: 1 }} onPress={() => router.push('/spend')} />
-          <Button small kind="soft" icon="gift" title={t('Gift')} style={{ flex: 1 }} onPress={() => router.push('/gift')} />
-          <Button
-            small
-            kind="soft"
-            icon="target"
-            title={t('Goals')}
-            style={{ flex: 1 }}
-            onPress={() => router.push({ pathname: '/shop', params: { tab: 'wishlist' } })}
-          />
-        </Row>
       </Card>
     </Animated.View>
   );
+
+  const quickActions = (
+    <Row style={{ justifyContent: 'space-around' }}>
+      {(
+        [
+          { icon: 'shop', label: t('Spend'), go: () => router.push('/spend') },
+          { icon: 'gift', label: t('Gift'), go: () => router.push('/gift') },
+          { icon: 'target', label: t('Goals'), go: () => router.push({ pathname: '/shop', params: { tab: 'wishlist' } }) },
+          { icon: 'chart', label: t('Stats'), go: () => router.push('/stats') },
+        ] as const
+      ).map((a) => (
+        <Pressy key={a.label} onPress={a.go} accessibilityLabel={a.label} style={{ alignItems: 'center', gap: 6, minWidth: 64 }}>
+          <View style={[{ width: 54, height: 54, borderRadius: 27, alignItems: 'center', justifyContent: 'center' }, elevation(theme, 1)]}>
+            <Icon name={a.icon} size={22} color={theme.c.accent} />
+          </View>
+          <Text variant="smallBold" color="soft">
+            {a.label}
+          </Text>
+        </Pressy>
+      ))}
+    </Row>
+  );
+
+  const chubbyLine = line ? (
+    <Card level={1} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14 }}>
+      <View
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          backgroundColor: theme.c.surfaceAlt,
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+        }}
+      >
+        <Chubby pose="happy" accessory={me.equipped.accessory} size={40} animate={false} />
+      </View>
+      <View style={{ flex: 1, minWidth: 0 }}>
+        <Text variant="label" color="soft">
+          {t('Chubbybara says')}
+        </Text>
+        <Text variant="body" style={{ fontFamily: theme.fonts.bodySemi }}>
+          {line.text}
+        </Text>
+      </View>
+    </Card>
+  ) : null;
 
   const approvalsCard =
     waiting > 0 ? (
@@ -182,7 +205,7 @@ export default function Home() {
     <Section
       title={t('Saving for')}
       action={
-        <Button small kind="ghost" title={t('Wishlist')} onPress={() => router.push({ pathname: '/shop', params: { tab: 'wishlist' } })} />
+        <Button small kind="link" title={t('Wishlist')} onPress={() => router.push({ pathname: '/shop', params: { tab: 'wishlist' } })} />
       }
     >
       <Card style={{ paddingVertical: 6 }}>
@@ -215,7 +238,7 @@ export default function Home() {
   const choresSection = (
     <Section
       title={t("Today's chores")}
-      action={<Button small kind="ghost" title={t('All chores')} onPress={() => router.push('/tasks')} />}
+      action={<Button small kind="link" title={t('All chores')} onPress={() => router.push('/tasks')} />}
     >
       <Card style={{ paddingVertical: 6 }}>
         {tasks.isLoading ? (
@@ -292,6 +315,8 @@ export default function Home() {
           left={
             <>
               {hero}
+              {quickActions}
+              {chubbyLine}
               <PushPrompt />
               {approvalsCard}
               {goalsSection}
@@ -308,6 +333,8 @@ export default function Home() {
       ) : (
         <>
           {hero}
+          {quickActions}
+          {chubbyLine}
           <PushPrompt />
           {approvalsCard}
           {choresSection}

@@ -6,7 +6,7 @@ import { createContext, useCallback, useContext, useRef, useState, type ReactNod
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '@/theme';
+import { elevation, useTheme } from '@/theme';
 import { Button } from './Button';
 import { Text } from './Text';
 import { Row } from './layout';
@@ -95,7 +95,7 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
       </View>
       <Modal visible={!!dialog} transparent animationType="fade" onRequestClose={() => close(false)}>
         <Pressable style={[styles.backdrop]} onPress={() => close(false)} accessibilityLabel="Close">
-          <Pressable style={[styles.dialog, { backgroundColor: t.c.surface, borderColor: t.c.line }]} onPress={() => undefined}>
+          <Pressable style={[styles.dialog, elevation(t, 3)]} onPress={() => undefined}>
             <Text variant="h3">{dialog?.title}</Text>
             {dialog?.message ? <Text color="soft">{dialog.message}</Text> : null}
             <Row style={{ justifyContent: 'flex-end', marginTop: 8 }} wrap>
@@ -117,8 +117,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     maxWidth: 520,
     marginHorizontal: 16,
-    borderWidth: 2,
+    borderWidth: 1,
   },
-  backdrop: { flex: 1, backgroundColor: 'rgba(20,10,15,0.45)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  dialog: { width: '100%', maxWidth: 420, borderRadius: 24, borderWidth: 1.5, padding: 20, gap: 10 },
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  dialog: { width: '100%', maxWidth: 420, borderRadius: 24, padding: 22, gap: 10 },
 });

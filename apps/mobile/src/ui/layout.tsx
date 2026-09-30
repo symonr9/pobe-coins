@@ -10,7 +10,8 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '@/theme';
+import type { ElevationLevel } from '@pobe/core';
+import { elevation, useTheme } from '@/theme';
 import { Text } from './Text';
 
 /** Width at which the app switches to the desktop/tablet layout (side rail, two columns). */
@@ -82,15 +83,21 @@ export function Screen({
   );
 }
 
-export function Card({ children, style, tint }: { children: ReactNode; style?: StyleProp<ViewStyle>; tint?: boolean }) {
+export function Card({
+  children,
+  style,
+  tint,
+  level = 1,
+}: {
+  children: ReactNode;
+  style?: StyleProp<ViewStyle>;
+  /** Soft hue-tinted panel with no elevation (callouts, prompts). */
+  tint?: boolean;
+  /** 0 = flat outlined, 1 = resting card (default), 2 = hero/featured, 3 = floating. */
+  level?: ElevationLevel;
+}) {
   const t = useTheme();
-  return (
-    <View
-      style={[styles.card, { backgroundColor: tint ? t.c.surfaceAlt : t.c.surface, borderColor: t.c.line, shadowColor: t.c.shadow }, style]}
-    >
-      {children}
-    </View>
-  );
+  return <View style={[styles.card, tint ? { backgroundColor: t.c.surfaceAlt } : elevation(t, level), style]}>{children}</View>;
 }
 
 export function Row({
@@ -152,14 +159,6 @@ const styles = StyleSheet.create({
   fill: { flex: 1 },
   column: { width: '100%', maxWidth: 720, alignSelf: 'center', gap: 16 },
   padded: { paddingHorizontal: 16 },
-  card: {
-    borderRadius: 20,
-    borderWidth: 1,
-    padding: 16,
-    shadowOpacity: 0.7,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 1,
-  },
+  card: { borderRadius: 22, padding: 18 },
   footer: { paddingHorizontal: 16, paddingTop: 12, borderTopWidth: 1, alignItems: 'center' },
 });

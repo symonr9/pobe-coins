@@ -1,6 +1,6 @@
 import { forwardRef, type ReactNode } from 'react';
 import { StyleSheet, Switch, TextInput, View, type TextInputProps } from 'react-native';
-import { useTheme } from '@/theme';
+import { elevation, useTheme } from '@/theme';
 import { Pressy } from './Pressy';
 import { Row } from './layout';
 import { Text } from './Text';
@@ -23,9 +23,9 @@ export const Field = forwardRef<TextInput, TextInputProps & { label: string; err
             style={[
               styles.input,
               {
-                backgroundColor: t.c.surfaceAlt,
+                backgroundColor: t.dark ? t.c.surfaceRaised : t.c.bg,
                 color: t.c.ink,
-                borderColor: error ? t.c.danger : 'transparent',
+                borderColor: error ? t.c.danger : t.c.line,
                 fontFamily: t.fonts.bodySemi,
               },
               rest.multiline && { minHeight: 90, textAlignVertical: 'top', paddingTop: 12 },
@@ -90,7 +90,7 @@ export function Segmented<T extends string>({
 }) {
   const t = useTheme();
   return (
-    <View style={[styles.segment, { backgroundColor: t.c.surfaceAlt }]} accessibilityRole="tablist">
+    <View style={[styles.segment, { backgroundColor: t.dark ? t.c.surface : t.c.line }]} accessibilityRole="tablist">
       {options.map((o) => {
         const on = o.value === value;
         return (
@@ -99,10 +99,7 @@ export function Segmented<T extends string>({
             onPress={() => onChange(o.value)}
             accessibilityRole="tab"
             accessibilityState={{ selected: on }}
-            style={[
-              styles.segmentItem,
-              on && { backgroundColor: t.c.surface, shadowColor: t.c.shadow, shadowOpacity: 1, shadowRadius: 6, elevation: 1 },
-            ]}
+            style={[styles.segmentItem, on && elevation(t, t.dark ? 2 : 1)]}
           >
             <Text variant="smallBold" color={on ? 'ink' : 'soft'} center numberOfLines={1}>
               {o.label}
@@ -199,13 +196,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 16,
-    borderWidth: 2,
+    borderWidth: 1,
     minHeight: 48,
   },
-  chip: { borderRadius: 999, borderWidth: 1.5, paddingHorizontal: 12, paddingVertical: 7 },
+  chip: { borderRadius: 999, borderWidth: 1, paddingHorizontal: 12, paddingVertical: 7 },
   dot: { width: 10, height: 10, borderRadius: 5 },
-  segment: { flexDirection: 'row', borderRadius: 999, padding: 4, gap: 4 },
-  segmentItem: { flex: 1, borderRadius: 999, paddingVertical: 8, paddingHorizontal: 8 },
+  segment: { flexDirection: 'row', borderRadius: 14, padding: 3, gap: 2 },
+  segmentItem: { flex: 1, borderRadius: 11, paddingVertical: 8, paddingHorizontal: 8 },
   listRow: { paddingVertical: 10 },
   iconBubble: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
 });

@@ -7,7 +7,7 @@ import { MOTION } from '@pobe/core';
 import { useSession } from '@/auth/session';
 import { useApprovals, useMe } from '@/api/hooks';
 import { useTranslation } from '@/i18n';
-import { useTheme } from '@/theme';
+import { elevation, useTheme } from '@/theme';
 import { Icon, type IconName } from '@/ui/Icon';
 import { Pressy } from '@/ui/Pressy';
 import { Text } from '@/ui/Text';
@@ -53,10 +53,7 @@ function TabBar({ state, navigation }: BottomTabBarProps) {
   const pending = (approvals.data?.completions.length ?? 0) + (approvals.data?.purchases.length ?? 0);
   return (
     <View pointerEvents="box-none" style={[styles.wrap, { paddingBottom: Math.max(insets.bottom, 10) }]}>
-      <View
-        style={[styles.bar, { backgroundColor: t.c.surface, borderColor: t.c.line, shadowColor: t.c.shadow }]}
-        accessibilityRole="tablist"
-      >
+      <View style={[styles.bar, elevation(t, 3)]} accessibilityRole="tablist">
         {state.routes.map((route, i) => {
           const tab = TABS.find((x) => x.name === route.name);
           if (!tab) return null;
@@ -209,19 +206,7 @@ const styles = StyleSheet.create({
   railBadge: { minWidth: 20, height: 20, borderRadius: 10, paddingHorizontal: 5, alignItems: 'center', justifyContent: 'center' },
   railPurse: { borderRadius: 14, padding: 14, gap: 2 },
   wrap: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', paddingHorizontal: 12 },
-  bar: {
-    flexDirection: 'row',
-    width: '100%',
-    maxWidth: 520,
-    borderRadius: 24,
-    borderWidth: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 6,
-    shadowOpacity: 1,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 8,
-  },
+  bar: { flexDirection: 'row', width: '100%', maxWidth: 520, borderRadius: 26, paddingVertical: 8, paddingHorizontal: 6 },
   tab: { flex: 1, alignItems: 'center', gap: 2 },
   iconWrap: { width: 52, height: 32, alignItems: 'center', justifyContent: 'center' },
   badge: {

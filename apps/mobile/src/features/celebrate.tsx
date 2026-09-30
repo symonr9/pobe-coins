@@ -19,7 +19,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { payout, type ChubbyPose, type Purse } from '@pobe/core';
-import { useTheme } from '@/theme';
+import { elevation, useTheme } from '@/theme';
 import { haptic, playCoin } from '@/lib/feedback';
 import { Coin } from '@/ui/Coins';
 import { Text } from '@/ui/Text';
@@ -77,10 +77,7 @@ function Overlay({ c, onClose }: { c: Celebration & { key: number }; onClose: ()
       {!reduce && c.big ? <Confetti colors={[t.c.primary, t.c.secondary, '#FCE6A6', '#C4EBD2', '#DCCDF8']} /> : null}
       <View style={styles.center} pointerEvents="none">
         {!reduce ? coins.map((d, i) => <FallingCoin key={`${c.key}-${i}`} denom={d} index={i} total={coins.length} />) : null}
-        <Animated.View
-          entering={reduce ? FadeIn : ZoomIn.springify().damping(11)}
-          style={[styles.card, { backgroundColor: t.c.surface, borderColor: t.c.line }]}
-        >
+        <Animated.View entering={reduce ? FadeIn : ZoomIn.springify().damping(11)} style={[styles.card, elevation(t, 3)]}>
           <Chubby pose={c.pose ?? 'cheer'} size={110} bounceKey={c.key} />
           {c.amount ? (
             <Text variant="hero" color="success" center accessibilityLiveRegion="polite">
@@ -181,6 +178,6 @@ function ConfettiBit({
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  card: { alignItems: 'center', gap: 8, padding: 20, borderRadius: 28, borderWidth: 2, maxWidth: 340, width: '100%' },
+  card: { alignItems: 'center', gap: 8, padding: 22, borderRadius: 28, maxWidth: 340, width: '100%' },
   coin: { position: 'absolute' },
 });

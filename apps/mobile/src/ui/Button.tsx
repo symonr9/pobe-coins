@@ -4,7 +4,7 @@ import { Icon, type IconName } from './Icon';
 import { Pressy } from './Pressy';
 import { Text } from './Text';
 
-type Kind = 'primary' | 'secondary' | 'ghost' | 'danger' | 'soft';
+type Kind = 'primary' | 'secondary' | 'ghost' | 'danger' | 'soft' | 'link';
 
 export function Button({
   title,
@@ -36,6 +36,7 @@ export function Button({
     soft: { bg: t.c.surfaceAlt, fg: t.c.ink },
     ghost: { bg: 'transparent', fg: t.c.accent, border: t.c.line },
     danger: { bg: 'transparent', fg: t.c.danger, border: t.c.line },
+    link: { bg: 'transparent', fg: t.c.accent },
   };
   const p = palette[kind];
   return (
@@ -46,10 +47,7 @@ export function Button({
       style={[
         styles.base,
         small ? styles.small : styles.normal,
-        { backgroundColor: p.bg, borderColor: p.border ?? 'transparent', borderWidth: p.border ? 2 : 0 },
-        kind === 'primary' || kind === 'secondary'
-          ? { shadowColor: t.c.shadow, shadowOpacity: 1, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 2 }
-          : null,
+        { backgroundColor: p.bg, borderColor: p.border ?? 'transparent', borderWidth: p.border ? 1 : 0 },
         full && { alignSelf: 'stretch' },
         style,
       ]}

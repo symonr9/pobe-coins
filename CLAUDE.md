@@ -32,7 +32,7 @@ npm run e2e                   # Playwright smoke test (needs both servers)
 - **Tenancy:** `householdId` always comes from the authenticated actor, never from the request body. Every new route needs a test showing another household can't reach it.
 - **Validation:** request bodies are validated with zod schemas exported from `@pobe/core` (`schemas.ts`), shared with the app.
 - **UI:** use theme tokens (`useTheme()`), the `src/ui` kit and `Text` variants. Never hard-code colors or fonts. All copy goes through `t()`, and Chubbybara's lines through `say()` (never `t(say(...))`). Check phone and desktop widths. Skill: `ui-screen`.
-- **Font:** Plus Jakarta Sans (500/600/700/800). Themes are pastel (pink default, blue, purple, yellow, green) × light/dark, and core tests enforce WCAG AA contrast.
+- **Look:** clean card-based UI on neutral backgrounds (soft white by day, true black by night), with the chosen pastel palette (pink default, blue, purple, yellow, green) as the accent. Elevation comes from `Card level` / `elevation()`. The font is Plus Jakarta Sans (500/600/700/800). Core tests enforce WCAG AA contrast for every palette × mode.
 - **Native dirs** `apps/mobile/ios|android` are generated (CNG). Never commit them; configure through `app.config.ts` and plugins. Keep `.gitignore` patterns anchored (`/apps/mobile/android/`).
 - Keep AWS costs near $0: no VPC/NAT, no RDS, no Secrets Manager, on-demand DynamoDB, 14-day logs.
 

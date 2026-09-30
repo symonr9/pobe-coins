@@ -48,11 +48,15 @@ export function PurseView({
   coinTypes,
   size = 36,
   compact,
+  inkColor,
 }: {
   purse: Purse;
   coinTypes: number[];
   size?: number;
+  /** Only show denominations you hold. */
   compact?: boolean;
+  /** Count label color (for use on colored cards). */
+  inkColor?: string;
 }) {
   const entries = purseEntries(purse, coinTypes).filter((e) => !compact || e.count > 0);
   const step = Math.round(size * 0.16);
@@ -69,7 +73,7 @@ export function PurseView({
                 </View>
               ))}
             </View>
-            <Text variant="smallBold" color="soft">
+            <Text variant="smallBold" color={inkColor ?? 'soft'}>
               ×{e.count}
             </Text>
           </View>

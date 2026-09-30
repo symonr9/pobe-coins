@@ -12,7 +12,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import type { ChubbyAccessory, ChubbyPose } from '@pobe/core';
-import { FONTS, useTheme } from '@/theme';
+import { FONTS, elevation, useTheme } from '@/theme';
 import { Text } from '@/ui/Text';
 import { chubbyArt } from './assets';
 
@@ -86,18 +86,12 @@ export function Bubble({ text, tail = 'left' }: { text: string; tail?: 'left' | 
   return (
     <View
       style={{
-        backgroundColor: t.c.surface,
-        borderColor: t.c.line,
-        borderWidth: 1,
+        ...elevation(t, 1),
         borderRadius: 18,
         borderBottomLeftRadius: tail === 'left' ? 4 : 18,
         paddingHorizontal: 14,
         paddingVertical: 10,
         flexShrink: 1,
-        shadowColor: t.c.shadow,
-        shadowOpacity: 1,
-        shadowRadius: 10,
-        elevation: 2,
       }}
     >
       <BubbleText text={text} />

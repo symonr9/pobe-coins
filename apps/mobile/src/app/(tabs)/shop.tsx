@@ -81,39 +81,41 @@ function Rewards() {
           {items.map((item) => {
             const soldOut = item.remaining === 0;
             return (
-              <Card key={item.id} style={{ flexBasis: basis, flexGrow: 1, gap: 8, alignItems: 'center' }}>
+              <Card key={item.id} style={{ flexBasis: basis, flexGrow: 1, padding: 12, gap: 12 }}>
                 <View
                   style={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: 20,
+                    height: 96,
+                    borderRadius: 16,
                     backgroundColor: theme.c.surfaceAlt,
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
                 >
-                  <Text style={{ fontSize: 34, lineHeight: 42 }}>{item.emoji ?? '🎁'}</Text>
+                  <Text style={{ fontSize: 44, lineHeight: 52 }}>{item.emoji ?? '🎁'}</Text>
                 </View>
-                <Text variant="title" center numberOfLines={2}>
-                  {item.title}
-                </Text>
-                {item.remaining !== null ? (
-                  <Text variant="small" color={soldOut ? 'danger' : 'soft'}>
-                    {soldOut ? t('Sold out') : t('{{n}} left', { n: item.remaining })}
+                <View style={{ gap: 2, paddingHorizontal: 4 }}>
+                  <Text variant="title" numberOfLines={1}>
+                    {item.title}
                   </Text>
-                ) : null}
-                <Button
-                  small
-                  full
-                  title={t('Buy · {{n}}', { n: item.price })}
-                  disabled={soldOut}
-                  loading={busy === item.id}
-                  onPress={async () => {
-                    setBusy(item.id);
-                    await spend(item.title, item.price, (allowIou) => actions.buyShopItem({ id: item.id, allowIou }));
-                    setBusy(null);
-                  }}
-                />
+                  <Text variant="small" color={soldOut ? 'danger' : 'soft'} numberOfLines={1}>
+                    {item.remaining === null ? t('Anytime') : soldOut ? t('Sold out') : t('{{n}} left', { n: item.remaining })}
+                  </Text>
+                </View>
+                <Row style={{ justifyContent: 'space-between', paddingHorizontal: 4 }} gap={8}>
+                  <CoinAmount amount={item.price} size={20} variant="title" />
+                  <Button
+                    small
+                    title={t('Buy')}
+                    accessibilityLabel={t('Buy {{name}}?', { name: item.title })}
+                    disabled={soldOut}
+                    loading={busy === item.id}
+                    onPress={async () => {
+                      setBusy(item.id);
+                      await spend(item.title, item.price, (allowIou) => actions.buyShopItem({ id: item.id, allowIou }));
+                      setBusy(null);
+                    }}
+                  />
+                </Row>
               </Card>
             );
           })}

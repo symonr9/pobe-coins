@@ -7,7 +7,8 @@
  *   npm run screens                (terminal 3) → .claude/.cache/screens/*.png
  *
  * Env: BASE_URL (default http://localhost:8081), OUT (output dir), ONLY (comma-separated route
- * names, e.g. ONLY=home,shop), USER_NAME (demo member, default sam), PLAYWRIGHT_MODULE.
+ * names, e.g. ONLY=home,shop), USER_NAME (demo member, default sam), SCHEMES (light,dark; default
+ * light), PLAYWRIGHT_MODULE.
  */
 import { createRequire } from 'node:module';
 import { mkdirSync } from 'node:fs';
@@ -19,6 +20,7 @@ const BASE = process.env.BASE_URL ?? 'http://localhost:8081';
 const OUT = resolve(process.env.OUT ?? '.claude/.cache/screens');
 const ONLY = process.env.ONLY?.split(',');
 const month = new Date().toISOString().slice(0, 7);
+const SCHEMES = (process.env.SCHEMES ?? 'light').split(',');
 
 const ROUTES = [
   ['home', '/'],
@@ -36,17 +38,23 @@ const ROUTES = [
   ['wrapped', `/wrapped/${month}`],
 ].filter(([name]) => !ONLY || ONLY.includes(name));
 
-const VIEWPORTS = [
-  { tag: 'phone', width: 390, height: 844, scale: 1.5 },
-  { tag: 'desktop', width: 1280, height: 820, scale: 1 },
-];
+const VIEWPORTS = SCHEMES.flatMap((scheme) =>
+  [
+    { tag: 'phone', width: 390, height: 844, scale: 1.5 },
+    { tag: 'desktop', width: 1280, height: 820, scale: 1 },
+  ].map((vp) => ({ ...vp, scheme, tag: scheme === 'light' ? vp.tag : `${vp.tag}-${scheme}` })),
+);
 
 mkdirSync(OUT, { recursive: true });
 const browser = await chromium.launch();
 const errors = new Set();
 try {
   for (const vp of VIEWPORTS) {
-    const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, deviceScaleFactor: vp.scale });
+    const ctx = await browser.newContext({
+      viewport: { width: vp.width, height: vp.height },
+      deviceScaleFactor: vp.scale,
+      colorScheme: vp.scheme,
+    });
     const page = await ctx.newPage();
     page.on('pageerror', (e) => errors.add(`${vp.tag}: ${e.message}`));
     page.on('console', (m) => m.type() === 'error' && errors.add(`${vp.tag}: ${m.text().slice(0, 200)}`));

@@ -94,30 +94,62 @@ export default function Settings() {
         </Card>
       </Section>
 
-      <Section title={t('Theme')}>
+      <Section title={t('Look')}>
         <Card style={{ gap: 14 }}>
+          <Segmented
+            value={prefs.mode}
+            onChange={(mode) => update({ mode })}
+            options={[
+              { value: 'system', label: t('Auto') },
+              { value: 'light', label: t('Day') },
+              { value: 'dark', label: t('Night') },
+            ]}
+          />
           <Row wrap gap={10}>
             {THEME_NAMES.map((n) => {
               const on = theme.name === n;
+              const p = THEMES[n][theme.dark ? 'dark' : 'light'];
               return (
                 <Pressy
                   key={n}
                   onPress={() => pickTheme(n)}
+                  accessibilityRole="radio"
                   accessibilityState={{ selected: on }}
-                  accessibilityLabel={THEMES[n].label}
-                  style={{ alignItems: 'center', gap: 6, width: 86 }}
+                  accessibilityLabel={t(THEMES[n].label)}
+                  scaleTo={0.97}
+                  style={{ flexBasis: '30%', flexGrow: 1, minWidth: 96, gap: 6 }}
                 >
+                  {/* A tiny preview of the app in this palette: background, a card, the purse. */}
                   <View
                     style={{
-                      width: 56,
-                      height: 56,
-                      borderRadius: 18,
-                      backgroundColor: THEMES[n].light.primary,
-                      borderWidth: on ? 3 : 1.5,
+                      height: 92,
+                      borderRadius: 16,
+                      padding: 8,
+                      gap: 6,
+                      backgroundColor: p.bg,
+                      borderWidth: 2,
                       borderColor: on ? theme.c.accent : theme.c.line,
                     }}
-                  />
-                  <Text variant="small" center numberOfLines={2} color={on ? 'ink' : 'soft'}>
+                  >
+                    <View style={{ flex: 1, borderRadius: 10, backgroundColor: p.primary, padding: 6, justifyContent: 'flex-end' }}>
+                      <View style={{ width: 22, height: 6, borderRadius: 3, backgroundColor: p.onPrimary, opacity: 0.8 }} />
+                    </View>
+                    <View
+                      style={{
+                        height: 22,
+                        borderRadius: 8,
+                        backgroundColor: p.surface,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 4,
+                        paddingHorizontal: 6,
+                      }}
+                    >
+                      <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: p.accent }} />
+                      <View style={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: p.line }} />
+                    </View>
+                  </View>
+                  <Text variant={on ? 'smallBold' : 'small'} center numberOfLines={1} color={on ? 'ink' : 'soft'}>
                     {t(THEMES[n].label)}
                   </Text>
                 </Pressy>
@@ -129,15 +161,6 @@ export default function Settings() {
               {t('The app icon changes to match.')}
             </Text>
           ) : null}
-          <Segmented
-            value={prefs.mode}
-            onChange={(mode) => update({ mode })}
-            options={[
-              { value: 'system', label: t('Auto') },
-              { value: 'light', label: t('Light') },
-              { value: 'dark', label: t('Dark') },
-            ]}
-          />
           <ToggleRow
             label={t('Sounds')}
             hint={t('Cha-ching when coins arrive')}

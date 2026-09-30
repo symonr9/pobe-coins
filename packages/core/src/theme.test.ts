@@ -6,7 +6,7 @@ describe('theme contrast (WCAG AA)', () => {
     for (const mode of ['light', 'dark'] as const) {
       const p = theme[mode];
       it(`${theme.name}/${mode}`, () => {
-        for (const bg of [p.bg, p.surface, p.surfaceAlt]) {
+        for (const bg of [p.bg, p.surface, p.surfaceRaised, p.surfaceAlt]) {
           expect(contrast(p.ink, bg)).toBeGreaterThanOrEqual(4.5);
           expect(contrast(p.inkSoft, bg)).toBeGreaterThanOrEqual(4.5);
           expect(contrast(p.accent, bg)).toBeGreaterThanOrEqual(4.5);
