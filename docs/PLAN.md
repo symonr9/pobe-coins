@@ -143,3 +143,19 @@ AWS account + credentials profile · Google Cloud OAuth client · Apple Services
 - `expo export -p web` + Playwright smoke test with a mocked API.
 - With AWS: `npx sst dev` + manual end-to-end; EAS development build on the user's devices for native features (push actions, share extension, widget, Face ID).
 - Commits pushed to `claude/vigilant-ptolemy-fdv0ka` (no PR unless asked).
+
+## Build status (v1)
+
+Everything above is implemented. Where the build differs from the plan, and why:
+
+| Plan | Built | Why |
+|---|---|---|
+| NativeWind styling | Typed theme hook + `StyleSheet` (`apps/mobile/src/theme`) | No extra build tooling on SDK 57; same tokens drive web, iOS and Android |
+| CloudFront signed URLs for photos | S3 presigned GET URLs (1h) | Simpler (no key pair to manage); S3 includes 100 GB of free egress |
+| Cognito tokens used directly | Provider token exchanged once for an app session token (`POST /auth/exchange`) | The native Sign in with Apple token expires in 10 minutes and can't be refreshed; one refreshable session works for Google, Apple and dev sign-in |
+| `@bacons/apple-targets` + `react-native-android-widget` | First-party `expo-widgets` (iOS) + `react-native-android-widget` | `expo-widgets` shipped in SDK 57; its Android side is still a stub |
+| i18n JSON per namespace | Natural-language keys (`t('Save')`), `npm run i18n:extract` → `locales/en.json` | English stays readable in code, and translations are just a JSON file |
+
+**Needs the owner:** an AWS account and credentials, a Google OAuth client, Apple Services ID/key, a Netlify site, an EAS project, and the commissioned Chubbybara art. See the README for each step.
+
+**Tested here:** 117 unit/API tests, typecheck in every workspace, web production build + PWA checks, a Playwright end-to-end smoke test, and `expo prebuild` for iOS/Android (widgets, share extension, alternate icons, notifications) plus iOS/Android JS bundles. **Not tested here** (needs devices or accounts): native builds on a phone, real push delivery, the Cognito/Google/Apple sign-in round trip, and an AWS deploy.
