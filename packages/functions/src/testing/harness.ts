@@ -49,6 +49,7 @@ export function createHarness(start = '2026-06-01T15:00:00Z') {
       bucketName: 'test',
       webOrigin: 'https://pobe.example.test',
       cognito: null,
+      appleAudiences: [],
       deviceTokenSecret: 'test-secret-test-secret-test-secret',
       vapid: null,
     },

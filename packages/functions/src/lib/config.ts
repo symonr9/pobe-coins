@@ -7,6 +7,8 @@ export interface Config {
   bucketName: string;
   webOrigin: string;
   cognito: { userPoolId: string; clientId: string } | null;
+  /** Bundle id / Services id accepted for native Sign in with Apple tokens. */
+  appleAudiences: string[];
   deviceTokenSecret: string;
   vapid: { publicKey: string; privateKey: string; subject: string } | null;
   expoAccessToken?: string;
@@ -27,6 +29,7 @@ export function loadConfig(): Config {
       env('COGNITO_USER_POOL_ID') && env('COGNITO_CLIENT_ID')
         ? { userPoolId: env('COGNITO_USER_POOL_ID'), clientId: env('COGNITO_CLIENT_ID') }
         : null,
+    appleAudiences: env('APPLE_AUDIENCES').split(',').map((s) => s.trim()).filter(Boolean),
     deviceTokenSecret: secret,
     vapid:
       env('VAPID_PUBLIC_KEY') && env('VAPID_PRIVATE_KEY')

@@ -51,6 +51,7 @@ const deps: Deps = {
     bucketName: 'local',
     webOrigin: process.env.WEB_ORIGIN ?? 'http://localhost:8081',
     cognito: null,
+    appleAudiences: [],
     deviceTokenSecret: 'local-dev-secret-local-dev-secret',
     vapid: null,
   },

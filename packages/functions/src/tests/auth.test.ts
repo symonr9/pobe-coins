@@ -172,3 +172,12 @@ describe('account deletion', () => {
     expect(me.body.household).toBeNull();
   });
 });
+
+describe('federated identity ids', () => {
+  it('maps Cognito federated users to provider ids', async () => {
+    const { normalizeCognitoSub } = await import('../adapters/aws');
+    expect(normalizeCognitoSub('c-1', [{ providerName: 'Google', providerType: 'Google', userId: '123' }])).toBe('google:123');
+    expect(normalizeCognitoSub('c-1', JSON.stringify([{ providerName: 'SignInWithApple', providerType: 'SignInWithApple', userId: '001.abc' }]))).toBe('apple:001.abc');
+    expect(normalizeCognitoSub('c-1', undefined)).toBe('c-1');
+  });
+});

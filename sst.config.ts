@@ -12,6 +12,7 @@
  *   AUTH_PREFIX     Cognito hosted-UI prefix (must be globally unique), default pobe-coins-<stage>
  *   ENABLE_GOOGLE   "false" to skip Google sign-in (default on)
  *   ENABLE_APPLE    "true" once the Apple Services ID / key secrets are set
+ *   APPLE_AUDIENCES iOS bundle id(s) for native Sign in with Apple, default app.pobecoins
  *   BUDGET_EMAIL    email for the AWS Budgets alarm (optional)
  */
 export default $config({
@@ -122,6 +123,7 @@ export default $config({
       WEB_ORIGIN: webOrigin,
       COGNITO_USER_POOL_ID: userPool.id,
       COGNITO_CLIENT_ID: userPoolClient.id,
+      APPLE_AUDIENCES: process.env.APPLE_AUDIENCES ?? 'app.pobecoins',
       DEVICE_TOKEN_SECRET: deviceTokenSecret.value,
       VAPID_PUBLIC_KEY: vapidPublicKey.value.apply((v) => (v === 'unset' ? '' : v)),
       VAPID_PRIVATE_KEY: vapidPrivateKey.value.apply((v) => (v === 'unset' ? '' : v)),
