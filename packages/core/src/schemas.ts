@@ -18,6 +18,8 @@ const httpUrl = z
   .url('Enter a full link starting with https://')
   .refine((u) => /^https?:\/\//i.test(u), 'Only http and https links work.');
 
+export const idSchema = id;
+
 export const recurrenceSchema = z.object({
   freq: z.enum(['daily', 'weekly', 'monthly']),
   interval: z.number().int().min(1).max(52).optional(),
@@ -206,6 +208,10 @@ export const pushRegisterSchema = z.discriminatedUnion('kind', [
     }),
   }),
 ]);
+
+export const linkAccountSchema = z.object({ idToken: z.string().min(20).max(8192) });
+export const rotateSchema = z.object({ by: z.number().int().min(-20).max(20).default(1) });
+export const pushUnregisterSchema = z.object({ token: z.string().min(10).max(2048) });
 
 export type RecurrenceInput = z.infer<typeof recurrenceSchema>;
 export type TaskInput = z.infer<typeof taskSchema>;
