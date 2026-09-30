@@ -52,6 +52,8 @@ npx expo start --dev-client
 
 ## Deploy
 
+**First time?** Follow [`docs/deploy/going-live.md`](docs/deploy/going-live.md), the step-by-step guide (AWS account, Google sign-in, Netlify, `dev` then `prod`). `npm run deploy:check` and `npm run deploy:secrets -- --stage <stage>` do the fiddly parts. The sections below are the reference.
+
 ### 1. AWS backend (SST)
 
 1. Create an AWS account and configure credentials (`aws configure sso` or an IAM user profile). New accounts get free-tier credits.

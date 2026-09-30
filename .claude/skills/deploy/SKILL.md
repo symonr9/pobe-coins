@@ -7,6 +7,14 @@ description: Deploy or change Pobe Coins infrastructure — SST v4 on AWS (Dynam
 
 **Always get the user's explicit OK before running a deploy or remove.** The settings file makes these commands ask first.
 
+- The user deploys from **their own computer**; AWS credentials never go in the sandbox or the chat. Walk them through `docs/deploy/going-live.md`.
+  - `npm run deploy:check` checks Node, AWS identity, `WEB_ORIGIN`, `AUTH_PREFIX` and the branch.
+  - `npm run deploy:secrets -- --stage <s>` generates and stores DeviceTokenSecret and VAPID keys, and takes the Google client via a hidden prompt, piping values to `sst secret set` over stdin.
+- `sst.config.ts` refuses to deploy without an https `WEB_ORIGIN`. `ALLOW_LOCAL_ORIGIN=1` overrides this for experiments.
+- The deploy outputs (`api`, `authDomain`, `userPoolClientId`) aren't secret. When the user shares them, verify from the sandbox:
+  - `curl <api>/health`
+  - a CORS preflight: `curl -si -X OPTIONS <api>/me -H 'Origin: <WEB_ORIGIN>' -H 'Access-Control-Request-Method: GET'`
+
 ## Backend (SST, `sst.config.ts`)
 
 - Stages: `dev` (personal) and `prod`. Each has its own table, user pool and bucket. `prod` is protected and retained on remove.

@@ -27,7 +27,16 @@ export default $config({
   },
   async run() {
     const isProd = $app.stage === 'prod';
-    const webOrigin = process.env.WEB_ORIGIN ?? 'http://localhost:8081';
+    // A deployed stage must know where the web app lives: it feeds CORS and the Cognito sign-in
+    // callbacks. Falling back to localhost would deploy fine but break sign-in, so fail loudly.
+    // (`sst dev` or ALLOW_LOCAL_ORIGIN=1 keeps the localhost default for local experiments.)
+    const webOrigin = process.env.WEB_ORIGIN?.replace(/\/$/, '') ?? 'http://localhost:8081';
+    if (!$dev && process.env.ALLOW_LOCAL_ORIGIN !== '1' && !webOrigin.startsWith('https://')) {
+      throw new Error(
+        `WEB_ORIGIN must be the https URL of the web app (e.g. https://pobe-coins.netlify.app), got "${webOrigin}". ` +
+          'See docs/deploy/going-live.md.',
+      );
+    }
     const appScheme = 'pobecoins';
 
     // ---------- secrets (stored encrypted in SSM by SST, never in the repo) ----------
