@@ -39,6 +39,7 @@ npm run e2e                   # Playwright smoke test (needs both servers)
 ## Environment gotchas
 
 - The cloud sandbox can't reach docs.expo.dev or Expo's version API, so `npx expo install` fails there. Pin versions from `node_modules/expo/bundledNativeModules.json` instead and set `EXPO_OFFLINE=1`.
+- In app code, read env **only** as literal `process.env.EXPO_PUBLIC_X`. Expo inlines just that form, so aliasing `process.env` makes production builds silently lose every value (`src/config.test.ts` guards this).
 - `CI=1` turns off Metro's file watching. Don't set it for the dev server.
 - Typed routes (`.expo/types/router.d.ts`) regenerate only when `expo start` restarts.
 - Stop background servers with `fuser -k 3001/tcp`. `pkill -f` can kill your own shell.
