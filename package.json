@@ -23,6 +23,7 @@
   "devDependencies": {
     "esbuild": "^0.28.2",
     "prettier": "^3.9.9",
+    "sst": "^4.17.1",
     "tsx": "^4.23.15"
   }
 }
