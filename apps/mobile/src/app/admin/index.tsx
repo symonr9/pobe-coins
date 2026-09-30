@@ -51,11 +51,19 @@ export default function Admin() {
       validateCoinTypes(coinTypes);
       return actions.updateHousehold({
         name: name.trim(),
-        settings: { purchaseApprovalThreshold: threshold, debtLimit, visibility, leaderboardEnabled: leaderboard, undoWindowMinutes: undo, timeZone, coinTypes },
+        settings: {
+          purchaseApprovalThreshold: threshold,
+          debtLimit,
+          visibility,
+          leaderboardEnabled: leaderboard,
+          undoWindowMinutes: undo,
+          timeZone,
+          coinTypes,
+        },
       });
     },
     onSuccess: () => toast(t('Household saved'), 'success'),
-    onError: (e) => toast(e instanceof Error ? e.message : t('Couldn\'t save.'), 'error'),
+    onError: (e) => toast(e instanceof Error ? e.message : t("Couldn't save."), 'error'),
     onSettled: () => refresh(),
   });
   const addMember = useMutation({
@@ -64,7 +72,7 @@ export default function Admin() {
       setNewMember('');
       router.push({ pathname: '/admin/member/[id]', params: { id: m.id, fresh: '1' } });
     },
-    onError: (e) => toast(e instanceof ApiError ? e.message : t('Couldn\'t add them.'), 'error'),
+    onError: (e) => toast(e instanceof ApiError ? e.message : t("Couldn't add them."), 'error'),
     onSettled: () => refresh(),
   });
   const giveMoney = useMutation({
@@ -77,7 +85,7 @@ export default function Admin() {
       setReason('');
       toast(money === 'bonus' ? t('Bonus sent!') : t('Correction saved'), 'success');
     },
-    onError: (e) => toast(e instanceof ApiError ? e.message : t('That didn\'t work.'), 'error'),
+    onError: (e) => toast(e instanceof ApiError ? e.message : t("That didn't work."), 'error'),
     onSettled: () => refresh(),
   });
 
@@ -112,7 +120,9 @@ export default function Admin() {
   }
 
   return (
-    <Screen footer={<Button full icon="check" title={t('Save household settings')} loading={save.isPending} onPress={() => save.mutate()} />}>
+    <Screen
+      footer={<Button full icon="check" title={t('Save household settings')} loading={save.isPending} onPress={() => save.mutate()} />}
+    >
       <Header title={t('Admin')} />
 
       <Section title={t('Members')}>
@@ -130,7 +140,15 @@ export default function Admin() {
             <View style={{ flex: 1 }}>
               <Field label={t('Add someone')} value={newMember} onChangeText={setNewMember} placeholder={t('Name')} maxLength={40} />
             </View>
-            <Button small icon="plus" title={t('Add')} disabled={!newMember.trim()} loading={addMember.isPending} onPress={() => addMember.mutate()} style={{ marginTop: 22 }} />
+            <Button
+              small
+              icon="plus"
+              title={t('Add')}
+              disabled={!newMember.trim()}
+              loading={addMember.isPending}
+              onPress={() => addMember.mutate()}
+              style={{ marginTop: 22 }}
+            />
           </Row>
           <Text variant="small" color="soft">
             {t("After adding someone, you'll get a one-time QR code or link for their phone.")}
@@ -145,13 +163,21 @@ export default function Admin() {
             {t('Coin types')}
           </Text>
           <Row wrap gap={8}>
-            {[...coinTypes].sort((a, b) => a - b).map((d) => (
-              <Chip key={d} label={`${d}`} selected onPress={() => d !== 1 && setCoinTypes(coinTypes.filter((x) => x !== d))} />
-            ))}
+            {[...coinTypes]
+              .sort((a, b) => a - b)
+              .map((d) => (
+                <Chip key={d} label={`${d}`} selected onPress={() => d !== 1 && setCoinTypes(coinTypes.filter((x) => x !== d))} />
+              ))}
           </Row>
           <Row gap={8}>
             <View style={{ flex: 1 }}>
-              <Field label={t('Add a coin type')} value={newCoin} onChangeText={(v) => setNewCoin(v.replace(/\D/g, ''))} keyboardType="number-pad" placeholder="20" />
+              <Field
+                label={t('Add a coin type')}
+                value={newCoin}
+                onChangeText={(v) => setNewCoin(v.replace(/\D/g, ''))}
+                keyboardType="number-pad"
+                placeholder="20"
+              />
             </View>
             <Button
               small
@@ -163,19 +189,36 @@ export default function Admin() {
             />
           </Row>
           <Text variant="small" color="soft">
-            {t('Tap a coin to remove it (the 1-coin always stays). Changing coin types re-mints everyone\'s purse at the same value.')}
+            {t("Tap a coin to remove it (the 1-coin always stays). Changing coin types re-mints everyone's purse at the same value.")}
           </Text>
-          <ToggleRow
-            label={t('Big purchases need approval')}
-            value={threshold !== null}
-            onChange={(on) => setThreshold(on ? 100 : null)}
-          />
+          <ToggleRow label={t('Big purchases need approval')} value={threshold !== null} onChange={(on) => setThreshold(on ? 100 : null)} />
           {threshold !== null ? (
-            <Field label={t('Needs approval above')} value={String(threshold)} keyboardType="number-pad" onChangeText={(v) => setThreshold(Number(v.replace(/\D/g, '')) || 0)} />
+            <Field
+              label={t('Needs approval above')}
+              value={String(threshold)}
+              keyboardType="number-pad"
+              onChangeText={(v) => setThreshold(Number(v.replace(/\D/g, '')) || 0)}
+            />
           ) : null}
-          <Field label={t('IOU limit per person (0 = no IOUs)')} value={String(debtLimit)} keyboardType="number-pad" onChangeText={(v) => setDebtLimit(Number(v.replace(/\D/g, '')) || 0)} />
-          <Field label={t('Undo window (minutes)')} value={String(undo)} keyboardType="number-pad" onChangeText={(v) => setUndo(Math.min(60, Number(v.replace(/\D/g, '')) || 0))} />
-          <Field label={t('Time zone')} value={timeZone} onChangeText={setTimeZone} autoCapitalize="none" hint={t('Decides when "daily" chores reset, e.g. America/Chicago')} />
+          <Field
+            label={t('IOU limit per person (0 = no IOUs)')}
+            value={String(debtLimit)}
+            keyboardType="number-pad"
+            onChangeText={(v) => setDebtLimit(Number(v.replace(/\D/g, '')) || 0)}
+          />
+          <Field
+            label={t('Undo window (minutes)')}
+            value={String(undo)}
+            keyboardType="number-pad"
+            onChangeText={(v) => setUndo(Math.min(60, Number(v.replace(/\D/g, '')) || 0))}
+          />
+          <Field
+            label={t('Time zone')}
+            value={timeZone}
+            onChangeText={setTimeZone}
+            autoCapitalize="none"
+            hint={t('Decides when "daily" chores reset, e.g. America/Chicago')}
+          />
           <Text variant="smallBold" color="soft">
             {t('What members can see of each other')}
           </Text>
@@ -187,14 +230,29 @@ export default function Admin() {
               { value: 'balances', label: t('Balances only') },
             ]}
           />
-          <ToggleRow label={t('Friendly leaderboard')} hint={t('Weekly "who earned most". Off by default.')} value={leaderboard} onChange={setLeaderboard} />
+          <ToggleRow
+            label={t('Friendly leaderboard')}
+            hint={t('Weekly "who earned most". Off by default.')}
+            value={leaderboard}
+            onChange={setLeaderboard}
+          />
         </Card>
       </Section>
 
       <Section title={t('Coins by hand')}>
         <Card style={{ paddingVertical: 6 }}>
-          <ListRow icon="star" title={t('Give a bonus')} subtitle={t('Reward something special')} onPress={() => (setTarget(hh.members[0]?.id), setMoney('bonus'))} />
-          <ListRow icon="edit" title={t('Correct a balance')} subtitle={t('Fix a mistake, with a reason for the log')} onPress={() => (setTarget(hh.members[0]?.id), setMoney('correction'))} />
+          <ListRow
+            icon="star"
+            title={t('Give a bonus')}
+            subtitle={t('Reward something special')}
+            onPress={() => (setTarget(hh.members[0]?.id), setMoney('bonus'))}
+          />
+          <ListRow
+            icon="edit"
+            title={t('Correct a balance')}
+            subtitle={t('Fix a mistake, with a reason for the log')}
+            onPress={() => (setTarget(hh.members[0]?.id), setMoney('correction'))}
+          />
         </Card>
       </Section>
 
@@ -203,14 +261,24 @@ export default function Admin() {
           <ListRow icon="shop" title={t('Shop rewards')} onPress={() => router.push('/admin/shop')} />
           <ListRow icon="target" title={t('Team challenges')} onPress={() => router.push('/challenges')} />
           <ListRow icon="shield" title={t('Activity log')} subtitle={t('Who changed what')} onPress={() => router.push('/admin/audit')} />
-          <ListRow icon="download" title={exporting ? t('Preparing export…') : t('Export all data')} subtitle={t('ZIP with records, ledger CSV and photos')} onPress={exporting ? undefined : exportData} />
+          <ListRow
+            icon="download"
+            title={exporting ? t('Preparing export…') : t('Export all data')}
+            subtitle={t('ZIP with records, ledger CSV and photos')}
+            onPress={exporting ? undefined : exportData}
+          />
           <ListRow
             icon="trash"
             danger
             title={t('Delete household')}
-            subtitle={t('Deletes everything for everyone. Can\'t be undone.')}
+            subtitle={t("Deletes everything for everyone. Can't be undone.")}
             onPress={async () => {
-              const ok = await confirm({ title: t('Delete {{name}}?', { name: hh.household?.name ?? '' }), message: t('All members, chores, coins, photos and history are deleted forever.'), confirm: t('Delete forever'), danger: true });
+              const ok = await confirm({
+                title: t('Delete {{name}}?', { name: hh.household?.name ?? '' }),
+                message: t('All members, chores, coins, photos and history are deleted forever.'),
+                confirm: t('Delete forever'),
+                danger: true,
+              });
               if (!ok) return;
               await actions.deleteHousehold().catch((e) => toast(e.message, 'error'));
               await session.updateActive({ householdId: undefined, householdName: undefined, memberId: undefined });
@@ -228,11 +296,30 @@ export default function Admin() {
           ))}
         </Row>
         {money === 'correction' ? (
-          <Segmented value={negative ? 'remove' : 'add'} onChange={(v) => setNegative(v === 'remove')} options={[{ value: 'add', label: t('Add coins') }, { value: 'remove', label: t('Remove coins') }]} />
+          <Segmented
+            value={negative ? 'remove' : 'add'}
+            onChange={(v) => setNegative(v === 'remove')}
+            options={[
+              { value: 'add', label: t('Add coins') },
+              { value: 'remove', label: t('Remove coins') },
+            ]}
+          />
         ) : null}
         <AmountPicker label={t('Coins')} value={amount} onChange={setAmount} coinTypes={s.coinTypes} />
-        <Field label={t('Reason')} value={reason} onChangeText={setReason} placeholder={money === 'bonus' ? t('Birthday!') : t('Counted twice')} maxLength={200} />
-        <Button full title={t('Confirm')} disabled={!target || !amount || reason.trim().length < (money === 'bonus' ? 1 : 3)} loading={giveMoney.isPending} onPress={() => giveMoney.mutate()} />
+        <Field
+          label={t('Reason')}
+          value={reason}
+          onChangeText={setReason}
+          placeholder={money === 'bonus' ? t('Birthday!') : t('Counted twice')}
+          maxLength={200}
+        />
+        <Button
+          full
+          title={t('Confirm')}
+          disabled={!target || !amount || reason.trim().length < (money === 'bonus' ? 1 : 3)}
+          loading={giveMoney.isPending}
+          onPress={() => giveMoney.mutate()}
+        />
       </Sheet>
       <Stack>
         <Row gap={6}>

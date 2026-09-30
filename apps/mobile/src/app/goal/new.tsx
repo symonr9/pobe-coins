@@ -27,10 +27,21 @@ export default function NewGoal() {
       void refresh();
       router.back();
     },
-    onError: (e) => setError(e instanceof ApiError ? e.message : t('Couldn\'t save.')),
+    onError: (e) => setError(e instanceof ApiError ? e.message : t("Couldn't save.")),
   });
   return (
-    <Screen footer={<Button full icon="target" title={t('Add to wishlist')} disabled={!title.trim() || !target} loading={save.isPending} onPress={() => save.mutate()} />}>
+    <Screen
+      footer={
+        <Button
+          full
+          icon="target"
+          title={t('Add to wishlist')}
+          disabled={!title.trim() || !target}
+          loading={save.isPending}
+          onPress={() => save.mutate()}
+        />
+      }
+    >
       <Header title={t('New wish')} />
       <Card style={{ gap: 14 }}>
         <Segmented
@@ -46,9 +57,22 @@ export default function NewGoal() {
             ? t('Your purse is the progress bar. Buy it whenever you have enough.')
             : t('Everyone can chip in coins. When the jar is full, anyone can buy it for the household.')}
         </Text>
-        <Field label={t('What are you saving for?')} value={title} onChangeText={setTitle} placeholder={t('Picnic basket')} maxLength={120} />
+        <Field
+          label={t('What are you saving for?')}
+          value={title}
+          onChangeText={setTitle}
+          placeholder={t('Picnic basket')}
+          maxLength={120}
+        />
         <AmountPicker label={t('Goal')} value={target} onChange={setTarget} coinTypes={hh.settings.coinTypes} />
-        <Field label={t('Link (optional)')} value={url} onChangeText={setUrl} placeholder="https://" autoCapitalize="none" keyboardType="url" />
+        <Field
+          label={t('Link (optional)')}
+          value={url}
+          onChangeText={setUrl}
+          placeholder="https://"
+          autoCapitalize="none"
+          keyboardType="url"
+        />
       </Card>
       {error ? <Text color="danger">{error}</Text> : null}
     </Screen>

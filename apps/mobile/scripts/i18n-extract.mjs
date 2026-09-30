@@ -19,8 +19,8 @@ walk('src');
 const core = await import('../../../packages/core/src/index.ts').catch(() => null);
 if (core) {
   for (const set of Object.values(core.LINES)) for (const l of set.lines) keys.add(l);
-  for (const o of core.ONBOARDING) keys.add(o.title), keys.add(o.body);
-  for (const tips of Object.values(core.HELP)) for (const tip of tips) keys.add(tip.title), keys.add(tip.body);
+  for (const o of core.ONBOARDING) (keys.add(o.title), keys.add(o.body));
+  for (const tips of Object.values(core.HELP)) for (const tip of tips) (keys.add(tip.title), keys.add(tip.body));
 }
 mkdirSync('locales', { recursive: true });
 const sorted = Object.fromEntries([...keys].sort().map((k) => [k, k]));

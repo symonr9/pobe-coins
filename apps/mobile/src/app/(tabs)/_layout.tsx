@@ -53,7 +53,10 @@ function TabBar({ state, navigation }: BottomTabBarProps) {
   const pending = (approvals.data?.completions.length ?? 0) + (approvals.data?.purchases.length ?? 0);
   return (
     <View pointerEvents="box-none" style={[styles.wrap, { paddingBottom: Math.max(insets.bottom, 10) }]}>
-      <View style={[styles.bar, { backgroundColor: t.c.surface, borderColor: t.c.line, shadowColor: t.c.shadow }]} accessibilityRole="tablist">
+      <View
+        style={[styles.bar, { backgroundColor: t.c.surface, borderColor: t.c.line, shadowColor: t.c.shadow }]}
+        accessibilityRole="tablist"
+      >
         {state.routes.map((route, i) => {
           const tab = TABS.find((x) => x.name === route.name);
           if (!tab) return null;
@@ -142,14 +145,32 @@ function SideRail({ state, navigation }: BottomTabBarProps) {
   );
 }
 
-function TabButton({ focused, icon, label, badge, onPress }: { focused: boolean; icon: IconName; label: string; badge: number; onPress: () => void }) {
+function TabButton({
+  focused,
+  icon,
+  label,
+  badge,
+  onPress,
+}: {
+  focused: boolean;
+  icon: IconName;
+  label: string;
+  badge: number;
+  onPress: () => void;
+}) {
   const t = useTheme();
   const pill = useAnimatedStyle(() => ({
     opacity: withSpring(focused ? 1 : 0, MOTION.spring),
     transform: [{ scale: withSpring(focused ? 1 : 0.6, MOTION.bouncy) }],
   }));
   return (
-    <Pressy onPress={onPress} style={styles.tab} accessibilityRole="tab" accessibilityState={{ selected: focused }} accessibilityLabel={badge ? `${label}, ${badge} waiting` : label}>
+    <Pressy
+      onPress={onPress}
+      style={styles.tab}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: focused }}
+      accessibilityLabel={badge ? `${label}, ${badge} waiting` : label}
+    >
       <View style={styles.iconWrap}>
         <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: t.c.primary, borderRadius: 12 }, pill]} />
         <View style={{ zIndex: 1 }}>
@@ -171,14 +192,49 @@ function TabButton({ focused, icon, label, badge, onPress }: { focused: boolean;
 }
 
 const styles = StyleSheet.create({
-  rail: { position: 'absolute', left: 0, top: 0, bottom: 0, width: RAIL, borderRightWidth: 1, paddingHorizontal: 14, paddingTop: 24, paddingBottom: 20, gap: 24 },
+  rail: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: RAIL,
+    borderRightWidth: 1,
+    paddingHorizontal: 14,
+    paddingTop: 24,
+    paddingBottom: 20,
+    gap: 24,
+  },
   brand: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 6 },
   railItem: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, paddingVertical: 11, borderRadius: 12 },
   railBadge: { minWidth: 20, height: 20, borderRadius: 10, paddingHorizontal: 5, alignItems: 'center', justifyContent: 'center' },
   railPurse: { borderRadius: 14, padding: 14, gap: 2 },
   wrap: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', paddingHorizontal: 12 },
-  bar: { flexDirection: 'row', width: '100%', maxWidth: 520, borderRadius: 24, borderWidth: 1, paddingVertical: 8, paddingHorizontal: 6, shadowOpacity: 1, shadowRadius: 18, shadowOffset: { width: 0, height: 6 }, elevation: 8 },
+  bar: {
+    flexDirection: 'row',
+    width: '100%',
+    maxWidth: 520,
+    borderRadius: 24,
+    borderWidth: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+    shadowOpacity: 1,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 8,
+  },
   tab: { flex: 1, alignItems: 'center', gap: 2 },
   iconWrap: { width: 52, height: 32, alignItems: 'center', justifyContent: 'center' },
-  badge: { zIndex: 2, position: 'absolute', top: -4, right: 4, minWidth: 18, height: 18, borderRadius: 9, paddingHorizontal: 4, alignItems: 'center', justifyContent: 'center', borderWidth: 2 },
+  badge: {
+    zIndex: 2,
+    position: 'absolute',
+    top: -4,
+    right: 4,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+  },
 });

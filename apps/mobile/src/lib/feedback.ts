@@ -15,7 +15,8 @@ const canHaptic = Platform.OS === 'ios' || Platform.OS === 'android';
 export const haptic = {
   tap: () => canHaptic && prefs.haptics && void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined),
   select: () => canHaptic && prefs.haptics && void Haptics.selectionAsync().catch(() => undefined),
-  success: () => canHaptic && prefs.haptics && void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined),
+  success: () =>
+    canHaptic && prefs.haptics && void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined),
   warn: () => canHaptic && prefs.haptics && void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => undefined),
   heavy: () => canHaptic && prefs.haptics && void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => undefined),
 };

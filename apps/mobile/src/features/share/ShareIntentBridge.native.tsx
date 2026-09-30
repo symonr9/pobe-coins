@@ -13,7 +13,7 @@ export function ShareIntentBridge() {
   useEffect(() => {
     if (!hasShareIntent || !active) return;
     const url = shareIntent.webUrl ?? shareIntent.text?.match(/https?:\/\/\S+/)?.[0] ?? undefined;
-    const title = shareIntent.meta?.title ?? (url ? undefined : shareIntent.text ?? undefined);
+    const title = shareIntent.meta?.title ?? (url ? undefined : (shareIntent.text ?? undefined));
     const image = shareIntent.files?.find((f) => f.mimeType?.startsWith('image/'))?.path;
     router.push({ pathname: '/spend', params: { ...(url ? { url } : {}), ...(title ? { title } : {}), ...(image ? { image } : {}) } });
     resetShareIntent();

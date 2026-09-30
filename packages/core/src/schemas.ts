@@ -67,13 +67,19 @@ export const updateHouseholdSchema = z.object({
 export const memberSchema = z.object({
   name: z.string().trim().min(1).max(40),
   role: z.enum(['admin', 'member']).default('member'),
-  color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
+  color: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/)
+    .optional(),
 });
 
 export const updateMemberSchema = z.object({
   name: z.string().trim().min(1).max(40).optional(),
   role: z.enum(['admin', 'member']).optional(),
-  color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
+  color: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/)
+    .optional(),
   theme: z.enum(THEME_NAMES as [string, ...string[]]).optional(),
 });
 
@@ -136,7 +142,12 @@ export const shopItemSchema = z.object({
   emoji: z.string().max(16).optional(),
   price: coins.min(1).max(1_000_000),
   stock: z.number().int().min(0).max(100_000).nullable().default(null),
-  cooldownHours: z.number().int().min(0).max(24 * 365).optional(),
+  cooldownHours: z
+    .number()
+    .int()
+    .min(0)
+    .max(24 * 365)
+    .optional(),
   requiresApproval: z.boolean().default(false),
   active: z.boolean().default(true),
 });
@@ -175,7 +186,12 @@ export const bonusSchema = z.object({
 export const correctionSchema = z.object({
   memberId: id,
   /** Signed: positive adds coins, negative removes. */
-  delta: z.number().int().min(-1_000_000).max(1_000_000).refine((n) => n !== 0, 'Enter a non-zero amount.'),
+  delta: z
+    .number()
+    .int()
+    .min(-1_000_000)
+    .max(1_000_000)
+    .refine((n) => n !== 0, 'Enter a non-zero amount.'),
   reason: z.string().trim().min(3, 'Explain the correction.').max(300),
 });
 
@@ -192,7 +208,11 @@ export const commentSchema = z.object({ text: z.string().trim().min(1).max(500) 
 
 export const uploadSchema = z.object({
   contentType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'image/heic']),
-  bytes: z.number().int().min(1).max(5 * 1024 * 1024),
+  bytes: z
+    .number()
+    .int()
+    .min(1)
+    .max(5 * 1024 * 1024),
   purpose: z.enum(['purchase', 'completion', 'goal', 'avatar']),
 });
 

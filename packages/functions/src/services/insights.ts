@@ -25,7 +25,11 @@ import { listTaskViews } from './tasks';
 
 async function ledgerSince(deps: Deps, hid: string, from: Date, memberId?: string): Promise<LedgerEntry[]> {
   const rows = memberId
-    ? await deps.db.query<Item & LedgerEntry>(memberLedgerIndex(hid, memberId), { index: 'gsi1', after: `L#${ulidFloor(from)}`, before: 'L#￿' })
+    ? await deps.db.query<Item & LedgerEntry>(memberLedgerIndex(hid, memberId), {
+        index: 'gsi1',
+        after: `L#${ulidFloor(from)}`,
+        before: 'L#￿',
+      })
     : await deps.db.query<Item & LedgerEntry>(partition(hid), { after: `L#${ulidFloor(from)}`, before: 'L#￿' });
   return rows.map((r) => strip(r) as LedgerEntry);
 }
@@ -41,13 +45,21 @@ export async function timeline(deps: Deps, actor: Actor, opts: { memberId?: stri
   const limit = Math.min(opts.limit ?? 30, 100);
   const before = opts.cursor ? `L#${opts.cursor}` : 'L#￿';
   const rows = opts.memberId
-    ? await deps.db.query<Item & LedgerEntry>(memberLedgerIndex(actor.householdId, opts.memberId), { index: 'gsi1', after: 'L#', before, newestFirst: true, limit })
+    ? await deps.db.query<Item & LedgerEntry>(memberLedgerIndex(actor.householdId, opts.memberId), {
+        index: 'gsi1',
+        after: 'L#',
+        before,
+        newestFirst: true,
+        limit,
+      })
     : await deps.db.query<Item & LedgerEntry>(partition(actor.householdId), { after: 'L#', before, newestFirst: true, limit });
   const entries = rows.map((r) => redact(strip(r) as LedgerEntry, actor, household.settings.visibility));
 
   // Purchase photos and details for spend entries.
   const purchaseIds = [...new Set(entries.filter((e) => e.ref?.type === 'purchase').map((e) => e.ref!.id))];
-  const purchases = (await deps.db.getMany<Item & Purchase>(purchaseIds.map((id) => keys.purchase(actor.householdId, id)))).map((p) => strip(p) as Purchase);
+  const purchases = (await deps.db.getMany<Item & Purchase>(purchaseIds.map((id) => keys.purchase(actor.householdId, id)))).map(
+    (p) => strip(p) as Purchase,
+  );
   const purchaseById = new Map(purchases.map((p) => [p.id, p]));
   const thumbs = new Map<string, string>();
   for (const p of purchases) if (p.photoKeys[0]) thumbs.set(p.id, await deps.storage.presignGet(p.photoKeys[0]));
@@ -72,7 +84,9 @@ export async function timeline(deps: Deps, actor: Actor, opts: { memberId?: stri
   const pending = opts.cursor
     ? []
     : [
-        ...(await listByPrefix<Completion>(deps, actor.householdId, PREFIX.completion, true, 100)).filter((c) => c.status === 'pending').map((c) => ({ type: 'completion' as const, at: c.createdAt, completion: c })),
+        ...(await listByPrefix<Completion>(deps, actor.householdId, PREFIX.completion, true, 100))
+          .filter((c) => c.status === 'pending')
+          .map((c) => ({ type: 'completion' as const, at: c.createdAt, completion: c })),
         ...(await listByPrefix<Purchase>(deps, actor.householdId, PREFIX.purchase, true, 100))
           .filter((p) => p.status === 'pending')
           .filter((p) => household.settings.visibility === 'full' || actor.role === 'admin' || p.memberId === actor.memberId)
@@ -86,7 +100,10 @@ export async function timeline(deps: Deps, actor: Actor, opts: { memberId?: stri
       const visible = !p || household.settings.visibility === 'full' || actor.role === 'admin' || p.memberId === actor.memberId;
       return {
         entry: e,
-        purchase: p && visible ? { id: p.id, title: p.title, url: p.url, preview: p.preview, status: p.status, redemption: p.redemption, kind: p.kind } : undefined,
+        purchase:
+          p && visible
+            ? { id: p.id, title: p.title, url: p.url, preview: p.preview, status: p.status, redemption: p.redemption, kind: p.kind }
+            : undefined,
         thumbUrl: p && visible ? thumbs.get(p.id) : undefined,
         reactions: reactions.filter((r) => r.itemId === e.id).map((r) => ({ memberId: r.memberId, emoji: r.emoji })),
         comments: commentCounts.get(e.id) ?? 0,
@@ -99,7 +116,7 @@ export async function timeline(deps: Deps, actor: Actor, opts: { memberId?: stri
 export async function stats(deps: Deps, actor: Actor, opts: { memberId?: string; weeks?: number }) {
   const household = await getHousehold(deps, actor.householdId);
   if (opts.memberId && opts.memberId !== actor.memberId && household.settings.visibility === 'balances' && actor.role !== 'admin') {
-    throw forbidden('Other members\' details are private in this household.');
+    throw forbidden("Other members' details are private in this household.");
   }
   const tz = household.settings.timeZone;
   const now = deps.now();
@@ -119,8 +136,18 @@ export async function stats(deps: Deps, actor: Actor, opts: { memberId?: string;
         : members.filter((m) => m.id === actor.memberId).map((m) => ({ memberId: m.id, balance: balance(m.purse), debt: m.debt })),
     leaderboard: household.settings.leaderboardEnabled
       ? {
-          thisWeek: leaderboard(entries, thisWeek, new Date(now.getTime() + 1), members.map((m) => m.id)),
-          lastWeek: leaderboard(entries, lastWeek, thisWeek, members.map((m) => m.id)),
+          thisWeek: leaderboard(
+            entries,
+            thisWeek,
+            new Date(now.getTime() + 1),
+            members.map((m) => m.id),
+          ),
+          lastWeek: leaderboard(
+            entries,
+            lastWeek,
+            thisWeek,
+            members.map((m) => m.id),
+          ),
         }
       : null,
   };
@@ -130,7 +157,8 @@ export async function stats(deps: Deps, actor: Actor, opts: { memberId?: string;
 export async function wrappedRecap(deps: Deps, actor: Actor, period: string, memberId?: string) {
   const household = await getHousehold(deps, actor.householdId);
   const target = memberId ?? actor.memberId;
-  if (target !== actor.memberId && household.settings.visibility === 'balances' && actor.role !== 'admin') throw forbidden('That recap is private.');
+  if (target !== actor.memberId && household.settings.visibility === 'balances' && actor.role !== 'admin')
+    throw forbidden('That recap is private.');
   const tz = household.settings.timeZone;
   let fromDate: string;
   let toDate: string;
@@ -152,13 +180,23 @@ export async function wrappedRecap(deps: Deps, actor: Actor, period: string, mem
 
 /** Compact snapshot for home-screen widgets. */
 export async function widget(deps: Deps, actor: Actor) {
-  const [household, tasks, members] = await Promise.all([getHousehold(deps, actor.householdId), listTaskViews(deps, actor), listMembers(deps, actor.householdId)]);
+  const [household, tasks, members] = await Promise.all([
+    getHousehold(deps, actor.householdId),
+    listTaskViews(deps, actor),
+    listMembers(deps, actor.householdId),
+  ]);
   const me = members.find((m) => m.id === actor.memberId) as Member;
-  const mine = tasks.filter((t) => !t.doneThisPeriod && (t.effectiveAssigneeId === actor.memberId || (t.effectiveAssigneeId === null && (!t.claimedBy || t.claimedBy === actor.memberId))));
+  const mine = tasks.filter(
+    (t) =>
+      !t.doneThisPeriod &&
+      (t.effectiveAssigneeId === actor.memberId || (t.effectiveAssigneeId === null && (!t.claimedBy || t.claimedBy === actor.memberId))),
+  );
   const now = deps.now();
   const today = toLocalDate(now, household.settings.timeZone);
   const dueToday = mine.filter((t) => !t.nextDueAt || toLocalDate(new Date(t.nextDueAt), household.settings.timeZone) <= today);
-  const hour = Number(new Intl.DateTimeFormat('en-US', { timeZone: household.settings.timeZone, hour: 'numeric', hourCycle: 'h23' }).format(now));
+  const hour = Number(
+    new Intl.DateTimeFormat('en-US', { timeZone: household.settings.timeZone, hour: 'numeric', hourCycle: 'h23' }).format(now),
+  );
   const line = pickLine(greetingContext(hour), { seed: `${today}:${me.id}`, vars: { name: me.name, coins: balance(me.purse) } });
   return {
     name: me.name,

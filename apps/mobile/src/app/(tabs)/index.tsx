@@ -40,7 +40,11 @@ export default function Home() {
   const hour = new Date().getHours();
   const line = useMemo(() => {
     if (!me) return null;
-    return say(greetingContext(hour), { seed: `${today}:${me.id}`, vars: { name: me.name, coins: balance(me.purse) }, recent: prefs.recentLines });
+    return say(greetingContext(hour), {
+      seed: `${today}:${me.id}`,
+      vars: { name: me.name, coins: balance(me.purse) },
+      recent: prefs.recentLines,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me?.id, today, hour]);
   useEffect(() => {
@@ -50,14 +54,20 @@ export default function Home() {
 
   if (!me) return null;
   const mine = (tasks.data ?? []).filter(
-    (x) => !x.doneThisPeriod && (x.effectiveAssigneeId === me.id || (x.effectiveAssigneeId === null && (!x.claimedBy || x.claimedBy === me.id))),
+    (x) =>
+      !x.doneThisPeriod && (x.effectiveAssigneeId === me.id || (x.effectiveAssigneeId === null && (!x.claimedBy || x.claimedBy === me.id))),
   );
   const dueToday = mine.filter((x) => !x.nextDueAt || toLocalDate(new Date(x.nextDueAt), tz) <= today);
   const waiting = (approvals.data?.completions.length ?? 0) + (approvals.data?.purchases.length ?? 0);
   const challenge = challenges.data?.find((c) => c.status === 'active' && Date.parse(c.endsAt) > Date.now());
   const openVisibility = hh.settings.visibility === 'full' || hh.isAdmin;
 
-  const greeting = hour < 12 ? t('Good morning, {{name}}', { name: me.name }) : hour < 18 ? t('Good afternoon, {{name}}', { name: me.name }) : t('Good evening, {{name}}', { name: me.name });
+  const greeting =
+    hour < 12
+      ? t('Good morning, {{name}}', { name: me.name })
+      : hour < 18
+        ? t('Good afternoon, {{name}}', { name: me.name })
+        : t('Good evening, {{name}}', { name: me.name });
   const dateLabel = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
 
   const hero = (
@@ -77,19 +87,43 @@ export default function Home() {
               </Text>
             </Row>
             {me.debt > 0 ? (
-              <View style={{ alignSelf: 'flex-start', backgroundColor: theme.c.surface, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, marginTop: 4 }}>
+              <View
+                style={{
+                  alignSelf: 'flex-start',
+                  backgroundColor: theme.c.surface,
+                  borderRadius: 999,
+                  paddingHorizontal: 10,
+                  paddingVertical: 4,
+                  marginTop: 4,
+                }}
+              >
                 <Text variant="smallBold" color="warning">
                   {t('IOU {{n}} · your next chores pay it back', { n: me.debt })}
                 </Text>
               </View>
             ) : null}
           </View>
-          <Pressy onPress={() => router.push('/shop')} noHaptic scaleTo={0.94} accessibilityLabel={t('Chubbybara')} style={{ marginTop: -10, marginRight: -8 }}>
+          <Pressy
+            onPress={() => router.push('/shop')}
+            noHaptic
+            scaleTo={0.94}
+            accessibilityLabel={t('Chubbybara')}
+            style={{ marginTop: -10, marginRight: -8 }}
+          >
             <Chubby pose={line?.pose ?? 'wave'} accessory={me.equipped.accessory} size={108} />
           </Pressy>
         </Row>
         {line ? (
-          <View style={{ backgroundColor: theme.c.surface, borderRadius: 14, borderTopRightRadius: 4, paddingHorizontal: 14, paddingVertical: 12, gap: 2 }}>
+          <View
+            style={{
+              backgroundColor: theme.c.surface,
+              borderRadius: 14,
+              borderTopRightRadius: 4,
+              paddingHorizontal: 14,
+              paddingVertical: 12,
+              gap: 2,
+            }}
+          >
             <Text variant="label" color="soft">
               {t('Chubbybara says')}
             </Text>
@@ -104,7 +138,14 @@ export default function Home() {
         <Row gap={8}>
           <Button small kind="soft" icon="shop" title={t('Spend')} style={{ flex: 1 }} onPress={() => router.push('/spend')} />
           <Button small kind="soft" icon="gift" title={t('Gift')} style={{ flex: 1 }} onPress={() => router.push('/gift')} />
-          <Button small kind="soft" icon="target" title={t('Goals')} style={{ flex: 1 }} onPress={() => router.push({ pathname: '/shop', params: { tab: 'wishlist' } })} />
+          <Button
+            small
+            kind="soft"
+            icon="target"
+            title={t('Goals')}
+            style={{ flex: 1 }}
+            onPress={() => router.push({ pathname: '/shop', params: { tab: 'wishlist' } })}
+          />
         </Row>
       </Card>
     </Animated.View>
@@ -114,7 +155,16 @@ export default function Home() {
     waiting > 0 ? (
       <Pressy onPress={() => router.push('/approvals')} scaleTo={0.98}>
         <Card tint style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: theme.c.surface, alignItems: 'center', justifyContent: 'center' }}>
+          <View
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 12,
+              backgroundColor: theme.c.surface,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <Icon name="bell" size={20} color={theme.c.accent} />
           </View>
           <View style={{ flex: 1 }}>
@@ -129,7 +179,12 @@ export default function Home() {
     ) : null;
 
   const goalsSection = goals.data?.length ? (
-    <Section title={t('Saving for')} action={<Button small kind="ghost" title={t('Wishlist')} onPress={() => router.push({ pathname: '/shop', params: { tab: 'wishlist' } })} />}>
+    <Section
+      title={t('Saving for')}
+      action={
+        <Button small kind="ghost" title={t('Wishlist')} onPress={() => router.push({ pathname: '/shop', params: { tab: 'wishlist' } })} />
+      }
+    >
       <Card style={{ paddingVertical: 6 }}>
         {goals.data.slice(0, 3).map((g) => {
           const saved = g.ownerId ? balance(me.purse) : Object.values(g.contributions).reduce((a, b) => a + b, 0);
@@ -158,7 +213,10 @@ export default function Home() {
   ) : null;
 
   const choresSection = (
-    <Section title={t("Today's chores")} action={<Button small kind="ghost" title={t('All chores')} onPress={() => router.push('/tasks')} />}>
+    <Section
+      title={t("Today's chores")}
+      action={<Button small kind="ghost" title={t('All chores')} onPress={() => router.push('/tasks')} />}
+    >
       <Card style={{ paddingVertical: 6 }}>
         {tasks.isLoading ? (
           <Text color="soft">{t('Loading…')}</Text>
@@ -341,4 +399,3 @@ function PushPrompt() {
     </Card>
   );
 }
-

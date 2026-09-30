@@ -21,7 +21,10 @@ const data = {
     THEME_NAMES.flatMap((t) =>
       (['light', 'dark'] as const).map((m) => {
         const p = THEMES[t][m];
-        return [`${t}-${m}`, { ink: contrast(p.ink, p.bg), soft: contrast(p.inkSoft, p.surfaceAlt), btn: contrast(p.onPrimary, p.primary) }];
+        return [
+          `${t}-${m}`,
+          { ink: contrast(p.ink, p.bg), soft: contrast(p.inkSoft, p.surfaceAlt), btn: contrast(p.onPrimary, p.primary) },
+        ];
       }),
     ),
   ),
@@ -31,8 +34,7 @@ const data = {
 const pink = THEMES.pink;
 const tokenKeys = Object.keys(pink.light) as (keyof typeof pink.light)[];
 const kebab = (s: string) => s.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
-const block = (prefix: 'l' | 'd', p: typeof pink.light) =>
-  tokenKeys.map((k) => `--${prefix}-${kebab(k)}: ${p[k]};`).join(' ');
+const block = (prefix: 'l' | 'd', p: typeof pink.light) => tokenKeys.map((k) => `--${prefix}-${kebab(k)}: ${p[k]};`).join(' ');
 const use = (prefix: 'l' | 'd') => tokenKeys.map((k) => `--${kebab(k)}: var(--${prefix}-${kebab(k)});`).join(' ');
 
 const html = `<title>Pobe Coins Style Book</title>

@@ -17,7 +17,16 @@ export function Avatar({ name, color, size = 36 }: { name: string; color: string
   return (
     <View
       accessibilityLabel={name}
-      style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: color, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: t.c.surface }}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: color,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 2,
+        borderColor: t.c.surface,
+      }}
     >
       <Text variant="smallBold" color="#2A1C22" style={{ fontSize: size * 0.42, lineHeight: size * 0.5 }}>
         {name.slice(0, 1).toUpperCase()}
@@ -36,7 +45,14 @@ export function Header({ title, right, back = true }: { title: string; right?: R
           <Pressy
             onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
             accessibilityLabel="Back"
-            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: t.c.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: t.c.surfaceAlt,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <Icon name="back" size={20} />
           </Pressy>
@@ -50,7 +66,15 @@ export function Header({ title, right, back = true }: { title: string; right?: R
   );
 }
 
-export function EmptyState({ pose = 'thinking', line, action }: { pose?: ChubbyPose; line: string; action?: { title: string; onPress: () => void } }) {
+export function EmptyState({
+  pose = 'thinking',
+  line,
+  action,
+}: {
+  pose?: ChubbyPose;
+  line: string;
+  action?: { title: string; onPress: () => void };
+}) {
   return (
     <View style={{ alignItems: 'center', gap: 12, paddingVertical: 24 }}>
       <Chubby pose={pose} size={120} />
@@ -85,13 +109,29 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
   );
 }
 
-export function ProgressRing({ progress, size = 72, stroke = 9, label, color }: { progress: number; size?: number; stroke?: number; label?: string; color?: string }) {
+export function ProgressRing({
+  progress,
+  size = 72,
+  stroke = 9,
+  label,
+  color,
+}: {
+  progress: number;
+  size?: number;
+  stroke?: number;
+  label?: string;
+  color?: string;
+}) {
   const t = useTheme();
   const r = (size - stroke) / 2;
   const circ = 2 * Math.PI * r;
   const p = Math.max(0, Math.min(1, progress));
   return (
-    <View style={{ width: size, height: size }} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: Math.round(p * 100) }}>
+    <View
+      style={{ width: size, height: size }}
+      accessibilityRole="progressbar"
+      accessibilityValue={{ min: 0, max: 100, now: Math.round(p * 100) }}
+    >
       <Svg width={size} height={size}>
         <Circle cx={size / 2} cy={size / 2} r={r} stroke={t.c.surfaceAlt} strokeWidth={stroke} fill="none" />
         <Circle
@@ -116,7 +156,15 @@ export function ProgressRing({ progress, size = 72, stroke = 9, label, color }: 
 }
 
 /** Grouped bars: earned vs spent per week. */
-export function WeekBars({ data, width = 320, height = 150 }: { data: { week: string; earned: number; spent: number }[]; width?: number; height?: number }) {
+export function WeekBars({
+  data,
+  width = 320,
+  height = 150,
+}: {
+  data: { week: string; earned: number; spent: number }[];
+  width?: number;
+  height?: number;
+}) {
   const t = useTheme();
   const max = Math.max(10, ...data.flatMap((d) => [d.earned, d.spent]));
   const pad = { l: 30, b: 22, t: 8 };
@@ -125,7 +173,11 @@ export function WeekBars({ data, width = 320, height = 150 }: { data: { week: st
   const bw = Math.max(3, Math.min(10, slot / 3));
   const ticks = [0, Math.round(max / 2), max];
   return (
-    <Svg width={width} height={height} accessibilityLabel={`Weekly coins: ${data.map((d) => `${d.week} earned ${d.earned}, spent ${d.spent}`).join('; ')}`}>
+    <Svg
+      width={width}
+      height={height}
+      accessibilityLabel={`Weekly coins: ${data.map((d) => `${d.week} earned ${d.earned}, spent ${d.spent}`).join('; ')}`}
+    >
       {ticks.map((v) => {
         const y = pad.t + plotH - (v / max) * plotH;
         return (
@@ -158,13 +210,33 @@ export function WeekBars({ data, width = 320, height = 150 }: { data: { week: st
 }
 
 /** Simple bottom sheet. */
-export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title: string; children: ReactNode }) {
+export function Sheet({
+  visible,
+  onClose,
+  title,
+  children,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  title: string;
+  children: ReactNode;
+}) {
   const t = useTheme();
   const insets = useSafeAreaInsets();
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={{ flex: 1, backgroundColor: 'rgba(20,10,15,0.35)' }} onPress={onClose} accessibilityLabel="Close" />
-      <View style={{ backgroundColor: t.c.surface, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 20, paddingBottom: insets.bottom + 20, gap: 14, maxHeight: '85%' }}>
+      <View
+        style={{
+          backgroundColor: t.c.surface,
+          borderTopLeftRadius: 28,
+          borderTopRightRadius: 28,
+          padding: 20,
+          paddingBottom: insets.bottom + 20,
+          gap: 14,
+          maxHeight: '85%',
+        }}
+      >
         <View style={{ alignSelf: 'center', width: 44, height: 5, borderRadius: 3, backgroundColor: t.c.line }} />
         <Text variant="h3">{title}</Text>
         {children}

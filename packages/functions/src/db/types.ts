@@ -18,11 +18,7 @@ export type Item = Key & {
 };
 
 export type Condition =
-  | { notExists: true }
-  | { exists: true }
-  | { version: number }
-  | { equals: Record<string, unknown> }
-  | { fieldMissing: string };
+  { notExists: true } | { exists: true } | { version: number } | { equals: Record<string, unknown> } | { fieldMissing: string };
 
 export type WriteOp =
   | { put: Item; if?: Condition }

@@ -66,15 +66,16 @@ async function assertPublicUrl(deps: Deps, raw: string): Promise<URL> {
   try {
     url = new URL(raw);
   } catch {
-    throw new ApiError('BAD_REQUEST', 'That link doesn\'t look right.');
+    throw new ApiError('BAD_REQUEST', "That link doesn't look right.");
   }
-  if (url.protocol !== 'https:' && url.protocol !== 'http:') throw new ApiError('BAD_REQUEST', 'Only http and https links can be previewed.');
-  if (url.username || url.password) throw new ApiError('BAD_REQUEST', 'Links with passwords can\'t be previewed.');
+  if (url.protocol !== 'https:' && url.protocol !== 'http:')
+    throw new ApiError('BAD_REQUEST', 'Only http and https links can be previewed.');
+  if (url.username || url.password) throw new ApiError('BAD_REQUEST', "Links with passwords can't be previewed.");
   if (url.port && url.port !== '80' && url.port !== '443') throw new ApiError('BAD_REQUEST', 'Only standard web ports can be previewed.');
   const host = url.hostname.replace(/^\[|\]$/g, '');
   const addresses = isIP(host) ? [host] : await deps.resolveHost(host).catch(() => []);
-  if (addresses.length === 0) throw new ApiError('BAD_REQUEST', 'Couldn\'t find that website.');
-  if (addresses.some(isPrivateAddress)) throw new ApiError('BAD_REQUEST', 'That address can\'t be previewed.');
+  if (addresses.length === 0) throw new ApiError('BAD_REQUEST', "Couldn't find that website.");
+  if (addresses.some(isPrivateAddress)) throw new ApiError('BAD_REQUEST', "That address can't be previewed.");
   return url;
 }
 
@@ -156,14 +157,16 @@ export async function fetchPreview(deps: Deps, rawUrl: string): Promise<LinkPrev
         url = await assertPublicUrl(deps, new URL(res.headers.get('location')!, url).toString());
         continue;
       }
-      if (!res.ok) throw new ApiError('BAD_REQUEST', 'That page didn\'t load.');
+      if (!res.ok) throw new ApiError('BAD_REQUEST', "That page didn't load.");
       const type = res.headers.get('content-type') ?? '';
-      const preview = type.includes('html') ? parseOpenGraph(await readCapped(res), url.toString()) : { url: url.toString(), siteName: url.hostname };
+      const preview = type.includes('html')
+        ? parseOpenGraph(await readCapped(res), url.toString())
+        : { url: url.toString(), siteName: url.hostname };
       await deps.db.put({ ...cacheKey, preview, ttl: Math.floor(deps.now().getTime() / 1000) + CACHE_DAYS * 86400 });
       return preview;
     } catch (err) {
       if (err instanceof ApiError) throw err;
-      throw new ApiError('BAD_REQUEST', 'That page took too long or couldn\'t be read.');
+      throw new ApiError('BAD_REQUEST', "That page took too long or couldn't be read.");
     } finally {
       clearTimeout(timer);
     }

@@ -36,7 +36,14 @@ export function Comments({ itemId, ownerId }: { itemId: string; ownerId?: string
               <Pressy
                 key={emoji}
                 onPress={() => react.mutate({ itemId, emoji: on ? null : emoji })}
-                style={{ flexDirection: 'row', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: on ? theme.c.primary : theme.c.surfaceAlt }}
+                style={{
+                  flexDirection: 'row',
+                  gap: 4,
+                  paddingHorizontal: 10,
+                  paddingVertical: 6,
+                  borderRadius: 999,
+                  backgroundColor: on ? theme.c.primary : theme.c.surfaceAlt,
+                }}
                 accessibilityState={{ selected: on }}
               >
                 <Text>{emoji}</Text>
@@ -54,7 +61,13 @@ export function Comments({ itemId, ownerId }: { itemId: string; ownerId?: string
                 <Text>{c.text}</Text>
               </View>
               {c.memberId === hh.me?.id || hh.isAdmin ? (
-                <Button small kind="ghost" title="✕" accessibilityLabel={t('Delete comment')} onPress={() => remove.mutate({ itemId, id: c.id })} />
+                <Button
+                  small
+                  kind="ghost"
+                  title="✕"
+                  accessibilityLabel={t('Delete comment')}
+                  onPress={() => remove.mutate({ itemId, id: c.id })}
+                />
               ) : null}
             </Row>
           ))}
@@ -65,7 +78,15 @@ export function Comments({ itemId, ownerId }: { itemId: string; ownerId?: string
           onChangeText={setText}
           maxLength={500}
           onSubmitEditing={() => text.trim() && comment.mutate({ itemId, text: text.trim(), ownerId })}
-          right={<Button small title={t('Send')} disabled={!text.trim()} loading={comment.isPending} onPress={() => comment.mutate({ itemId, text: text.trim(), ownerId })} />}
+          right={
+            <Button
+              small
+              title={t('Send')}
+              disabled={!text.trim()}
+              loading={comment.isPending}
+              onPress={() => comment.mutate({ itemId, text: text.trim(), ownerId })}
+            />
+          }
         />
       </Card>
     </Section>

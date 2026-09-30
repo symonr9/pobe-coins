@@ -1,7 +1,9 @@
 import { LINES, type LineContext } from './lines';
 import type { ChubbyPose } from '../art';
 
-export type LineVars = Partial<Record<'name' | 'coins' | 'task' | 'goal' | 'left' | 'streak' | 'partner' | 'item' | 'debt', string | number>>;
+export type LineVars = Partial<
+  Record<'name' | 'coins' | 'task' | 'goal' | 'left' | 'streak' | 'partner' | 'item' | 'debt', string | number>
+>;
 
 /** Fills {placeholders}; unknown ones are dropped cleanly. */
 export function fill(template: string, vars: LineVars): string {

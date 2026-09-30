@@ -23,7 +23,8 @@ export default function Tasks() {
   const me = hh.me?.id;
 
   const all = tasks.data ?? [];
-  const mineOrPool = (x: TaskView) => x.effectiveAssigneeId === me || (x.effectiveAssigneeId === null && (!x.claimedBy || x.claimedBy === me));
+  const mineOrPool = (x: TaskView) =>
+    x.effectiveAssigneeId === me || (x.effectiveAssigneeId === null && (!x.claimedBy || x.claimedBy === me));
   const lists: Record<Filter, TaskView[]> = {
     mine: all.filter((x) => x.effectiveAssigneeId === me || (x.effectiveAssigneeId === null && x.claimedBy === me)),
     pool: all.filter((x) => x.effectiveAssigneeId === null),
@@ -31,7 +32,7 @@ export default function Tasks() {
     everyone: all,
   };
   const list = lists[filter];
-  const open = list.filter((x) => !x.doneThisPeriod).sort((a, b) => (a.nextDueAt ?? '9') .localeCompare(b.nextDueAt ?? '9'));
+  const open = list.filter((x) => !x.doneThisPeriod).sort((a, b) => (a.nextDueAt ?? '9').localeCompare(b.nextDueAt ?? '9'));
   const done = list.filter((x) => x.doneThisPeriod);
 
   return (
@@ -74,7 +75,9 @@ export default function Tasks() {
           </Card>
           {filter === 'mine' && lists.pool.some((x) => !x.doneThisPeriod && !x.claimedBy) ? (
             <Text variant="small" color="soft">
-              {t('There are {{n}} chores in the pool anyone can grab.', { n: lists.pool.filter((x) => !x.doneThisPeriod && !x.claimedBy).length })}
+              {t('There are {{n}} chores in the pool anyone can grab.', {
+                n: lists.pool.filter((x) => !x.doneThisPeriod && !x.claimedBy).length,
+              })}
             </Text>
           ) : null}
           {done.length ? (

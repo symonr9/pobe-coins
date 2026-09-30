@@ -26,7 +26,10 @@ function localHour(now: Date, tz: string) {
 /** Records that a notification was sent, so retries and overlapping runs don't repeat it. */
 async function once(deps: Deps, hid: string, key: string, days = 3): Promise<boolean> {
   try {
-    await deps.db.put({ pk: `H#${hid}`, sk: `SENT#${key}`, ttl: Math.floor(deps.now().getTime() / 1000) + days * 86400 }, { notExists: true });
+    await deps.db.put(
+      { pk: `H#${hid}`, sk: `SENT#${key}`, ttl: Math.floor(deps.now().getTime() / 1000) + days * 86400 },
+      { notExists: true },
+    );
     return true;
   } catch (err) {
     if (err instanceof ConditionFailed) return false;

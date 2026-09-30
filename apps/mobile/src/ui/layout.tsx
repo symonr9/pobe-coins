@@ -1,5 +1,14 @@
 import { createContext, useContext, type ReactNode } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+  type StyleProp,
+  type ViewProps,
+  type ViewStyle,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme';
 import { Text } from './Text';
@@ -64,7 +73,11 @@ export function Screen({
       ) : (
         inner
       )}
-      {footer ? <View style={[styles.footer, { paddingBottom: insets.bottom + 12, backgroundColor: t.c.bg, borderTopColor: t.c.line }]}>{footer}</View> : null}
+      {footer ? (
+        <View style={[styles.footer, { paddingBottom: insets.bottom + 12, backgroundColor: t.c.bg, borderTopColor: t.c.line }]}>
+          {footer}
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -73,19 +86,25 @@ export function Card({ children, style, tint }: { children: ReactNode; style?: S
   const t = useTheme();
   return (
     <View
-      style={[
-        styles.card,
-        { backgroundColor: tint ? t.c.surfaceAlt : t.c.surface, borderColor: t.c.line, shadowColor: t.c.shadow },
-        style,
-      ]}
+      style={[styles.card, { backgroundColor: tint ? t.c.surfaceAlt : t.c.surface, borderColor: t.c.line, shadowColor: t.c.shadow }, style]}
     >
       {children}
     </View>
   );
 }
 
-export function Row({ children, gap = 12, style, wrap, ...rest }: ViewProps & { children: ReactNode; gap?: number; style?: StyleProp<ViewStyle>; wrap?: boolean }) {
-  return <View {...rest} style={[{ flexDirection: 'row', alignItems: 'center', gap, flexWrap: wrap ? 'wrap' : 'nowrap' }, style]}>{children}</View>;
+export function Row({
+  children,
+  gap = 12,
+  style,
+  wrap,
+  ...rest
+}: ViewProps & { children: ReactNode; gap?: number; style?: StyleProp<ViewStyle>; wrap?: boolean }) {
+  return (
+    <View {...rest} style={[{ flexDirection: 'row', alignItems: 'center', gap, flexWrap: wrap ? 'wrap' : 'nowrap' }, style]}>
+      {children}
+    </View>
+  );
 }
 
 export function Stack({ children, gap = 12, style }: { children: ReactNode; gap?: number; style?: StyleProp<ViewStyle> }) {
@@ -133,6 +152,14 @@ const styles = StyleSheet.create({
   fill: { flex: 1 },
   column: { width: '100%', maxWidth: 720, alignSelf: 'center', gap: 16 },
   padded: { paddingHorizontal: 16 },
-  card: { borderRadius: 20, borderWidth: 1, padding: 16, shadowOpacity: 0.7, shadowRadius: 18, shadowOffset: { width: 0, height: 6 }, elevation: 1 },
+  card: {
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 16,
+    shadowOpacity: 0.7,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 1,
+  },
   footer: { paddingHorizontal: 16, paddingTop: 12, borderTopWidth: 1, alignItems: 'center' },
 });

@@ -71,14 +71,27 @@ function Rewards() {
   return (
     <Stack>
       {items.length === 0 ? (
-        <EmptyState pose="shopkeeper" line={say('emptyShop', { seed: 'x' }).text} action={hh.isAdmin ? { title: t('Stock the shop'), onPress: () => router.push('/admin/shop') } : undefined} />
+        <EmptyState
+          pose="shopkeeper"
+          line={say('emptyShop', { seed: 'x' }).text}
+          action={hh.isAdmin ? { title: t('Stock the shop'), onPress: () => router.push('/admin/shop') } : undefined}
+        />
       ) : (
         <Row wrap gap={12}>
           {items.map((item) => {
             const soldOut = item.remaining === 0;
             return (
               <Card key={item.id} style={{ flexBasis: basis, flexGrow: 1, gap: 8, alignItems: 'center' }}>
-                <View style={{ width: 64, height: 64, borderRadius: 20, backgroundColor: theme.c.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
+                <View
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 20,
+                    backgroundColor: theme.c.surfaceAlt,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
                   <Text style={{ fontSize: 34, lineHeight: 42 }}>{item.emoji ?? '🎁'}</Text>
                 </View>
                 <Text variant="title" center numberOfLines={2}>
@@ -106,7 +119,9 @@ function Rewards() {
           })}
         </Row>
       )}
-      {hh.isAdmin && items.length > 0 ? <Button kind="ghost" icon="edit" title={t('Manage rewards')} onPress={() => router.push('/admin/shop')} /> : null}
+      {hh.isAdmin && items.length > 0 ? (
+        <Button kind="ghost" icon="edit" title={t('Manage rewards')} onPress={() => router.push('/admin/shop')} />
+      ) : null}
     </Stack>
   );
 }
@@ -128,7 +143,7 @@ function Wishlist() {
       if (r.reached) celebrate({ title: r.goal.title, line: say('goalReached', { vars: { goal: r.goal.title } }).text, big: true });
       else toast(t('Saved {{n}} toward {{goal}}', { n: r.contributed, goal: r.goal.title }), 'success');
     },
-    onError: (e) => toast(e instanceof ApiError ? e.message : t('That didn\'t work.'), 'error'),
+    onError: (e) => toast(e instanceof ApiError ? e.message : t("That didn't work."), 'error'),
     onSettled: () => refresh(),
   });
   if (goals.isLoading) return <Loading />;
@@ -165,7 +180,15 @@ function Wishlist() {
               </View>
             </Row>
             <Row wrap gap={8}>
-              {shared && !ready ? <Button small kind="soft" icon="plus" title={t('Add coins')} onPress={() => (setAmount(Math.min(10, g.target - saved)), setGiving(g))} /> : null}
+              {shared && !ready ? (
+                <Button
+                  small
+                  kind="soft"
+                  icon="plus"
+                  title={t('Add coins')}
+                  onPress={() => (setAmount(Math.min(10, g.target - saved)), setGiving(g))}
+                />
+              ) : null}
               {ready || !shared ? (
                 <Button
                   small
@@ -180,7 +203,14 @@ function Wishlist() {
                   kind="danger"
                   title={t('Remove')}
                   onPress={async () => {
-                    if (await confirm({ title: t('Remove "{{goal}}"?', { goal: g.title }), message: shared ? t('Everyone gets their saved coins back.') : undefined, confirm: t('Remove'), danger: true })) {
+                    if (
+                      await confirm({
+                        title: t('Remove "{{goal}}"?', { goal: g.title }),
+                        message: shared ? t('Everyone gets their saved coins back.') : undefined,
+                        confirm: t('Remove'),
+                        danger: true,
+                      })
+                    ) {
                       await actions.cancelGoal({ id: g.id }).catch((e) => toast(e.message, 'error'));
                       void refresh();
                     }
@@ -193,7 +223,13 @@ function Wishlist() {
       })}
       <Sheet visible={!!giving} onClose={() => setGiving(null)} title={t('Add coins to {{goal}}', { goal: giving?.title ?? '' })}>
         <AmountPicker label={t('How many?')} value={amount} onChange={setAmount} coinTypes={hh.settings.coinTypes} />
-        <Button full title={t('Save {{n}} coins', { n: amount })} disabled={!amount} loading={contribute.isPending} onPress={() => giving && contribute.mutate({ id: giving.id, amount })} />
+        <Button
+          full
+          title={t('Save {{n}} coins', { n: amount })}
+          disabled={!amount}
+          loading={contribute.isPending}
+          onPress={() => giving && contribute.mutate({ id: giving.id, amount })}
+        />
       </Sheet>
     </Stack>
   );
@@ -216,7 +252,7 @@ function Cosmetics() {
       await fn();
       after?.();
     } catch (e) {
-      toast(e instanceof ApiError ? e.message : t('That didn\'t work.'), 'error');
+      toast(e instanceof ApiError ? e.message : t("That didn't work."), 'error');
     } finally {
       setBusy(null);
       void refresh();
@@ -264,7 +300,14 @@ function Cosmetics() {
                   loading={busy === c.id}
                   disabled={hh.balance < c.price}
                   onPress={async () => {
-                    if (!(await confirm({ title: t('Buy {{name}}?', { name: c.name }), message: t('{{n}} coins from your purse.', { n: c.price }), confirm: t('Buy') }))) return;
+                    if (
+                      !(await confirm({
+                        title: t('Buy {{name}}?', { name: c.name }),
+                        message: t('{{n}} coins from your purse.', { n: c.price }),
+                        confirm: t('Buy'),
+                      }))
+                    )
+                      return;
                     await run(
                       c.id,
                       async () => {

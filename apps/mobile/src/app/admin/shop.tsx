@@ -38,11 +38,20 @@ export default function AdminShop() {
       return e.id ? actions.updateShopItem({ id: e.id, ...body }) : actions.createShopItem(body);
     },
     onSuccess: () => setEditing(null),
-    onError: (e) => toast(e instanceof ApiError ? e.message : t('Couldn\'t save.'), 'error'),
+    onError: (e) => toast(e instanceof ApiError ? e.message : t("Couldn't save."), 'error'),
     onSettled: () => refresh(),
   });
   const edit = (i: ShopItem) =>
-    setEditing({ id: i.id, title: i.title, emoji: i.emoji ?? '', price: i.price, stock: i.stock === null ? '' : String(i.stock), cooldownHours: i.cooldownHours ? String(i.cooldownHours) : '', requiresApproval: i.requiresApproval, active: i.active });
+    setEditing({
+      id: i.id,
+      title: i.title,
+      emoji: i.emoji ?? '',
+      price: i.price,
+      stock: i.stock === null ? '' : String(i.stock),
+      cooldownHours: i.cooldownHours ? String(i.cooldownHours) : '',
+      requiresApproval: i.requiresApproval,
+      active: i.active,
+    });
   return (
     <Screen>
       <Header title={t('Shop rewards')} right={<Button small icon="plus" title={t('New')} onPress={() => setEditing({ ...EMPTY })} />} />
@@ -75,24 +84,60 @@ export default function AdminShop() {
           <Stack gap={12}>
             <Row gap={10} style={{ alignItems: 'flex-end' }}>
               <View style={{ width: 72 }}>
-                <Field label={t('Emoji')} value={editing.emoji} onChangeText={(v) => setEditing({ ...editing, emoji: [...v].slice(-2).join('') })} style={{ textAlign: 'center', fontSize: 22 }} />
+                <Field
+                  label={t('Emoji')}
+                  value={editing.emoji}
+                  onChangeText={(v) => setEditing({ ...editing, emoji: [...v].slice(-2).join('') })}
+                  style={{ textAlign: 'center', fontSize: 22 }}
+                />
               </View>
               <View style={{ flex: 1 }}>
-                <Field label={t('Reward')} value={editing.title} onChangeText={(title) => setEditing({ ...editing, title })} placeholder={t('Breakfast in bed')} maxLength={120} />
+                <Field
+                  label={t('Reward')}
+                  value={editing.title}
+                  onChangeText={(title) => setEditing({ ...editing, title })}
+                  placeholder={t('Breakfast in bed')}
+                  maxLength={120}
+                />
               </View>
             </Row>
-            <AmountPicker label={t('Price')} value={editing.price} onChange={(price) => setEditing({ ...editing, price })} coinTypes={hh.settings.coinTypes} />
+            <AmountPicker
+              label={t('Price')}
+              value={editing.price}
+              onChange={(price) => setEditing({ ...editing, price })}
+              coinTypes={hh.settings.coinTypes}
+            />
             <Row gap={10}>
               <View style={{ flex: 1 }}>
-                <Field label={t('Stock (blank = unlimited)')} value={editing.stock} keyboardType="number-pad" onChangeText={(v) => setEditing({ ...editing, stock: v.replace(/\D/g, '') })} />
+                <Field
+                  label={t('Stock (blank = unlimited)')}
+                  value={editing.stock}
+                  keyboardType="number-pad"
+                  onChangeText={(v) => setEditing({ ...editing, stock: v.replace(/\D/g, '') })}
+                />
               </View>
               <View style={{ flex: 1 }}>
-                <Field label={t('Cooldown hours')} value={editing.cooldownHours} keyboardType="number-pad" onChangeText={(v) => setEditing({ ...editing, cooldownHours: v.replace(/\D/g, '') })} />
+                <Field
+                  label={t('Cooldown hours')}
+                  value={editing.cooldownHours}
+                  keyboardType="number-pad"
+                  onChangeText={(v) => setEditing({ ...editing, cooldownHours: v.replace(/\D/g, '') })}
+                />
               </View>
             </Row>
-            <ToggleRow label={t('Needs approval')} value={editing.requiresApproval} onChange={(requiresApproval) => setEditing({ ...editing, requiresApproval })} />
+            <ToggleRow
+              label={t('Needs approval')}
+              value={editing.requiresApproval}
+              onChange={(requiresApproval) => setEditing({ ...editing, requiresApproval })}
+            />
             <ToggleRow label={t('For sale')} value={editing.active} onChange={(active) => setEditing({ ...editing, active })} />
-            <Button full title={t('Save')} disabled={!editing.title.trim() || !editing.price} loading={save.isPending} onPress={() => save.mutate()} />
+            <Button
+              full
+              title={t('Save')}
+              disabled={!editing.title.trim() || !editing.price}
+              loading={save.isPending}
+              onPress={() => save.mutate()}
+            />
             {editing.id ? (
               <Button
                 kind="danger"

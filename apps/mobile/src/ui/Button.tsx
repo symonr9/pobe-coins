@@ -47,7 +47,9 @@ export function Button({
         styles.base,
         small ? styles.small : styles.normal,
         { backgroundColor: p.bg, borderColor: p.border ?? 'transparent', borderWidth: p.border ? 2 : 0 },
-        kind === 'primary' || kind === 'secondary' ? { shadowColor: t.c.shadow, shadowOpacity: 1, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 2 } : null,
+        kind === 'primary' || kind === 'secondary'
+          ? { shadowColor: t.c.shadow, shadowOpacity: 1, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 2 }
+          : null,
         full && { alignSelf: 'stretch' },
         style,
       ]}

@@ -68,6 +68,7 @@ npx expo start --dev-client
    ```
 
    **Google OAuth client:** Google Cloud Console → APIs & Services → Credentials → OAuth client ID (Web application). Add the authorized redirect URI `https://<AUTH_PREFIX>.auth.<region>.amazoncognito.com/oauth2/idpresponse`.
+
 3. Deploy:
 
    ```bash
@@ -76,6 +77,7 @@ npx expo start --dev-client
    ```
 
    The outputs are `api`, `authDomain`, `userPoolClientId` and a few others. Deploy-time options are documented at the top of `sst.config.ts` (`AUTH_PREFIX`, `ENABLE_APPLE`, `APPLE_AUDIENCES`, `AWS_REGION`).
+
 4. **Sign in with Apple** (once you have the Apple Developer account):
    1. Create a Services ID and a Sign in with Apple key.
    2. Set `AppleServicesId`, `AppleTeamId`, `AppleKeyId` and `ApplePrivateKey` with `sst secret set`.
@@ -87,13 +89,13 @@ npx expo start --dev-client
 
 Connect the repo in Netlify. `netlify.toml` already contains the build command, publish directory, rewrites and headers. Set these environment variables:
 
-| Variable | Value |
-|---|---|
-| `EXPO_PUBLIC_API_URL` | sst output `api` |
-| `EXPO_PUBLIC_WEB_URL` | your Netlify URL |
-| `EXPO_PUBLIC_COGNITO_DOMAIN` | sst output `authDomain` |
-| `EXPO_PUBLIC_COGNITO_CLIENT_ID` | sst output `userPoolClientId` |
-| `EXPO_PUBLIC_VAPID_PUBLIC_KEY` | the VAPID public key |
+| Variable                          | Value                                            |
+| --------------------------------- | ------------------------------------------------ |
+| `EXPO_PUBLIC_API_URL`             | sst output `api`                                 |
+| `EXPO_PUBLIC_WEB_URL`             | your Netlify URL                                 |
+| `EXPO_PUBLIC_COGNITO_DOMAIN`      | sst output `authDomain`                          |
+| `EXPO_PUBLIC_COGNITO_CLIENT_ID`   | sst output `userPoolClientId`                    |
+| `EXPO_PUBLIC_VAPID_PUBLIC_KEY`    | the VAPID public key                             |
 | `APPLE_TEAM_ID`, `ANDROID_SHA256` | optional: make join links open the installed app |
 
 ### 3. Phone apps (EAS)
@@ -110,11 +112,11 @@ Set the same `EXPO_PUBLIC_*` values as EAS environment variables. Before submitt
 
 ## What it costs
 
-| | Your household | ~100 households | ~10k active users |
-|---|---|---|---|
-| AWS (Lambda, DynamoDB, API Gateway, S3, Cognito, logs) | ≈ $0–1/mo | ≈ $1–2/mo | ≈ $15–60/mo |
-| Netlify, Expo EAS | free tiers | free tiers | free to ~$19/mo each |
-| Apple Developer / Google Play | $99/yr / $25 once | | |
+|                                                        | Your household    | ~100 households | ~10k active users    |
+| ------------------------------------------------------ | ----------------- | --------------- | -------------------- |
+| AWS (Lambda, DynamoDB, API Gateway, S3, Cognito, logs) | ≈ $0–1/mo         | ≈ $1–2/mo       | ≈ $15–60/mo          |
+| Netlify, Expo EAS                                      | free tiers        | free tiers      | free to ~$19/mo each |
+| Apple Developer / Google Play                          | $99/yr / $25 once |                 |                      |
 
 The infrastructure avoids the usual AWS surprise bills: no VPC/NAT gateway, no always-on database, no Secrets Manager (SST keeps secrets in SSM), and logs are kept for 2 weeks. `BUDGET_EMAIL` sends alerts at $5 and $20.
 

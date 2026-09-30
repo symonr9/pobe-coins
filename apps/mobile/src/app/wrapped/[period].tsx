@@ -88,7 +88,9 @@ export default function Wrapped() {
           <Text variant="hero" style={{ fontSize: 72, lineHeight: 80 }}>
             🔥 {w.bestStreak}
           </Text>
-          {w.busiestWeekday ? <Text center>{t('Your busiest day was {{day}}.', { day: t(WEEKDAYS[w.busiestWeekday.weekday]!) })}</Text> : null}
+          {w.busiestWeekday ? (
+            <Text center>{t('Your busiest day was {{day}}.', { day: t(WEEKDAYS[w.busiestWeekday.weekday]!) })}</Text>
+          ) : null}
         </>
       ),
     },
@@ -100,7 +102,9 @@ export default function Wrapped() {
           <Text variant="h1" center>
             {t('You spent {{n}} coins', { n: w.spent })}
           </Text>
-          {w.biggestPurchase ? <Text center>{t('Biggest treat: {{item}} ({{n}})', { item: w.biggestPurchase.label, n: w.biggestPurchase.amount })}</Text> : null}
+          {w.biggestPurchase ? (
+            <Text center>{t('Biggest treat: {{item}} ({{n}})', { item: w.biggestPurchase.label, n: w.biggestPurchase.amount })}</Text>
+          ) : null}
           {w.giftsGiven ? <Text center>{t('You gave {{n}} coins as gifts 💝', { n: w.giftsGiven })}</Text> : null}
           {w.giftsReceived ? <Text center>{t('…and got {{n}} back in gifts', { n: w.giftsReceived })}</Text> : null}
         </>
@@ -132,7 +136,12 @@ export default function Wrapped() {
           <View key={i} style={[styles.bar, { backgroundColor: i <= page ? bgs[page % bgs.length]!.onPrimary : 'rgba(0,0,0,0.12)' }]} />
         ))}
       </View>
-      <Pressable style={[styles.close, { top: insets.top + 22 }]} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('Close')}>
+      <Pressable
+        style={[styles.close, { top: insets.top + 22 }]}
+        onPress={() => router.back()}
+        accessibilityRole="button"
+        accessibilityLabel={t('Close')}
+      >
         <Icon name="x" color={bgs[page % bgs.length]!.onPrimary} />
       </Pressable>
       <ScrollView

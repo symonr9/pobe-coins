@@ -10,7 +10,7 @@
   "scripts": {
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "lint": "eslint .",
+    "lint": "prettier --check .",
     "format": "prettier --write .",
     "dev:web": "npm run web -w @pobe/mobile",
     "deploy:dev": "sst deploy --stage dev",

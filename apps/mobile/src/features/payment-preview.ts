@@ -32,4 +32,3 @@ export function describeCoins(p?: Purse) {
     .map(([d, n]) => `${n}×${d}`)
     .join(' + ');
 }
-

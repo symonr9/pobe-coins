@@ -18,9 +18,26 @@ import type {
   Reaction,
 } from '@pobe/core';
 
-export type { Challenge, Completion, Household, LedgerEntry, LinkPreview, Member, Purchase, Session, ShopItem, Task, WishlistGoal, Device, AuditEntry, Comment, Reaction };
+export type {
+  Challenge,
+  Completion,
+  Household,
+  LedgerEntry,
+  LinkPreview,
+  Member,
+  Purchase,
+  Session,
+  ShopItem,
+  Task,
+  WishlistGoal,
+  Device,
+  AuditEntry,
+  Comment,
+  Reaction,
+};
 
-export type MeResponse = Session | { household: null; user: { sub: string; name?: string; email?: string } | null; households: { id: string; name: string }[] };
+export type MeResponse =
+  Session | { household: null; user: { sub: string; name?: string; email?: string } | null; households: { id: string; name: string }[] };
 
 export const hasHousehold = (me: MeResponse | undefined): me is Session => !!me && me.household !== null;
 

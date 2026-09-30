@@ -103,13 +103,24 @@ export default function TaskEdit() {
       toast(existing ? t('Saved') : t('Chore added'), 'success');
       router.back();
     },
-    onError: (e) => setError(e instanceof ApiError ? e.message : t('Couldn\'t save.')),
+    onError: (e) => setError(e instanceof ApiError ? e.message : t("Couldn't save.")),
   });
 
   const valid = title.trim().length > 0 && (who !== 'member' || !!assignee) && (who !== 'rotation' || rotation.length >= 2);
 
   return (
-    <Screen footer={<Button full title={existing ? t('Save changes') : t('Add chore')} icon="check" disabled={!valid} loading={save.isPending} onPress={() => save.mutate()} />}>
+    <Screen
+      footer={
+        <Button
+          full
+          title={existing ? t('Save changes') : t('Add chore')}
+          icon="check"
+          disabled={!valid}
+          loading={save.isPending}
+          onPress={() => save.mutate()}
+        />
+      }
+    >
       <Header title={existing ? t('Edit chore') : t('New chore')} />
       {!existing ? (
         <Section title={t('Quick picks')}>
@@ -135,7 +146,13 @@ export default function TaskEdit() {
       <Card style={{ gap: 14 }}>
         <Row gap={10} style={{ alignItems: 'flex-end' }}>
           <View style={{ width: 80 }}>
-            <Field label={t('Emoji')} value={emoji} onChangeText={(s) => setEmoji([...s].slice(-2).join(''))} placeholder="🧹" style={{ textAlign: 'center', fontSize: 22 }} />
+            <Field
+              label={t('Emoji')}
+              value={emoji}
+              onChangeText={(s) => setEmoji([...s].slice(-2).join(''))}
+              placeholder="🧹"
+              style={{ textAlign: 'center', fontSize: 22 }}
+            />
           </View>
           <View style={{ flex: 1 }}>
             <Field label={t('Chore')} value={title} onChangeText={setTitle} placeholder={t('Take out the trash')} maxLength={120} />
@@ -174,7 +191,11 @@ export default function TaskEdit() {
               })}
             </Row>
           ) : null}
-          {who === 'rotation' ? <Text variant="small" color="soft">{t('Pick at least two people, in turn order. It needs to repeat.')}</Text> : null}
+          {who === 'rotation' ? (
+            <Text variant="small" color="soft">
+              {t('Pick at least two people, in turn order. It needs to repeat.')}
+            </Text>
+          ) : null}
         </Card>
       </Section>
 
@@ -200,7 +221,16 @@ export default function TaskEdit() {
                     accessibilityLabel={new Date(2026, 0, 4 + i).toLocaleDateString(undefined, { weekday: 'long' })}
                     accessibilityState={{ selected: on }}
                     onPress={() => setDays(on ? days.filter((x) => x !== i) : [...days, i].sort())}
-                    style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? hh.color(hh.me?.id) : 'transparent', borderWidth: 2, borderColor: on ? 'transparent' : '#00000014' }}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: on ? hh.color(hh.me?.id) : 'transparent',
+                      borderWidth: 2,
+                      borderColor: on ? 'transparent' : '#00000014',
+                    }}
                   >
                     <Text variant="bodyBold">{d}</Text>
                   </Pressy>
@@ -212,27 +242,55 @@ export default function TaskEdit() {
             <Row gap={10}>
               <View style={{ flex: 1 }}>
                 <Field
-                  label={repeat === 'daily' ? t('Every how many days') : repeat === 'weekly' ? t('Every how many weeks') : t('Every how many months')}
+                  label={
+                    repeat === 'daily'
+                      ? t('Every how many days')
+                      : repeat === 'weekly'
+                        ? t('Every how many weeks')
+                        : t('Every how many months')
+                  }
                   value={String(interval)}
                   keyboardType="number-pad"
                   onChangeText={(s) => setInterval_(Math.max(1, Math.min(52, Number(s.replace(/\D/g, '')) || 1)))}
                 />
               </View>
               <View style={{ flex: 1 }}>
-                <Field label={t('Due time (optional)')} value={dueTime} onChangeText={setDueTime} placeholder="18:00" maxLength={5} hint={t('24-hour, like 18:30')} />
+                <Field
+                  label={t('Due time (optional)')}
+                  value={dueTime}
+                  onChangeText={setDueTime}
+                  placeholder="18:00"
+                  maxLength={5}
+                  hint={t('24-hour, like 18:30')}
+                />
               </View>
             </Row>
           ) : null}
           {repeat !== 'none' ? (
             <>
-              <ToggleRow label={t('Streak bonus')} hint={t('Extra coins for doing it every time')} value={streakOn} onChange={setStreakOn} />
+              <ToggleRow
+                label={t('Streak bonus')}
+                hint={t('Extra coins for doing it every time')}
+                value={streakOn}
+                onChange={setStreakOn}
+              />
               {streakOn ? (
                 <Row gap={10}>
                   <View style={{ flex: 1 }}>
-                    <Field label={t('Every … in a row')} value={String(streakEvery)} keyboardType="number-pad" onChangeText={(s) => setStreakEvery(Math.max(2, Number(s.replace(/\D/g, '')) || 2))} />
+                    <Field
+                      label={t('Every … in a row')}
+                      value={String(streakEvery)}
+                      keyboardType="number-pad"
+                      onChangeText={(s) => setStreakEvery(Math.max(2, Number(s.replace(/\D/g, '')) || 2))}
+                    />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Field label={t('Bonus coins')} value={String(streakBonus)} keyboardType="number-pad" onChangeText={(s) => setStreakBonus(Math.max(0, Number(s.replace(/\D/g, '')) || 0))} />
+                    <Field
+                      label={t('Bonus coins')}
+                      value={String(streakBonus)}
+                      keyboardType="number-pad"
+                      onChangeText={(s) => setStreakBonus(Math.max(0, Number(s.replace(/\D/g, '')) || 0))}
+                    />
                   </View>
                 </Row>
               ) : null}
@@ -246,22 +304,54 @@ export default function TaskEdit() {
           {steps.map((s, i) => (
             <Row key={i} gap={8}>
               <View style={{ flex: 1 }}>
-                <Field label={t('Step {{n}}', { n: i + 1 })} value={s.label} onChangeText={(v) => setSteps(steps.map((x, j) => (j === i ? { ...x, label: v } : x)))} />
+                <Field
+                  label={t('Step {{n}}', { n: i + 1 })}
+                  value={s.label}
+                  onChangeText={(v) => setSteps(steps.map((x, j) => (j === i ? { ...x, label: v } : x)))}
+                />
               </View>
-              <Button small kind="ghost" title="✕" accessibilityLabel={t('Remove step')} onPress={() => setSteps(steps.filter((_, j) => j !== i))} style={{ marginTop: 22 }} />
+              <Button
+                small
+                kind="ghost"
+                title="✕"
+                accessibilityLabel={t('Remove step')}
+                onPress={() => setSteps(steps.filter((_, j) => j !== i))}
+                style={{ marginTop: 22 }}
+              />
             </Row>
           ))}
-          <Button small kind="soft" icon="plus" title={t('Add step')} onPress={() => setSteps([...steps, { label: '' }])} disabled={steps.length >= 30} />
-          {steps.length > 1 ? <ToggleRow label={t('Pay as you go')} hint={t('Split the reward across the steps')} value={partial} onChange={setPartial} /> : null}
+          <Button
+            small
+            kind="soft"
+            icon="plus"
+            title={t('Add step')}
+            onPress={() => setSteps([...steps, { label: '' }])}
+            disabled={steps.length >= 30}
+          />
+          {steps.length > 1 ? (
+            <ToggleRow label={t('Pay as you go')} hint={t('Split the reward across the steps')} value={partial} onChange={setPartial} />
+          ) : null}
         </Card>
       </Section>
 
       <Card style={{ gap: 12 }}>
-        <ToggleRow label={t('Needs approval')} hint={t('Someone else confirms before the coins are paid')} value={approval} onChange={setApproval} />
+        <ToggleRow
+          label={t('Needs approval')}
+          hint={t('Someone else confirms before the coins are paid')}
+          value={approval}
+          onChange={setApproval}
+        />
         <Field label={t('Notes (optional)')} value={notes} onChangeText={setNotes} multiline maxLength={1000} />
       </Card>
       {error ? <Text color="danger">{error}</Text> : null}
-      <Stack>{who === 'member' && assignee ? <Row><Avatar name={hh.name(assignee)} color={hh.color(assignee)} size={24} /><Text color="soft">{t('Assigned to {{name}}', { name: hh.name(assignee) })}</Text></Row> : null}</Stack>
+      <Stack>
+        {who === 'member' && assignee ? (
+          <Row>
+            <Avatar name={hh.name(assignee)} color={hh.color(assignee)} size={24} />
+            <Text color="soft">{t('Assigned to {{name}}', { name: hh.name(assignee) })}</Text>
+          </Row>
+        ) : null}
+      </Stack>
     </Screen>
   );
 }

@@ -6,17 +6,18 @@ Chubbybara is a round, cute, lovable capybara based on our plushie. He runs the 
 
 One square illustration per **pose**, on a transparent background:
 
-| Pose | Used for |
-|---|---|
-| `idle` | resting state, notifications, empty states |
-| `happy` | home greeting, finished chores |
-| `cheer` | celebrations: arms up, sparkles |
+| Pose         | Used for                                          |
+| ------------ | ------------------------------------------------- |
+| `idle`       | resting state, notifications, empty states        |
+| `happy`      | home greeting, finished chores                    |
+| `cheer`      | celebrations: arms up, sparkles                   |
 | `shopkeeper` | POBE Shop and purchases: little apron and bow tie |
-| `sleepy` | night-time greeting, offline, errors |
-| `thinking` | help, empty lists, "needs approval" |
-| `wave` | onboarding, sign-in, join links |
+| `sleepy`     | night-time greeting, offline, errors              |
+| `thinking`   | help, empty lists, "needs approval"               |
+| `wave`       | onboarding, sign-in, join links                   |
 
 Also needed:
+
 - **Blink frame** for `idle` (eyes closed, otherwise identical). The app blinks every 4–7 seconds.
 - **Accessories** as separate transparent layers that sit on the base poses: beanie, ribbon bow, winter scarf, yuzu crown, daisy clip, party hat, reading glasses. The apron, beanie, scarf and party hat pick up the user's theme color, so please also supply them in a neutral light grey that we can tint.
 - **App icon** versions (1024×1024, full-bleed background, no transparency) for the five themes: Strawberry milk `#F9B9CD`, Sky puddle `#AAD3F4`, Lavender nap `#CFBCF5`, Butter toast `#FBE08C`, Matcha meadow `#AEE1BD`.

@@ -18,7 +18,17 @@ export const Coin = memo(function Coin({ denom, size = 32 }: { denom: number; si
 });
 
 /** "+30" with a coin. */
-export function CoinAmount({ amount, size = 20, sign, variant = 'number' }: { amount: number; size?: number; sign?: boolean; variant?: 'number' | 'title' | 'h2' }) {
+export function CoinAmount({
+  amount,
+  size = 20,
+  sign,
+  variant = 'number',
+}: {
+  amount: number;
+  size?: number;
+  sign?: boolean;
+  variant?: 'number' | 'title' | 'h2';
+}) {
   const t = useTheme();
   const color = sign ? (amount >= 0 ? t.c.success : t.c.danger) : t.c.ink;
   return (
@@ -33,7 +43,17 @@ export function CoinAmount({ amount, size = 20, sign, variant = 'number' }: { am
 }
 
 /** Coins by denomination: a little stack per coin type with its count. */
-export function PurseView({ purse, coinTypes, size = 36, compact }: { purse: Purse; coinTypes: number[]; size?: number; compact?: boolean }) {
+export function PurseView({
+  purse,
+  coinTypes,
+  size = 36,
+  compact,
+}: {
+  purse: Purse;
+  coinTypes: number[];
+  size?: number;
+  compact?: boolean;
+}) {
   const entries = purseEntries(purse, coinTypes).filter((e) => !compact || e.count > 0);
   const step = Math.round(size * 0.16);
   return (

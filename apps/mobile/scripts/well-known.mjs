@@ -9,7 +9,11 @@ const bundle = process.env.IOS_BUNDLE_ID ?? 'app.pobecoins';
 if (process.env.APPLE_TEAM_ID) {
   writeFileSync(
     `${dir}/apple-app-site-association`,
-    JSON.stringify({ applinks: { details: [{ appIDs: [`${process.env.APPLE_TEAM_ID}.${bundle}`], components: [{ '/': '/join/*' }] }] } }, null, 2),
+    JSON.stringify(
+      { applinks: { details: [{ appIDs: [`${process.env.APPLE_TEAM_ID}.${bundle}`], components: [{ '/': '/join/*' }] }] } },
+      null,
+      2,
+    ),
   );
   console.log('wrote apple-app-site-association');
 }
@@ -20,7 +24,11 @@ if (process.env.ANDROID_SHA256) {
       [
         {
           relation: ['delegate_permission/common.handle_all_urls'],
-          target: { namespace: 'android_app', package_name: process.env.ANDROID_PACKAGE ?? 'app.pobecoins', sha256_cert_fingerprints: [process.env.ANDROID_SHA256] },
+          target: {
+            namespace: 'android_app',
+            package_name: process.env.ANDROID_PACKAGE ?? 'app.pobecoins',
+            sha256_cert_fingerprints: [process.env.ANDROID_SHA256],
+          },
         },
       ],
       null,

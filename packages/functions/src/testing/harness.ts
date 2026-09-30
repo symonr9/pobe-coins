@@ -76,7 +76,11 @@ export function createHarness(start = '2026-06-01T15:00:00Z') {
   clearDeviceCache();
   const app = createApp(deps);
 
-  async function call<T = any>(method: string, path: string, opts: { token?: string; body?: unknown; household?: string; ip?: string } = {}) {
+  async function call<T = any>(
+    method: string,
+    path: string,
+    opts: { token?: string; body?: unknown; household?: string; ip?: string } = {},
+  ) {
     const headers: Record<string, string> = { 'content-type': 'application/json', 'x-forwarded-for': opts.ip ?? '203.0.113.9' };
     if (opts.token) headers.authorization = `Bearer ${opts.token}`;
     if (opts.household) headers['x-household-id'] = opts.household;
@@ -126,5 +130,12 @@ export async function household(h: Harness, opts: { templates?: string[]; sub?: 
   const link = await h.call('POST', '/links', { token: adminToken, body: { memberId: wife.body.id } });
   const redeemed = await h.call('POST', '/links/redeem', { body: { token: link.body.token, deviceLabel: 'Alex phone', platform: 'ios' } });
   if (redeemed.status !== 200) throw new Error(`redeem failed: ${JSON.stringify(redeemed.body)}`);
-  return { hid, adminToken, adminId, memberToken: redeemed.body.token as string, memberId: wife.body.id as string, deviceId: redeemed.body.device.id as string };
+  return {
+    hid,
+    adminToken,
+    adminId,
+    memberToken: redeemed.body.token as string,
+    memberId: wife.body.id as string,
+    deviceId: redeemed.body.device.id as string,
+  };
 }

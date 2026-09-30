@@ -115,8 +115,15 @@ export function SessionProvider({ children, onSwitch }: { children: ReactNode; o
   const addProfile = useCallback(
     async (p: Omit<Profile, 'id' | 'addedAt'>, t: string) => {
       // Re-use an existing profile for the same member/user.
-      const existing = profiles.find((x) => x.kind === p.kind && (p.kind === 'device' ? x.memberId === p.memberId : x.name === p.name && x.householdId === p.householdId));
-      const profile: Profile = { ...p, id: existing?.id ?? `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`, addedAt: new Date().toISOString() };
+      const existing = profiles.find(
+        (x) =>
+          x.kind === p.kind && (p.kind === 'device' ? x.memberId === p.memberId : x.name === p.name && x.householdId === p.householdId),
+      );
+      const profile: Profile = {
+        ...p,
+        id: existing?.id ?? `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
+        addedAt: new Date().toISOString(),
+      };
       tokenCache.current.set(profile.id, t);
       await setSecret(tokenKey(profile.id), t);
       await persist([...profiles.filter((x) => x.id !== profile.id), profile], profile.id);
@@ -130,7 +137,10 @@ export function SessionProvider({ children, onSwitch }: { children: ReactNode; o
     async (patch: Partial<Profile>) => {
       const a = activeRef.current;
       if (!a) return;
-      await persist(profiles.map((p) => (p.id === a.id ? { ...p, ...patch } : p)), a.id);
+      await persist(
+        profiles.map((p) => (p.id === a.id ? { ...p, ...patch } : p)),
+        a.id,
+      );
     },
     [profiles, persist],
   );
@@ -158,7 +168,12 @@ export function useSession() {
 
 /** Exchanges a provider ID token for an app session and stores the profile. */
 export async function exchangeAndStore(session: SessionValue, idToken: string) {
-  const r = await api<{ token: string; user: { sub: string; name?: string; email?: string } }>('POST', '/auth/exchange', { idToken }, { token: null });
+  const r = await api<{ token: string; user: { sub: string; name?: string; email?: string } }>(
+    'POST',
+    '/auth/exchange',
+    { idToken },
+    { token: null },
+  );
   const me = await api<any>('GET', '/me', undefined, { token: r.token });
   const household = me.household;
   return session.addProfile(

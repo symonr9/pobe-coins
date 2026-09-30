@@ -30,15 +30,20 @@ export const useFeedback = () => useContext(Ctx);
 export function FeedbackProvider({ children }: { children: ReactNode }) {
   const t = useTheme();
   const insets = useSafeAreaInsets();
-  const [toasts, setToasts] = useState<{ id: number; message: string; kind: string; action?: { label: string; onPress: () => void } }[]>([]);
+  const [toasts, setToasts] = useState<{ id: number; message: string; kind: string; action?: { label: string; onPress: () => void } }[]>(
+    [],
+  );
   const [dialog, setDialog] = useState<(ConfirmOptions & { resolve: (v: boolean) => void }) | null>(null);
   const idRef = useRef(0);
 
-  const toast = useCallback((message: string, kind: 'info' | 'error' | 'success' = 'info', action?: { label: string; onPress: () => void }) => {
-    const id = ++idRef.current;
-    setToasts((l) => [...l.slice(-2), { id, message, kind, action }]);
-    setTimeout(() => setToasts((l) => l.filter((x) => x.id !== id)), kind === 'error' || action ? 6000 : 3000);
-  }, []);
+  const toast = useCallback(
+    (message: string, kind: 'info' | 'error' | 'success' = 'info', action?: { label: string; onPress: () => void }) => {
+      const id = ++idRef.current;
+      setToasts((l) => [...l.slice(-2), { id, message, kind, action }]);
+      setTimeout(() => setToasts((l) => l.filter((x) => x.id !== id)), kind === 'error' || action ? 6000 : 3000);
+    },
+    [],
+  );
 
   const confirm = useCallback((o: ConfirmOptions) => new Promise<boolean>((resolve) => setDialog({ ...o, resolve })), []);
   const close = (v: boolean) => {
@@ -49,7 +54,10 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={{ toast, confirm }}>
       {children}
-      <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', alignItems: 'center', paddingBottom: insets.bottom + 90 }]}>
+      <View
+        pointerEvents="box-none"
+        style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', alignItems: 'center', paddingBottom: insets.bottom + 90 }]}
+      >
         {toasts.map((x) => (
           <Animated.View
             key={x.id}
@@ -102,7 +110,15 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
 }
 
 const styles = StyleSheet.create({
-  toast: { marginTop: 8, borderRadius: 18, paddingHorizontal: 18, paddingVertical: 12, maxWidth: 520, marginHorizontal: 16, borderWidth: 2 },
+  toast: {
+    marginTop: 8,
+    borderRadius: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    maxWidth: 520,
+    marginHorizontal: 16,
+    borderWidth: 2,
+  },
   backdrop: { flex: 1, backgroundColor: 'rgba(20,10,15,0.45)', alignItems: 'center', justifyContent: 'center', padding: 24 },
   dialog: { width: '100%', maxWidth: 420, borderRadius: 24, borderWidth: 1.5, padding: 20, gap: 10 },
 });

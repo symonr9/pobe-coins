@@ -1,7 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Image, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
-import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import type { ChubbyAccessory, ChubbyPose } from '@pobe/core';
 import { FONTS, useTheme } from '@/theme';
 import { Text } from '@/ui/Text';
@@ -32,11 +41,14 @@ export function Chubby({
     breathe.value = withRepeat(withTiming(1.025, { duration: 1600, easing: Easing.inOut(Easing.sin) }), -1, true);
     let timer: ReturnType<typeof setTimeout>;
     const schedule = () => {
-      timer = setTimeout(() => {
-        setBlink(true);
-        setTimeout(() => setBlink(false), 140);
-        schedule();
-      }, 4000 + Math.random() * 3000);
+      timer = setTimeout(
+        () => {
+          setBlink(true);
+          setTimeout(() => setBlink(false), 140);
+          schedule();
+        },
+        4000 + Math.random() * 3000,
+      );
     };
     schedule();
     return () => clearTimeout(timer);
@@ -53,8 +65,17 @@ export function Chubby({
   const art = useMemo(() => chubbyArt(pose, accessory, t.c.primary, blink), [pose, accessory, t.c.primary, blink]);
 
   return (
-    <Animated.View style={[{ width: size, height: size, transformOrigin: 'bottom' }, style]} accessible accessibilityRole="image" accessibilityLabel="Chubbybara the capybara">
-      {art.kind === 'svg' ? <SvgXml xml={art.xml} width={size} height={size} /> : <Image source={art.source} style={{ width: size, height: size }} resizeMode="contain" />}
+    <Animated.View
+      style={[{ width: size, height: size, transformOrigin: 'bottom' }, style]}
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel="Chubbybara the capybara"
+    >
+      {art.kind === 'svg' ? (
+        <SvgXml xml={art.xml} width={size} height={size} />
+      ) : (
+        <Image source={art.source} style={{ width: size, height: size }} resizeMode="contain" />
+      )}
     </Animated.View>
   );
 }
@@ -85,5 +106,9 @@ export function Bubble({ text, tail = 'left' }: { text: string; tail?: 'left' | 
 }
 
 function BubbleText({ text }: { text: string }) {
-  return <Text variant="body" style={{ fontFamily: FONTS.bodySemi }}>{text}</Text>;
+  return (
+    <Text variant="body" style={{ fontFamily: FONTS.bodySemi }}>
+      {text}
+    </Text>
+  );
 }

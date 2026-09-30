@@ -56,18 +56,36 @@ function fold(line: string) {
 export async function renderCalendar(deps: Deps, token: string): Promise<string> {
   const ref = await deps.db.get<Item & { householdId: string; memberId: string }>(keys.calendar(sha256(token.replace(/\.ics$/, ''))));
   if (!ref) throw new ApiError('NOT_FOUND', 'This calendar link was turned off.');
-  const [household, tasks, members] = await Promise.all([getHousehold(deps, ref.householdId), listTasks(deps, ref.householdId), listMembers(deps, ref.householdId)]);
+  const [household, tasks, members] = await Promise.all([
+    getHousehold(deps, ref.householdId),
+    listTasks(deps, ref.householdId),
+    listMembers(deps, ref.householdId),
+  ]);
   const me = members.find((m) => m.id === ref.memberId);
   if (!me) throw new ApiError('NOT_FOUND', 'This calendar link was turned off.');
-  const stamp = deps.now().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const stamp = deps
+    .now()
+    .toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\.\d{3}/, '');
   const mine = tasks.filter(
-    (t) => t.status !== 'archived' && t.status !== 'done' && (t.assigneeId === null || t.assigneeId === me.id || t.rotation?.includes(me.id)),
+    (t) =>
+      t.status !== 'archived' && t.status !== 'done' && (t.assigneeId === null || t.assigneeId === me.id || t.rotation?.includes(me.id)),
   );
   const tz = household.settings.timeZone;
-  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Pobe Coins//Chores//EN', 'CALSCALE:GREGORIAN', `X-WR-CALNAME:${esc(`${household.name} chores`)}`, `X-WR-TIMEZONE:${tz}`];
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Pobe Coins//Chores//EN',
+    'CALSCALE:GREGORIAN',
+    `X-WR-CALNAME:${esc(`${household.name} chores`)}`,
+    `X-WR-TIMEZONE:${tz}`,
+  ];
   for (const t of mine) {
     const summary = `${t.emoji ? `${t.emoji} ` : ''}${t.title} (+${t.reward})`;
-    const desc = [t.notes, t.rotation?.length ? 'Rotating chore: check the app for whose turn it is.' : undefined].filter(Boolean).join('\n');
+    const desc = [t.notes, t.rotation?.length ? 'Rotating chore: check the app for whose turn it is.' : undefined]
+      .filter(Boolean)
+      .join('\n');
     lines.push('BEGIN:VEVENT', `UID:${t.id}@pobe-coins`, `DTSTAMP:${stamp}`, `SUMMARY:${esc(summary)}`);
     if (desc) lines.push(`DESCRIPTION:${esc(desc)}`);
     if (t.recurrence) {

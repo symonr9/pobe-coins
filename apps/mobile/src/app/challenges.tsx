@@ -27,22 +27,33 @@ export default function Challenges() {
   const create = useMutation({
     mutationFn: () => {
       const start = new Date();
-      return actions.createChallenge({ title: title.trim(), target, bonus, startsAt: start.toISOString(), endsAt: new Date(start.getTime() + Number(days) * 86400_000).toISOString() });
+      return actions.createChallenge({
+        title: title.trim(),
+        target,
+        bonus,
+        startsAt: start.toISOString(),
+        endsAt: new Date(start.getTime() + Number(days) * 86400_000).toISOString(),
+      });
     },
     onSuccess: () => {
       setOpen(false);
       setTitle('');
       toast(t('Challenge started!'), 'success');
     },
-    onError: (e) => toast(e instanceof ApiError ? e.message : t('Couldn\'t start it.'), 'error'),
+    onError: (e) => toast(e instanceof ApiError ? e.message : t("Couldn't start it."), 'error'),
     onSettled: () => refresh(),
   });
   return (
     <Screen>
-      <Header title={t('Team challenges')} right={hh.isAdmin ? <Button small icon="plus" title={t('New')} onPress={() => setOpen(true)} /> : undefined} />
+      <Header
+        title={t('Team challenges')}
+        right={hh.isAdmin ? <Button small icon="plus" title={t('New')} onPress={() => setOpen(true)} /> : undefined}
+      />
       <Text color="soft">{t('Earn coins together before time runs out, and everyone gets a bonus.')}</Text>
       {q.isLoading ? <Loading /> : null}
-      {q.data?.length === 0 ? <EmptyState pose="cheer" line={t('No challenges yet. Admins can start one, like "earn 300 together this week".')} /> : null}
+      {q.data?.length === 0 ? (
+        <EmptyState pose="cheer" line={t('No challenges yet. Admins can start one, like "earn 300 together this week".')} />
+      ) : null}
       <Stack>
         {q.data?.map((c) => (
           <Card key={c.id} style={{ flexDirection: 'row', gap: 14, alignItems: 'center', opacity: c.status === 'expired' ? 0.6 : 1 }}>
@@ -50,13 +61,29 @@ export default function Challenges() {
             <View style={{ flex: 1, gap: 2 }}>
               <Text variant="title">{c.title}</Text>
               <Text variant="small" color="soft">
-                {t('{{p}}/{{target}} coins · bonus {{bonus}} each', { p: Math.min(c.progress, c.target), target: c.target, bonus: c.bonus })}
+                {t('{{p}}/{{target}} coins · bonus {{bonus}} each', {
+                  p: Math.min(c.progress, c.target),
+                  target: c.target,
+                  bonus: c.bonus,
+                })}
               </Text>
               <Text variant="smallBold" color={c.status === 'won' ? 'success' : c.status === 'expired' ? 'soft' : 'accent'}>
-                {c.status === 'won' ? t('Won!') : c.status === 'expired' ? t('Ended') : t('Ends {{date}}', { date: new Date(c.endsAt).toLocaleDateString() })}
+                {c.status === 'won'
+                  ? t('Won!')
+                  : c.status === 'expired'
+                    ? t('Ended')
+                    : t('Ends {{date}}', { date: new Date(c.endsAt).toLocaleDateString() })}
               </Text>
             </View>
-            {hh.isAdmin && c.status === 'active' ? <Button small kind="ghost" title="✕" accessibilityLabel={t('Delete challenge')} onPress={() => actions.deleteChallenge({ id: c.id }).then(() => refresh())} /> : null}
+            {hh.isAdmin && c.status === 'active' ? (
+              <Button
+                small
+                kind="ghost"
+                title="✕"
+                accessibilityLabel={t('Delete challenge')}
+                onPress={() => actions.deleteChallenge({ id: c.id }).then(() => refresh())}
+              />
+            ) : null}
           </Card>
         ))}
       </Stack>
@@ -65,11 +92,30 @@ export default function Challenges() {
         <AmountPicker label={t('Earn together')} value={target} onChange={setTarget} coinTypes={hh.settings.coinTypes} />
         <Row gap={10}>
           <View style={{ flex: 1 }}>
-            <Field label={t('Bonus each')} value={String(bonus)} keyboardType="number-pad" onChangeText={(s) => setBonus(Number(s.replace(/\D/g, '')) || 0)} />
+            <Field
+              label={t('Bonus each')}
+              value={String(bonus)}
+              keyboardType="number-pad"
+              onChangeText={(s) => setBonus(Number(s.replace(/\D/g, '')) || 0)}
+            />
           </View>
         </Row>
-        <Segmented value={days} onChange={setDays} options={[{ value: '7', label: t('1 week') }, { value: '14', label: t('2 weeks') }, { value: '30', label: t('1 month') }]} />
-        <Button full title={t('Start challenge')} disabled={!title.trim() || !target} loading={create.isPending} onPress={() => create.mutate()} />
+        <Segmented
+          value={days}
+          onChange={setDays}
+          options={[
+            { value: '7', label: t('1 week') },
+            { value: '14', label: t('2 weeks') },
+            { value: '30', label: t('1 month') },
+          ]}
+        />
+        <Button
+          full
+          title={t('Start challenge')}
+          disabled={!title.trim() || !target}
+          loading={create.isPending}
+          onPress={() => create.mutate()}
+        />
       </Sheet>
     </Screen>
   );

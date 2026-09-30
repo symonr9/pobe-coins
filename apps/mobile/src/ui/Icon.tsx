@@ -42,7 +42,19 @@ const PATHS: Record<string, string> = {
 
 export type IconName = keyof typeof PATHS;
 
-export function Icon({ name, size = 22, color, strokeWidth = 2, filled }: { name: IconName; size?: number; color?: string; strokeWidth?: number; filled?: boolean }) {
+export function Icon({
+  name,
+  size = 22,
+  color,
+  strokeWidth = 2,
+  filled,
+}: {
+  name: IconName;
+  size?: number;
+  color?: string;
+  strokeWidth?: number;
+  filled?: boolean;
+}) {
   const t = useTheme();
   const c = color ?? t.c.ink;
   return (
@@ -50,7 +62,14 @@ export function Icon({ name, size = 22, color, strokeWidth = 2, filled }: { name
       {name === 'more' ? (
         [6, 12, 18].map((x) => <Circle key={x} cx={x} cy={12} r={1.8} fill={c} />)
       ) : (
-        <Path d={PATHS[name]!} stroke={c} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" fill={filled ? c : 'none'} />
+        <Path
+          d={PATHS[name]!}
+          stroke={c}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill={filled ? c : 'none'}
+        />
       )}
     </Svg>
   );

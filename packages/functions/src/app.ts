@@ -24,7 +24,7 @@ async function body<T>(c: Context, schema: ZodType<T>): Promise<T> {
     const text = await c.req.text();
     json = text ? JSON.parse(text) : {};
   } catch {
-    throw new ApiError('BAD_REQUEST', 'The request body isn\'t valid JSON.');
+    throw new ApiError('BAD_REQUEST', "The request body isn't valid JSON.");
   }
   return schema.parse(json);
 }
@@ -54,7 +54,16 @@ export function createApp(deps: Deps) {
     if (err instanceof ZodError) {
       const first = err.issues[0];
       const field = first?.path.join('.');
-      return c.json({ error: { code: 'BAD_REQUEST', message: first ? `${field ? `${field}: ` : ''}${first.message}` : 'Invalid request.', details: err.issues } }, 400);
+      return c.json(
+        {
+          error: {
+            code: 'BAD_REQUEST',
+            message: first ? `${field ? `${field}: ` : ''}${first.message}` : 'Invalid request.',
+            details: err.issues,
+          },
+        },
+        400,
+      );
     }
     const api = toApiError(err);
     if (api) return c.json({ error: { code: api.code, message: api.message, details: api.details } }, api.status as 400);
@@ -62,7 +71,7 @@ export function createApp(deps: Deps) {
     return c.json({ error: { code: 'INTERNAL', message: 'Something went wrong on our side. Please try again.' } }, 500);
   });
 
-  app.notFound((c) => c.json({ error: { code: 'NOT_FOUND', message: 'That endpoint doesn\'t exist.' } }, 404));
+  app.notFound((c) => c.json({ error: { code: 'NOT_FOUND', message: "That endpoint doesn't exist." } }, 404));
 
   // ---------- public ----------
 
@@ -138,7 +147,9 @@ export function createApp(deps: Deps) {
     const input = await body(c, S.createHouseholdSchema);
     return c.json(await households.createHousehold(deps, { sub: principal.sub, name: principal.name }, input), 201);
   });
-  authed.patch('/household', async (c) => c.json(await households.updateHousehold(deps, actorOf(c), await body(c, S.updateHouseholdSchema))));
+  authed.patch('/household', async (c) =>
+    c.json(await households.updateHousehold(deps, actorOf(c), await body(c, S.updateHouseholdSchema))),
+  );
   authed.delete('/household', async (c) => {
     await households.deleteHousehold(deps, actorOf(c));
     return c.json({ deleted: true });
@@ -152,7 +163,9 @@ export function createApp(deps: Deps) {
     return c.json(members.map((m) => (open || m.id === actor.memberId ? m : { ...m, purse: {}, debt: 0 })));
   });
   authed.post('/members', async (c) => c.json(await households.addMember(deps, actorOf(c), await body(c, S.memberSchema)), 201));
-  authed.patch('/members/:id', async (c) => c.json(await households.updateMember(deps, actorOf(c), c.req.param('id'), await body(c, S.updateMemberSchema))));
+  authed.patch('/members/:id', async (c) =>
+    c.json(await households.updateMember(deps, actorOf(c), c.req.param('id'), await body(c, S.updateMemberSchema))),
+  );
   authed.delete('/members/:id', async (c) => c.json(await households.removeMember(deps, actorOf(c), c.req.param('id'))));
 
   // Join links & devices
@@ -174,7 +187,9 @@ export function createApp(deps: Deps) {
   // Tasks
   authed.get('/tasks', async (c) => c.json(await tasks.listTaskViews(deps, actorOf(c))));
   authed.post('/tasks', async (c) => c.json(await tasks.createTask(deps, actorOf(c), await body(c, S.taskSchema)), 201));
-  authed.patch('/tasks/:id', async (c) => c.json(await tasks.updateTask(deps, actorOf(c), c.req.param('id'), await body(c, S.updateTaskSchema))));
+  authed.patch('/tasks/:id', async (c) =>
+    c.json(await tasks.updateTask(deps, actorOf(c), c.req.param('id'), await body(c, S.updateTaskSchema))),
+  );
   authed.delete('/tasks/:id', async (c) => c.json(await tasks.archiveTask(deps, actorOf(c), c.req.param('id'))));
   authed.post('/tasks/:id/claim', async (c) => c.json(await tasks.claimTask(deps, actorOf(c), c.req.param('id'), true)));
   authed.post('/tasks/:id/release', async (c) => c.json(await tasks.claimTask(deps, actorOf(c), c.req.param('id'), false)));
@@ -182,7 +197,9 @@ export function createApp(deps: Deps) {
     const { by } = await body(c, S.rotateSchema);
     return c.json(await tasks.shiftRotation(deps, actorOf(c), c.req.param('id'), by));
   });
-  authed.post('/tasks/:id/complete', async (c) => c.json(await tasks.completeTask(deps, actorOf(c), c.req.param('id'), await body(c, S.completeTaskSchema))));
+  authed.post('/tasks/:id/complete', async (c) =>
+    c.json(await tasks.completeTask(deps, actorOf(c), c.req.param('id'), await body(c, S.completeTaskSchema))),
+  );
 
   // Approvals
   authed.get('/approvals', async (c) => {
@@ -212,7 +229,9 @@ export function createApp(deps: Deps) {
   // POBE Shop
   authed.get('/shop', async (c) => c.json(await purchases.listShop(deps, actorOf(c))));
   authed.post('/shop/items', async (c) => c.json(await purchases.createShopItem(deps, actorOf(c), await body(c, S.shopItemSchema)), 201));
-  authed.patch('/shop/items/:id', async (c) => c.json(await purchases.updateShopItem(deps, actorOf(c), c.req.param('id'), await body(c, S.shopItemSchema.partial()))));
+  authed.patch('/shop/items/:id', async (c) =>
+    c.json(await purchases.updateShopItem(deps, actorOf(c), c.req.param('id'), await body(c, S.shopItemSchema.partial()))),
+  );
   authed.delete('/shop/items/:id', async (c) => {
     await purchases.deleteShopItem(deps, actorOf(c), c.req.param('id'));
     return c.json({ deleted: true });
@@ -257,7 +276,11 @@ export function createApp(deps: Deps) {
     const b = await body(c, S.bonusSchema);
     const r = await money.grantBonus(deps, actor, b.memberId, b.amount, b.reason);
     await deps.db.transact([auditOp(deps, actor, 'bonus', b.memberId, { amount: b.amount, reason: b.reason })]);
-    await deps.notifier.send(actor.householdId, [b.memberId], { title: 'Bonus coins!', body: `+${b.amount}: ${b.reason}`, url: '/timeline' });
+    await deps.notifier.send(actor.householdId, [b.memberId], {
+      title: 'Bonus coins!',
+      body: `+${b.amount}: ${b.reason}`,
+      url: '/timeline',
+    });
     await tasks.afterEarn(deps, { ...actor, memberId: b.memberId }, b.amount);
     return c.json(r, 201);
   });
@@ -305,9 +328,16 @@ export function createApp(deps: Deps) {
     ),
   );
   authed.get('/stats', async (c) =>
-    c.json(await insights.stats(deps, actorOf(c), { memberId: c.req.query('memberId') || undefined, weeks: c.req.query('weeks') ? Number(c.req.query('weeks')) : undefined })),
+    c.json(
+      await insights.stats(deps, actorOf(c), {
+        memberId: c.req.query('memberId') || undefined,
+        weeks: c.req.query('weeks') ? Number(c.req.query('weeks')) : undefined,
+      }),
+    ),
   );
-  authed.get('/wrapped/:period', async (c) => c.json(await insights.wrappedRecap(deps, actorOf(c), c.req.param('period'), c.req.query('memberId') || undefined)));
+  authed.get('/wrapped/:period', async (c) =>
+    c.json(await insights.wrappedRecap(deps, actorOf(c), c.req.param('period'), c.req.query('memberId') || undefined)),
+  );
   authed.get('/widget', async (c) => c.json(await insights.widget(deps, actorOf(c))));
   authed.get('/audit', async (c) => c.json(await misc.listAudit(deps, actorOf(c))));
 

@@ -86,19 +86,35 @@ export async function enablePush(): Promise<boolean> {
 }
 
 /** Schedules on-device reminders for chores due today (native only). */
-export async function scheduleReminders(tasks: { id: string; title: string; emoji?: string; nextDueAt?: string; doneThisPeriod: boolean; mine: boolean; recurrenceDueTime?: string }[]) {
+export async function scheduleReminders(
+  tasks: {
+    id: string;
+    title: string;
+    emoji?: string;
+    nextDueAt?: string;
+    doneThisPeriod: boolean;
+    mine: boolean;
+    recurrenceDueTime?: string;
+  }[],
+) {
   if (Platform.OS === 'web') return;
   const perm = await Notifications.getPermissionsAsync();
   if (!perm.granted) return;
   const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  await Promise.all(scheduled.filter((n) => n.content.data?.kind === 'reminder').map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)));
+  await Promise.all(
+    scheduled.filter((n) => n.content.data?.kind === 'reminder').map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)),
+  );
   const now = Date.now();
   for (const t of tasks) {
     if (!t.mine || t.doneThisPeriod || !t.nextDueAt || !t.recurrenceDueTime) continue;
     const at = new Date(t.nextDueAt).getTime();
     if (at <= now || at - now > 36 * 3600_000) continue;
     await Notifications.scheduleNotificationAsync({
-      content: { title: `${t.emoji ? `${t.emoji} ` : ''}${t.title}`, body: 'Chubbybara says it\'s time!', data: { kind: 'reminder', url: '/tasks' } },
+      content: {
+        title: `${t.emoji ? `${t.emoji} ` : ''}${t.title}`,
+        body: "Chubbybara says it's time!",
+        data: { kind: 'reminder', url: '/tasks' },
+      },
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(at) },
     });
   }

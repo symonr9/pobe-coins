@@ -31,7 +31,15 @@ export function ThemeProvider({ name, children }: { name?: ThemeName; children: 
   const dark = prefs.mode === 'system' ? scheme === 'dark' : prefs.mode === 'dark';
   const themeName = name && THEMES[name] ? name : DEFAULT_THEME;
   const value = useMemo<AppTheme>(
-    () => ({ name: themeName, dark, c: THEMES[themeName][dark ? 'dark' : 'light'], fonts: FONTS, radius: RADIUS, space: SPACE, motion: MOTION }),
+    () => ({
+      name: themeName,
+      dark,
+      c: THEMES[themeName][dark ? 'dark' : 'light'],
+      fonts: FONTS,
+      radius: RADIUS,
+      space: SPACE,
+      motion: MOTION,
+    }),
     [themeName, dark],
   );
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

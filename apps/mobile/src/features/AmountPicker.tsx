@@ -8,7 +8,17 @@ import { Row } from '@/ui/layout';
 import { Text } from '@/ui/Text';
 
 /** Big number + tap-a-coin-to-add buttons (like dropping coins in a jar). */
-export function AmountPicker({ value, onChange, coinTypes, label }: { value: number; onChange: (n: number) => void; coinTypes: number[]; label: string }) {
+export function AmountPicker({
+  value,
+  onChange,
+  coinTypes,
+  label,
+}: {
+  value: number;
+  onChange: (n: number) => void;
+  coinTypes: number[];
+  label: string;
+}) {
   const t = useTheme();
   const { t: tr } = useTranslation();
   return (
@@ -36,23 +46,25 @@ export function AmountPicker({ value, onChange, coinTypes, label }: { value: num
         ) : null}
       </Row>
       <Row gap={8} wrap style={{ justifyContent: 'center' }}>
-        {[...coinTypes].sort((a, b) => a - b).map((d) => (
-          <Pressy
-            key={d}
-            accessibilityLabel={tr('Add {{n}}', { n: d })}
-            noHaptic
-            onPress={() => {
-              haptic.select();
-              onChange(Math.min(1_000_000, value + d));
-            }}
-            style={{ alignItems: 'center', gap: 2 }}
-          >
-            <Coin denom={d} size={42} />
-            <Text variant="smallBold" color="soft">
-              +{d}
-            </Text>
-          </Pressy>
-        ))}
+        {[...coinTypes]
+          .sort((a, b) => a - b)
+          .map((d) => (
+            <Pressy
+              key={d}
+              accessibilityLabel={tr('Add {{n}}', { n: d })}
+              noHaptic
+              onPress={() => {
+                haptic.select();
+                onChange(Math.min(1_000_000, value + d));
+              }}
+              style={{ alignItems: 'center', gap: 2 }}
+            >
+              <Coin denom={d} size={42} />
+              <Text variant="smallBold" color="soft">
+                +{d}
+              </Text>
+            </Pressy>
+          ))}
       </Row>
     </View>
   );

@@ -47,7 +47,15 @@ export default function Welcome() {
           </Animated.View>
           <Row gap={6} accessibilityLabel={t('Step {{n}} of {{total}}', { n: step + 1, total: ONBOARDING.length })}>
             {ONBOARDING.map((_, i) => (
-              <View key={i} style={{ width: i === step ? 22 : 8, height: 8, borderRadius: 4, backgroundColor: i === step ? theme.c.accent : theme.c.line }} />
+              <View
+                key={i}
+                style={{
+                  width: i === step ? 22 : 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: i === step ? theme.c.accent : theme.c.line,
+                }}
+              />
             ))}
           </Row>
           <Row>
@@ -87,20 +95,39 @@ export default function Welcome() {
               {Platform.OS === 'ios' ? (
                 <AppleAuthentication.AppleAuthenticationButton
                   buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
-                  buttonStyle={theme.dark ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                  buttonStyle={
+                    theme.dark
+                      ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
+                      : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+                  }
                   cornerRadius={25}
                   style={{ height: 50 }}
                   onPress={() => done(signIn.apple())}
                 />
               ) : (
-                <Button kind="soft" title={t('Continue with Apple')} loading={signIn.busy === 'apple'} onPress={() => done(signIn.apple())} />
+                <Button
+                  kind="soft"
+                  title={t('Continue with Apple')}
+                  loading={signIn.busy === 'apple'}
+                  onPress={() => done(signIn.apple())}
+                />
               )}
-              <Button kind="soft" title={t('Continue with Google')} loading={signIn.busy === 'google'} onPress={() => done(signIn.google())} />
+              <Button
+                kind="soft"
+                title={t('Continue with Google')}
+                loading={signIn.busy === 'google'}
+                onPress={() => done(signIn.google())}
+              />
             </>
           ) : null}
           {DEV_AUTH ? (
             <Stack gap={8}>
-              <Field label={t('Dev sign-in name')} value={devName} onChangeText={setDevName} hint={t('Local development only. Try "sam" or "alex" with the demo API.')} />
+              <Field
+                label={t('Dev sign-in name')}
+                value={devName}
+                onChangeText={setDevName}
+                hint={t('Local development only. Try "sam" or "alex" with the demo API.')}
+              />
               <Button title={t('Dev sign-in')} loading={signIn.busy === 'dev'} onPress={() => done(signIn.dev(devName))} />
             </Stack>
           ) : null}
@@ -109,10 +136,19 @@ export default function Welcome() {
         <Card style={{ gap: 12 }}>
           <Text variant="h3">{t('Joining a household?')}</Text>
           <Text color="soft">{t('Ask your household admin for a join link or QR code. Scan it with your camera, or paste it here.')}</Text>
-          <Field label={t('Join link')} value={joinCode} onChangeText={setJoinCode} placeholder="https://…/join/…" autoCapitalize="none" autoCorrect={false} />
+          <Field
+            label={t('Join link')}
+            value={joinCode}
+            onChangeText={setJoinCode}
+            placeholder="https://…/join/…"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
           <Row wrap>
             <Button kind="secondary" title={t('Join')} onPress={openJoin} disabled={!joinCode.trim()} />
-            {Platform.OS !== 'web' ? <Button kind="ghost" icon="qr" title={t('Scan QR code')} onPress={() => router.push('/scan')} /> : null}
+            {Platform.OS !== 'web' ? (
+              <Button kind="ghost" icon="qr" title={t('Scan QR code')} onPress={() => router.push('/scan')} />
+            ) : null}
           </Row>
         </Card>
         <Row style={{ justifyContent: 'center' }} gap={16}>

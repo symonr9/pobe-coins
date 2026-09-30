@@ -30,12 +30,12 @@ export default function MemberAdmin() {
   const create = useMutation({
     mutationFn: () => actions.createLink({ memberId: id, expiresInHours: 24 }),
     onSuccess: (r) => setLink(r),
-    onError: (e) => toast(e instanceof ApiError ? e.message : t('Couldn\'t create a link.'), 'error'),
+    onError: (e) => toast(e instanceof ApiError ? e.message : t("Couldn't create a link."), 'error'),
     onSettled: () => refresh(),
   });
   const act = useMutation({
     mutationFn: (fn: () => Promise<unknown>) => fn(),
-    onError: (e) => toast(e instanceof ApiError ? e.message : t('That didn\'t work.'), 'error'),
+    onError: (e) => toast(e instanceof ApiError ? e.message : t("That didn't work."), 'error'),
     onSettled: () => refresh(),
   });
   if (!member) return null;
@@ -63,8 +63,20 @@ export default function MemberAdmin() {
                 {link.url}
               </Text>
               <Row wrap style={{ justifyContent: 'center' }}>
-                <Button small kind="soft" title={t('Copy link')} onPress={() => Clipboard.setStringAsync(link.url).then(() => toast(t('Copied')))} />
-                {Platform.OS !== 'web' ? <Button small kind="soft" title={t('Share')} onPress={() => Share.share({ message: t('Join our Pobe Coins household: {{url}}', { url: link.url }) })} /> : null}
+                <Button
+                  small
+                  kind="soft"
+                  title={t('Copy link')}
+                  onPress={() => Clipboard.setStringAsync(link.url).then(() => toast(t('Copied')))}
+                />
+                {Platform.OS !== 'web' ? (
+                  <Button
+                    small
+                    kind="soft"
+                    title={t('Share')}
+                    onPress={() => Share.share({ message: t('Join our Pobe Coins household: {{url}}', { url: link.url }) })}
+                  />
+                ) : null}
               </Row>
             </Stack>
           ) : (
@@ -90,7 +102,11 @@ export default function MemberAdmin() {
 
       <Section title={t('Signed-in devices')}>
         <Card style={{ paddingVertical: 6 }}>
-          {memberDevices.length === 0 ? <Text color="soft" style={{ paddingVertical: 8 }}>{t('No devices yet.')}</Text> : null}
+          {memberDevices.length === 0 ? (
+            <Text color="soft" style={{ paddingVertical: 8 }}>
+              {t('No devices yet.')}
+            </Text>
+          ) : null}
           {memberDevices.map((d) => (
             <ListRow
               key={d.id}
@@ -103,7 +119,8 @@ export default function MemberAdmin() {
                   kind="danger"
                   title={t('Sign out')}
                   onPress={async () => {
-                    if (await confirm({ title: t('Sign out {{device}}?', { device: d.label }), confirm: t('Sign out'), danger: true })) act.mutate(() => actions.revokeDevice({ id: d.id }));
+                    if (await confirm({ title: t('Sign out {{device}}?', { device: d.label }), confirm: t('Sign out'), danger: true }))
+                      act.mutate(() => actions.revokeDevice({ id: d.id }));
                   }}
                 />
               }
@@ -133,7 +150,14 @@ export default function MemberAdmin() {
           icon="trash"
           title={t('Remove {{name}}', { name: member.name })}
           onPress={async () => {
-            if (await confirm({ title: t('Remove {{name}}?', { name: member.name }), message: t('Their devices are signed out. Their history stays in the timeline.'), confirm: t('Remove'), danger: true })) {
+            if (
+              await confirm({
+                title: t('Remove {{name}}?', { name: member.name }),
+                message: t('Their devices are signed out. Their history stays in the timeline.'),
+                confirm: t('Remove'),
+                danger: true,
+              })
+            ) {
               act.mutate(() => actions.removeMember({ id: member.id }), { onSuccess: () => router.back() });
             }
           }}

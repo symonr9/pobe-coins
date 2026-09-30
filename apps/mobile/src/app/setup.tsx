@@ -40,12 +40,22 @@ export default function Setup() {
     try {
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
       const r = await actions.createHousehold({ name: household.trim(), memberName: name.trim(), timeZone: tz, templateIds: [...picked] });
-      await session.updateActive({ householdId: r.household.id, householdName: r.household.name, memberId: r.member.id, name: r.member.name });
+      await session.updateActive({
+        householdId: r.household.id,
+        householdName: r.household.name,
+        memberId: r.member.id,
+        name: r.member.name,
+      });
       await qc.invalidateQueries();
-      celebrate({ title: t('{{name}} is open!', { name: r.household.name }), line: t("I stocked the shop with a few rewards. Let's earn some coins!"), pose: 'cheer', big: true });
+      celebrate({
+        title: t('{{name}} is open!', { name: r.household.name }),
+        line: t("I stocked the shop with a few rewards. Let's earn some coins!"),
+        pose: 'cheer',
+        big: true,
+      });
       router.replace('/');
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t('Couldn\'t create the household.'));
+      setError(err instanceof ApiError ? err.message : t("Couldn't create the household."));
     } finally {
       setBusy(false);
     }
@@ -53,7 +63,16 @@ export default function Setup() {
 
   return (
     <Screen
-      footer={<Button full title={t('Create household')} icon="sparkle" loading={busy} disabled={!household.trim() || !name.trim()} onPress={create} />}
+      footer={
+        <Button
+          full
+          title={t('Create household')}
+          icon="sparkle"
+          loading={busy}
+          disabled={!household.trim() || !name.trim()}
+          onPress={create}
+        />
+      }
     >
       <Row style={{ alignItems: 'flex-end', paddingTop: 12 }}>
         <Chubby pose="shopkeeper" size={110} />
@@ -62,7 +81,13 @@ export default function Setup() {
         </View>
       </Row>
       <Card style={{ gap: 14 }}>
-        <Field label={t('Household name')} placeholder={t('The Cozy Burrow')} value={household} onChangeText={setHousehold} maxLength={60} />
+        <Field
+          label={t('Household name')}
+          placeholder={t('The Cozy Burrow')}
+          value={household}
+          onChangeText={setHousehold}
+          maxLength={60}
+        />
         <Field label={t('Your name')} value={name} onChangeText={setName} maxLength={40} />
       </Card>
       <Section title={t('Starter chores')}>

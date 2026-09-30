@@ -6,7 +6,16 @@ import { haptic } from '@/lib/feedback';
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /** Pressable that squishes on press (spring) and gives a light haptic. */
-export function Pressy({ style, onPressIn, onPressOut, onPress, disabled, scaleTo = 0.96, noHaptic, ...rest }: PressableProps & { style?: StyleProp<ViewStyle>; scaleTo?: number; noHaptic?: boolean }) {
+export function Pressy({
+  style,
+  onPressIn,
+  onPressOut,
+  onPress,
+  disabled,
+  scaleTo = 0.96,
+  noHaptic,
+  ...rest
+}: PressableProps & { style?: StyleProp<ViewStyle>; scaleTo?: number; noHaptic?: boolean }) {
   const scale = useSharedValue(1);
   const reduce = useReducedMotion();
   const animated = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));

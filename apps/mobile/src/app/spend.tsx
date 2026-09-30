@@ -61,7 +61,7 @@ export default function Spend() {
       setPhotos((p) => p.map((x) => (x.uri === uri ? { ...x, key } : x)));
     } catch (e) {
       setPhotos((p) => p.filter((x) => x.uri !== uri));
-      toast(e instanceof Error ? e.message : t('The photo didn\'t upload.'), 'error');
+      toast(e instanceof Error ? e.message : t("The photo didn't upload."), 'error');
     }
   };
 
@@ -112,13 +112,29 @@ export default function Spend() {
         <AmountPicker label={t('Cost in coins')} value={amount} onChange={setAmount} coinTypes={hh.settings.coinTypes} />
         {change ? (
           <View style={{ backgroundColor: theme.c.surfaceAlt, borderRadius: 16, padding: 12, gap: 4 }} accessibilityLiveRegion="polite">
-            {change.kind === 'exact' ? <Text variant="smallBold">{t('You hand over {{coins}}. Exact, no change.', { coins: describeCoins(change.out) })}</Text> : null}
-            {change.kind === 'change' ? (
-              <Text variant="smallBold">{t('You hand over {{out}} and get {{back}} back.', { out: describeCoins(change.out), back: describeCoins(change.back) })}</Text>
+            {change.kind === 'exact' ? (
+              <Text variant="smallBold">{t('You hand over {{coins}}. Exact, no change.', { coins: describeCoins(change.out) })}</Text>
             ) : null}
-            {change.kind === 'iou' ? <Text variant="smallBold" color="warning">{t('You have {{have}}. {{n}} would go on an IOU.', { have: hh.balance, n: change.borrow })}</Text> : null}
-            {change.kind === 'short' ? <Text variant="smallBold" color="danger">{t('You need {{n}} more coins for this.', { n: change.borrow })}</Text> : null}
-            {needsApproval ? <Text variant="small" color="soft">{t('Over {{n}} coins, so someone else approves it first.', { n: threshold })}</Text> : null}
+            {change.kind === 'change' ? (
+              <Text variant="smallBold">
+                {t('You hand over {{out}} and get {{back}} back.', { out: describeCoins(change.out), back: describeCoins(change.back) })}
+              </Text>
+            ) : null}
+            {change.kind === 'iou' ? (
+              <Text variant="smallBold" color="warning">
+                {t('You have {{have}}. {{n}} would go on an IOU.', { have: hh.balance, n: change.borrow })}
+              </Text>
+            ) : null}
+            {change.kind === 'short' ? (
+              <Text variant="smallBold" color="danger">
+                {t('You need {{n}} more coins for this.', { n: change.borrow })}
+              </Text>
+            ) : null}
+            {needsApproval ? (
+              <Text variant="small" color="soft">
+                {t('Over {{n}} coins, so someone else approves it first.', { n: threshold })}
+              </Text>
+            ) : null}
           </View>
         ) : null}
       </Card>
@@ -137,7 +153,9 @@ export default function Spend() {
           />
           {preview ? (
             <Row style={{ alignItems: 'flex-start' }}>
-              {preview.image ? <Image source={{ uri: preview.image }} style={{ width: 64, height: 64, borderRadius: 12 }} contentFit="cover" /> : null}
+              {preview.image ? (
+                <Image source={{ uri: preview.image }} style={{ width: 64, height: 64, borderRadius: 12 }} contentFit="cover" />
+              ) : null}
               <View style={{ flex: 1, gap: 2 }}>
                 <Text variant="smallBold" numberOfLines={2}>
                   {preview.title ?? preview.url}
@@ -162,10 +180,30 @@ export default function Spend() {
             </Row>
           ) : null}
           <Row wrap>
-            <Button small kind="soft" icon="camera" title={t('Take photo')} onPress={async () => addPhoto(await pickPhoto('camera'))} disabled={photos.length >= 6} />
-            <Button small kind="soft" title={t('Choose photo')} onPress={async () => addPhoto(await pickPhoto('library'))} disabled={photos.length >= 6} />
+            <Button
+              small
+              kind="soft"
+              icon="camera"
+              title={t('Take photo')}
+              onPress={async () => addPhoto(await pickPhoto('camera'))}
+              disabled={photos.length >= 6}
+            />
+            <Button
+              small
+              kind="soft"
+              title={t('Choose photo')}
+              onPress={async () => addPhoto(await pickPhoto('library'))}
+              disabled={photos.length >= 6}
+            />
           </Row>
-          <Field label={t('Notes')} value={description} onChangeText={setDescription} multiline maxLength={2000} placeholder={t('Why it was worth it…')} />
+          <Field
+            label={t('Notes')}
+            value={description}
+            onChangeText={setDescription}
+            multiline
+            maxLength={2000}
+            placeholder={t('Why it was worth it…')}
+          />
         </Card>
       </Section>
     </Screen>

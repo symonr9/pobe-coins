@@ -62,7 +62,7 @@ export function useSignIn() {
         return await exchangeAndStore(session, idToken);
       } catch (err) {
         if ((err as { code?: string }).code === 'ERR_REQUEST_CANCELED') return null;
-        setError(err instanceof ApiError ? err.message : 'Sign-in didn\'t finish. Please try again.');
+        setError(err instanceof ApiError ? err.message : "Sign-in didn't finish. Please try again.");
         return null;
       } finally {
         setBusy(null);
@@ -87,13 +87,17 @@ export function useSignIn() {
       }),
     dev: (name: string) =>
       run('dev', async () => {
-        const sub = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'dev';
+        const sub =
+          name
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-') || 'dev';
         const res = await fetch(`${API_URL}/dev-token`, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ sub, name: name.trim() || 'Dev' }),
         });
-        if (!res.ok) throw new ApiError('DEV', 'The dev API isn\'t running. Start it with npm run dev:api.', res.status);
+        if (!res.ok) throw new ApiError('DEV', "The dev API isn't running. Start it with npm run dev:api.", res.status);
         return ((await res.json()) as { token: string }).token;
       }),
   };

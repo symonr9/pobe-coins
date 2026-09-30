@@ -65,8 +65,16 @@ export default function Timeline() {
                   <Text style={{ fontSize: 20 }}>⏳</Text>
                   <Text style={{ flex: 1 }} variant="bodyBold">
                     {p.type === 'completion'
-                      ? t('{{name}} did "{{task}}" (+{{n}})', { name: hh.name(p.completion.memberId), task: p.completion.taskTitle, n: p.completion.reward })
-                      : t('{{name}} wants "{{item}}" (−{{n}})', { name: hh.name(p.purchase.memberId), item: p.purchase.title, n: p.purchase.amount })}
+                      ? t('{{name}} did "{{task}}" (+{{n}})', {
+                          name: hh.name(p.completion.memberId),
+                          task: p.completion.taskTitle,
+                          n: p.completion.reward,
+                        })
+                      : t('{{name}} wants "{{item}}" (−{{n}})', {
+                          name: hh.name(p.purchase.memberId),
+                          item: p.purchase.title,
+                          n: p.purchase.amount,
+                        })}
                   </Text>
                 </Row>
               </Pressy>
@@ -91,7 +99,9 @@ export default function Timeline() {
           </Section>
         ))
       )}
-      {q.hasNextPage ? <Button kind="ghost" title={t('Load more')} loading={q.isFetchingNextPage} onPress={() => q.fetchNextPage()} /> : null}
+      {q.hasNextPage ? (
+        <Button kind="ghost" title={t('Load more')} loading={q.isFetchingNextPage} onPress={() => q.fetchNextPage()} />
+      ) : null}
     </Screen>
   );
 }

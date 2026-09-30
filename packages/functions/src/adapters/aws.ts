@@ -65,9 +65,15 @@ export class FederatedIdentity implements IdentityVerifier {
   private readonly cognito;
   private readonly apple;
   constructor(cognito: { userPoolId: string; clientId: string } | null, appleAudiences: string[]) {
-    this.cognito = cognito ? CognitoJwtVerifier.create({ userPoolId: cognito.userPoolId, clientId: cognito.clientId, tokenUse: 'id' }) : null;
+    this.cognito = cognito
+      ? CognitoJwtVerifier.create({ userPoolId: cognito.userPoolId, clientId: cognito.clientId, tokenUse: 'id' })
+      : null;
     this.apple = appleAudiences.length
-      ? JwtRsaVerifier.create({ issuer: 'https://appleid.apple.com', audience: appleAudiences, jwksUri: 'https://appleid.apple.com/auth/keys' })
+      ? JwtRsaVerifier.create({
+          issuer: 'https://appleid.apple.com',
+          audience: appleAudiences,
+          jwksUri: 'https://appleid.apple.com/auth/keys',
+        })
       : null;
   }
   async verify(token: string) {

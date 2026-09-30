@@ -13,13 +13,28 @@ const html = (title: string) =>
 
 describe('link previews (SSRF guard)', () => {
   it('classifies private addresses', () => {
-    for (const ip of ['127.0.0.1', '10.1.2.3', '172.20.0.1', '192.168.1.1', '169.254.169.254', '100.64.0.1', '0.0.0.0', '::1', 'fd00::1', 'fe80::1', '::ffff:10.0.0.1'])
+    for (const ip of [
+      '127.0.0.1',
+      '10.1.2.3',
+      '172.20.0.1',
+      '192.168.1.1',
+      '169.254.169.254',
+      '100.64.0.1',
+      '0.0.0.0',
+      '::1',
+      'fd00::1',
+      'fe80::1',
+      '::ffff:10.0.0.1',
+    ])
       expect(isPrivateAddress(ip), ip).toBe(true);
     for (const ip of ['93.184.216.34', '8.8.8.8', '2606:4700::1111']) expect(isPrivateAddress(ip), ip).toBe(false);
   });
 
   it('parses Open Graph tags', () => {
-    const p = parseOpenGraph('<meta property="og:title" content="Cozy &amp; Warm Blanket"><meta name="description" content="Soft">', 'https://shop.example.com/p/1');
+    const p = parseOpenGraph(
+      '<meta property="og:title" content="Cozy &amp; Warm Blanket"><meta name="description" content="Soft">',
+      'https://shop.example.com/p/1',
+    );
     expect(p).toMatchObject({ title: 'Cozy & Warm Blanket', description: 'Soft', siteName: 'shop.example.com' });
   });
 
@@ -31,18 +46,29 @@ describe('link previews (SSRF guard)', () => {
     expect(r.status).toBe(200);
     expect(r.body).toMatchObject({ title: 'Blanket', image: 'https://shop.example.com/img.jpg', siteName: 'Example Shop' });
     h.pages.delete('https://shop.example.com/item');
-    expect((await h.call('POST', '/link-preview', { token: memberToken, body: { url: 'https://shop.example.com/item' } })).body.title).toBe('Blanket');
+    expect((await h.call('POST', '/link-preview', { token: memberToken, body: { url: 'https://shop.example.com/item' } })).body.title).toBe(
+      'Blanket',
+    );
   });
 
   it('refuses private hosts, odd ports and redirects into the network', async () => {
     const h = createHarness();
     const { memberToken } = await household(h);
     h.dns.set('internal.example.com', ['10.0.0.5']);
-    for (const url of ['http://127.0.0.1/', 'http://169.254.169.254/latest/meta-data', 'https://internal.example.com/', 'https://shop.example.com:8443/', 'http://[::1]/']) {
+    for (const url of [
+      'http://127.0.0.1/',
+      'http://169.254.169.254/latest/meta-data',
+      'https://internal.example.com/',
+      'https://shop.example.com:8443/',
+      'http://[::1]/',
+    ]) {
       const r = await h.call('POST', '/link-preview', { token: memberToken, body: { url } });
       expect(r.status, url).toBe(400);
     }
-    h.pages.set('https://shop.example.com/redirect', () => new Response(null, { status: 302, headers: { location: 'http://169.254.169.254/' } }));
+    h.pages.set(
+      'https://shop.example.com/redirect',
+      () => new Response(null, { status: 302, headers: { location: 'http://169.254.169.254/' } }),
+    );
     const r = await h.call('POST', '/link-preview', { token: memberToken, body: { url: 'https://shop.example.com/redirect' } });
     expect(r.status).toBe(400);
     expect(r.body.error.message).toMatch(/can't be previewed/);
@@ -53,7 +79,10 @@ describe('link previews (SSRF guard)', () => {
     const h = createHarness();
     const { adminToken, memberToken, memberId } = await household(h);
     await h.call('POST', '/bonuses', { token: adminToken, body: { memberId, amount: 20, reason: 'x' } });
-    const r = await h.call('POST', '/purchases', { token: memberToken, body: { title: 'Mug', amount: 10, url: 'https://gone.example.com/x' } });
+    const r = await h.call('POST', '/purchases', {
+      token: memberToken,
+      body: { title: 'Mug', amount: 10, url: 'https://gone.example.com/x' },
+    });
     expect(r.status).toBe(201);
     expect(r.body.purchase.preview).toEqual({ url: 'https://gone.example.com/x' });
   });
@@ -77,7 +106,7 @@ describe('timeline and privacy', () => {
     expect(t2.body.items[0].comments).toBe(1);
   });
 
-  it('balances-only households hide other members\' purchase details', async () => {
+  it("balances-only households hide other members' purchase details", async () => {
     const h = createHarness();
     const { adminToken, memberToken, adminId, memberId } = await household(h);
     await h.call('PATCH', '/household', { token: adminToken, body: { settings: { visibility: 'balances' } } });
@@ -117,7 +146,12 @@ describe('calendar feed', () => {
     const { adminToken, memberToken, memberId } = await household(h);
     await h.call('POST', '/tasks', {
       token: adminToken,
-      body: { title: 'Water plants', reward: 5, assigneeId: memberId, recurrence: { freq: 'weekly', byWeekday: [1, 4], anchor: '2026-06-01', dueTime: '18:00' } },
+      body: {
+        title: 'Water plants',
+        reward: 5,
+        assigneeId: memberId,
+        recurrence: { freq: 'weekly', byWeekday: [1, 4], anchor: '2026-06-01', dueTime: '18:00' },
+      },
     });
     const feed = await h.call('POST', '/calendar', { token: memberToken });
     const path = new URL(feed.body.url).pathname;
@@ -134,11 +168,19 @@ describe('uploads', () => {
   it('scopes keys to the household and enforces the storage quota', async () => {
     const h = createHarness();
     const { memberToken, hid } = await household(h);
-    const r = await h.call('POST', '/uploads', { token: memberToken, body: { contentType: 'image/jpeg', bytes: 200_000, purpose: 'purchase' } });
+    const r = await h.call('POST', '/uploads', {
+      token: memberToken,
+      body: { contentType: 'image/jpeg', bytes: 200_000, purpose: 'purchase' },
+    });
     expect(r.status).toBe(201);
     expect(r.body.key).toMatch(new RegExp(`^h/${hid}/purchase/`));
-    expect((await h.call('POST', '/uploads', { token: memberToken, body: { contentType: 'image/gif', bytes: 10, purpose: 'purchase' } })).status).toBe(400);
-    const bad = await h.call('POST', '/purchases', { token: memberToken, body: { title: 'x', amount: 1, photoKeys: ['h/other/purchase/x.jpg'] } });
+    expect(
+      (await h.call('POST', '/uploads', { token: memberToken, body: { contentType: 'image/gif', bytes: 10, purpose: 'purchase' } })).status,
+    ).toBe(400);
+    const bad = await h.call('POST', '/purchases', {
+      token: memberToken,
+      body: { title: 'x', amount: 1, photoKeys: ['h/other/purchase/x.jpg'] },
+    });
     expect(bad.status).toBe(400);
   });
 });
@@ -149,7 +191,10 @@ describe('export', () => {
     const { adminToken, memberId, hid } = await household(h);
     await h.call('POST', '/bonuses', { token: adminToken, body: { memberId, amount: 30, reason: 'hello, "friend"' } });
     h.storage.objects.set(`h/${hid}/purchase/a.jpg`, new Uint8Array([1, 2, 3]));
-    await h.call('POST', '/purchases', { token: adminToken, body: { title: 'x', amount: 0 + 1, photoKeys: [`h/${hid}/purchase/a.jpg`], allowIou: true } });
+    await h.call('POST', '/purchases', {
+      token: adminToken,
+      body: { title: 'x', amount: 0 + 1, photoKeys: [`h/${hid}/purchase/a.jpg`], allowIou: true },
+    });
     const job = await h.call('POST', '/export', { token: adminToken });
     expect(job.status).toBe(202);
     expect(h.exports).toHaveLength(1);
@@ -157,7 +202,9 @@ describe('export', () => {
     const status = await h.call('GET', `/export/${job.body.id}`, { token: adminToken });
     expect(status.body.status).toBe('ready');
     const zip = unzipSync(h.storage.objects.get(status.body.key)!);
-    expect(Object.keys(zip)).toEqual(expect.arrayContaining(['ledger.csv', 'data/member.json', 'data/ledger.json', 'photos/purchase/a.jpg']));
+    expect(Object.keys(zip)).toEqual(
+      expect.arrayContaining(['ledger.csv', 'data/member.json', 'data/ledger.json', 'photos/purchase/a.jpg']),
+    );
     expect(strFromU8(zip['ledger.csv']!)).toContain('"Bonus: hello, ""friend"""');
   });
 });
@@ -181,7 +228,10 @@ describe('hourly job', () => {
   it('expires challenges and announces Wrapped on the 1st', async () => {
     const h = createHarness('2026-06-30T12:00:00Z');
     const { adminToken } = await household(h);
-    await h.call('POST', '/challenges', { token: adminToken, body: { title: 'Week', target: 999, bonus: 5, startsAt: '2026-06-24T00:00:00Z', endsAt: '2026-07-01T00:00:00Z' } });
+    await h.call('POST', '/challenges', {
+      token: adminToken,
+      body: { title: 'Week', target: 999, bonus: 5, startsAt: '2026-06-24T00:00:00Z', endsAt: '2026-07-01T00:00:00Z' },
+    });
     h.setNow('2026-07-01T09:10:00Z');
     await runHourly(h.deps);
     expect((await h.call('GET', '/challenges', { token: adminToken })).body[0].status).toBe('expired');

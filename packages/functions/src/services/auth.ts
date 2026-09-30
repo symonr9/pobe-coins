@@ -45,7 +45,7 @@ export async function issueUserToken(deps: Deps, claims: { sub: string; name?: s
 /** Exchanges a provider ID token (Cognito, native Apple, dev) for an app session token. */
 export async function exchangeIdentity(deps: Deps, idToken: string) {
   const claims = await deps.identity.verify(idToken).catch(() => {
-    throw new ApiError('UNAUTHORIZED', 'That sign-in didn\'t work. Please try again.');
+    throw new ApiError('UNAUTHORIZED', "That sign-in didn't work. Please try again.");
   });
   return { token: await issueUserToken(deps, claims), user: claims };
 }
@@ -71,7 +71,10 @@ export async function authenticate(deps: Deps, bearer: string): Promise<{ princi
         currentDate: deps.now(),
       }));
     } catch {
-      throw new ApiError('UNAUTHORIZED', 'This device\'s sign-in expired. Ask an admin for a new join link, or sign in with Google or Apple.');
+      throw new ApiError(
+        'UNAUTHORIZED',
+        "This device's sign-in expired. Ask an admin for a new join link, or sign in with Google or Apple.",
+      );
     }
     const hid = String(payload.hid);
     const mid = String(payload.mid);
@@ -86,7 +89,8 @@ export async function authenticate(deps: Deps, bearer: string): Promise<{ princi
       throw new ApiError('UNAUTHORIZED', 'This device was signed out by an admin. Ask for a new join link to sign back in.');
     }
     const ageDays = (deps.now().getTime() / 1000 - Number(payload.iat)) / 86400;
-    const refreshToken = ageDays > REFRESH_AFTER_DAYS ? await issueDeviceToken(deps, { id: did, householdId: hid, memberId: mid }) : undefined;
+    const refreshToken =
+      ageDays > REFRESH_AFTER_DAYS ? await issueDeviceToken(deps, { id: did, householdId: hid, memberId: mid }) : undefined;
     return { principal: { kind: 'device', householdId: hid, memberId: mid, deviceId: did }, refreshToken };
   }
   if (aud === 'pobe-user') {
@@ -182,10 +186,12 @@ export async function listDeviceLinks(deps: Deps, actor: Actor) {
   requireAdmin(actor);
   const now = deps.now();
   const rows = await deps.db.query<Item & DeviceLinkInfo>(partition(actor.householdId), { beginsWith: PREFIX.deviceLinkRef });
-  return rows.filter((r) => !r.usedAt && new Date(r.expiresAt) > now).map((r) => {
-    const { hash: _h, ...rest } = strip(r) as DeviceLinkInfo & { hash?: string };
-    return rest;
-  });
+  return rows
+    .filter((r) => !r.usedAt && new Date(r.expiresAt) > now)
+    .map((r) => {
+      const { hash: _h, ...rest } = strip(r) as DeviceLinkInfo & { hash?: string };
+      return rest;
+    });
 }
 
 export async function deleteDeviceLink(deps: Deps, actor: Actor, id: string) {
@@ -199,7 +205,7 @@ export async function redeemDeviceLink(deps: Deps, token: string, label: string,
   const hash = sha256(token);
   const link = await deps.db.get<Item & DeviceLinkInfo & { householdId: string }>(keys.deviceLink(hash));
   const now = deps.now();
-  if (!link) throw new ApiError('GONE', 'This join link isn\'t valid. Ask your household admin for a new one.');
+  if (!link) throw new ApiError('GONE', "This join link isn't valid. Ask your household admin for a new one.");
   if (link.usedAt) throw new ApiError('GONE', 'This join link was already used. Each link works once. Ask for a new one.');
   if (new Date(link.expiresAt) <= now) throw new ApiError('GONE', 'This join link expired. Ask your household admin for a new one.');
   const member = await getMember(deps, link.householdId, link.memberId);
@@ -219,11 +225,17 @@ export async function redeemDeviceLink(deps: Deps, token: string, label: string,
       { put: { ...keys.device(device.householdId, device.id), type: 'device', ...device } },
     ]);
   } catch (err) {
-    if (err instanceof ConditionFailed) throw new ApiError('GONE', 'This join link was already used. Each link works once. Ask for a new one.');
+    if (err instanceof ConditionFailed)
+      throw new ApiError('GONE', 'This join link was already used. Each link works once. Ask for a new one.');
     throw err;
   }
   const deviceToken = await issueDeviceToken(deps, device);
-  const actor: Actor = { householdId: device.householdId, memberId: member.id, role: member.role, principal: { kind: 'device', householdId: device.householdId, memberId: member.id, deviceId: device.id } };
+  const actor: Actor = {
+    householdId: device.householdId,
+    memberId: member.id,
+    role: member.role,
+    principal: { kind: 'device', householdId: device.householdId, memberId: member.id, deviceId: device.id },
+  };
   return { token: deviceToken, device, session: await sessionFor(deps, actor) };
 }
 
@@ -237,17 +249,14 @@ export async function revokeDevice(deps: Deps, actor: Actor, deviceId: string) {
   const d = await deps.db.get<Item & Device>(keys.device(actor.householdId, deviceId));
   if (!d || d.revokedAt) throw notFound('That device');
   if (actor.role !== 'admin' && d.memberId !== actor.memberId) throw forbidden('You can only sign out your own devices.');
-  await deps.db.transact([
-    { put: { ...d, revokedAt: deps.now().toISOString() } },
-    auditOp(deps, actor, 'device.revoke', deviceId),
-  ]);
+  await deps.db.transact([{ put: { ...d, revokedAt: deps.now().toISOString() } }, auditOp(deps, actor, 'device.revoke', deviceId)]);
   deviceCache.delete(`${actor.householdId}/${deviceId}`);
 }
 
 /** Links a Google/Apple identity to the member this device is signed in as. */
 export async function linkAccount(deps: Deps, actor: Actor, idToken: string) {
   const claims = await deps.identity.verify(idToken).catch(() => {
-    throw new ApiError('UNAUTHORIZED', 'That sign-in didn\'t work. Please try again.');
+    throw new ApiError('UNAUTHORIZED', "That sign-in didn't work. Please try again.");
   });
   const household = await getHousehold(deps, actor.householdId);
   const member = await getMember(deps, actor.householdId, actor.memberId);
@@ -261,7 +270,14 @@ export async function linkAccount(deps: Deps, actor: Actor, idToken: string) {
   const updated: Member = { ...member, userSub: claims.sub, version: member.version + 1 };
   await deps.db.transact([
     { put: toItem.member(updated), if: { version: member.version } },
-    { put: { ...keys.userHousehold(claims.sub, actor.householdId), householdId: actor.householdId, householdName: household.name, memberId: member.id } },
+    {
+      put: {
+        ...keys.userHousehold(claims.sub, actor.householdId),
+        householdId: actor.householdId,
+        householdName: household.name,
+        memberId: member.id,
+      },
+    },
   ]);
   return updated;
 }

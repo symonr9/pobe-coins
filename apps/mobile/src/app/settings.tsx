@@ -49,7 +49,7 @@ export default function Settings() {
 
   const saveMember = useMutation({
     mutationFn: (v: Record<string, unknown>) => actions.updateMember({ id: hh.me!.id, ...v }),
-    onError: (e) => toast(e instanceof ApiError ? e.message : t('Couldn\'t save.'), 'error'),
+    onError: (e) => toast(e instanceof ApiError ? e.message : t("Couldn't save."), 'error'),
     onSettled: () => refresh(),
   });
 
@@ -67,7 +67,7 @@ export default function Settings() {
       await actions.linkAccount(token);
       toast(t('Linked! You can now sign in with {{p}} on any device.', { p: provider === 'google' ? 'Google' : 'Apple' }), 'success');
     } catch (e) {
-      toast(e instanceof ApiError ? e.message : t('Linking didn\'t finish.'), 'error');
+      toast(e instanceof ApiError ? e.message : t("Linking didn't finish."), 'error');
     }
   };
 
@@ -81,7 +81,15 @@ export default function Settings() {
             value={name}
             onChangeText={setName}
             maxLength={40}
-            right={<Button small kind="soft" title={t('Save')} disabled={!name.trim() || name === hh.me?.name} onPress={() => saveMember.mutate({ name: name.trim() })} />}
+            right={
+              <Button
+                small
+                kind="soft"
+                title={t('Save')}
+                disabled={!name.trim() || name === hh.me?.name}
+                onPress={() => saveMember.mutate({ name: name.trim() })}
+              />
+            }
           />
         </Card>
       </Section>
@@ -116,7 +124,11 @@ export default function Settings() {
               );
             })}
           </Row>
-          {Platform.OS !== 'web' && supportsAlternateIcons ? <Text variant="small" color="soft">{t('The app icon changes to match.')}</Text> : null}
+          {Platform.OS !== 'web' && supportsAlternateIcons ? (
+            <Text variant="small" color="soft">
+              {t('The app icon changes to match.')}
+            </Text>
+          ) : null}
           <Segmented
             value={prefs.mode}
             onChange={(mode) => update({ mode })}
@@ -126,26 +138,55 @@ export default function Settings() {
               { value: 'dark', label: t('Dark') },
             ]}
           />
-          <ToggleRow label={t('Sounds')} hint={t('Cha-ching when coins arrive')} value={prefs.sounds} onChange={(sounds) => update({ sounds })} />
-          {Platform.OS !== 'web' ? <ToggleRow label={t('Haptics')} value={prefs.haptics} onChange={(haptics) => update({ haptics })} /> : null}
+          <ToggleRow
+            label={t('Sounds')}
+            hint={t('Cha-ching when coins arrive')}
+            value={prefs.sounds}
+            onChange={(sounds) => update({ sounds })}
+          />
+          {Platform.OS !== 'web' ? (
+            <ToggleRow label={t('Haptics')} value={prefs.haptics} onChange={(haptics) => update({ haptics })} />
+          ) : null}
         </Card>
       </Section>
 
       <Section title={t('Notifications')}>
         <Card style={{ gap: 10 }}>
           {pushSupport() === 'web-needs-install' ? (
-            <Text color="soft">{t('On iPhone, add Pobe to your Home Screen (Share → Add to Home Screen) and open it from there to get notifications.')}</Text>
+            <Text color="soft">
+              {t('On iPhone, add Pobe to your Home Screen (Share → Add to Home Screen) and open it from there to get notifications.')}
+            </Text>
           ) : pushSupport() === 'unsupported' ? (
-            <Text color="soft">{t('This browser doesn\'t support notifications.')}</Text>
+            <Text color="soft">{t("This browser doesn't support notifications.")}</Text>
           ) : push === 'granted' ? (
             <Stack gap={8}>
               <Text>✅ {t('Notifications are on for this device.')}</Text>
-              <Button small kind="ghost" title={t('Re-register this device')} onPress={() => enablePush().then((ok) => toast(ok ? t('Done') : t('Couldn\'t register.')))} />
+              <Button
+                small
+                kind="ghost"
+                title={t('Re-register this device')}
+                onPress={() => enablePush().then((ok) => toast(ok ? t('Done') : t("Couldn't register.")))}
+              />
             </Stack>
           ) : (
             <Stack gap={8}>
-              <Text color="soft">{push === 'denied' ? t('Notifications are blocked. Turn them on in your device settings.') : t('Get a nudge for approvals, gifts and due chores.')}</Text>
-              {push !== 'denied' ? <Button small icon="bell" title={t('Turn on notifications')} onPress={() => enablePush().then((ok) => (setPush(ok ? 'granted' : 'denied'), toast(ok ? t('Notifications are on.') : t('Notifications are off.'))))} /> : null}
+              <Text color="soft">
+                {push === 'denied'
+                  ? t('Notifications are blocked. Turn them on in your device settings.')
+                  : t('Get a nudge for approvals, gifts and due chores.')}
+              </Text>
+              {push !== 'denied' ? (
+                <Button
+                  small
+                  icon="bell"
+                  title={t('Turn on notifications')}
+                  onPress={() =>
+                    enablePush().then(
+                      (ok) => (setPush(ok ? 'granted' : 'denied'), toast(ok ? t('Notifications are on.') : t('Notifications are off.'))),
+                    )
+                  }
+                />
+              ) : null}
             </Stack>
           )}
         </Card>
@@ -154,7 +195,11 @@ export default function Settings() {
       <Section title={t('Security')}>
         <Card>
           {bio ? (
-            <ToggleRow label={t('Confirm spending with Face ID / fingerprint')} value={prefs.biometricSpend} onChange={(biometricSpend) => update({ biometricSpend })} />
+            <ToggleRow
+              label={t('Confirm spending with Face ID / fingerprint')}
+              value={prefs.biometricSpend}
+              onChange={(biometricSpend) => update({ biometricSpend })}
+            />
           ) : (
             <Text color="soft">{t('Face ID / fingerprint confirmation is available in the phone apps.')}</Text>
           )}
@@ -170,12 +215,27 @@ export default function Settings() {
                 {calendarUrl}
               </Text>
               <Row wrap>
-                <Button small kind="soft" title={t('Copy link')} onPress={() => Clipboard.setStringAsync(calendarUrl).then(() => toast(t('Copied')))} />
-                <Button small kind="ghost" title={t('Turn off')} onPress={() => actions.removeCalendar().then(() => (setCalendarUrl(null), toast(t('Calendar link turned off'))))} />
+                <Button
+                  small
+                  kind="soft"
+                  title={t('Copy link')}
+                  onPress={() => Clipboard.setStringAsync(calendarUrl).then(() => toast(t('Copied')))}
+                />
+                <Button
+                  small
+                  kind="ghost"
+                  title={t('Turn off')}
+                  onPress={() => actions.removeCalendar().then(() => (setCalendarUrl(null), toast(t('Calendar link turned off'))))}
+                />
               </Row>
             </Stack>
           ) : (
-            <Button small icon="calendar" title={t('Create calendar link')} onPress={() => actions.calendar().then((r) => setCalendarUrl(r.url))} />
+            <Button
+              small
+              icon="calendar"
+              title={t('Create calendar link')}
+              onPress={() => actions.calendar().then((r) => setCalendarUrl(r.url))}
+            />
           )}
         </Card>
       </Section>
@@ -183,7 +243,9 @@ export default function Settings() {
       {session.active?.kind === 'device' && OAUTH_ENABLED ? (
         <Section title={t('Sign-in')}>
           <Card style={{ gap: 10 }}>
-            <Text color="soft">{t('You joined with a link. Link your Apple or Google account to sign in on new devices without a new link.')}</Text>
+            <Text color="soft">
+              {t('You joined with a link. Link your Apple or Google account to sign in on new devices without a new link.')}
+            </Text>
             <Row wrap>
               <Button small kind="soft" title={t('Link Apple')} onPress={() => link('apple')} />
               <Button small kind="soft" title={t('Link Google')} onPress={() => link('google')} />
@@ -215,7 +277,7 @@ export default function Settings() {
             onPress={async () => {
               const ok = await confirm({
                 title: t('Delete your account?'),
-                message: t('This can\'t be undone. If you\'re the only admin, make someone else admin first.'),
+                message: t("This can't be undone. If you're the only admin, make someone else admin first."),
                 confirm: t('Delete'),
                 danger: true,
               });
@@ -225,7 +287,7 @@ export default function Settings() {
                 await session.signOut();
                 router.replace('/');
               } catch (e) {
-                toast(e instanceof ApiError ? e.message : t('Couldn\'t delete the account.'), 'error');
+                toast(e instanceof ApiError ? e.message : t("Couldn't delete the account."), 'error');
               }
             }}
           />

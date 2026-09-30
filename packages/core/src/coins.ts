@@ -299,12 +299,7 @@ export interface Receipt {
 }
 
 /** Receives `amount` coins of value. Outstanding debt is paid off first. */
-export function receive(
-  purse: Purse,
-  debt: number,
-  amount: number,
-  coinTypes: CoinTypes = DEFAULT_COIN_TYPES,
-): Receipt {
+export function receive(purse: Purse, debt: number, amount: number, coinTypes: CoinTypes = DEFAULT_COIN_TYPES): Receipt {
   assertAmount(amount);
   const debtPaid = Math.min(debt, amount);
   const coinsIn = payout(amount - debtPaid, coinTypes);

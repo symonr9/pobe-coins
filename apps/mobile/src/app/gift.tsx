@@ -31,10 +31,21 @@ export default function Gift() {
       celebrate({ pose: 'happy', title: t('Gift sent!'), line: say('giftSent', { vars: { partner: hh.name(to), coins: amount } }).text });
       router.back();
     },
-    onError: (e) => setError(e instanceof ApiError ? e.message : t('Couldn\'t send the gift.')),
+    onError: (e) => setError(e instanceof ApiError ? e.message : t("Couldn't send the gift.")),
   });
   return (
-    <Screen footer={<Button full icon="gift" title={t('Send {{n}} coins', { n: amount })} disabled={!to || !amount || amount > hh.balance} loading={send.isPending} onPress={() => send.mutate()} />}>
+    <Screen
+      footer={
+        <Button
+          full
+          icon="gift"
+          title={t('Send {{n}} coins', { n: amount })}
+          disabled={!to || !amount || amount > hh.balance}
+          loading={send.isPending}
+          onPress={() => send.mutate()}
+        />
+      }
+    >
       <Header title={t('Send a gift')} />
       {others.length === 0 ? (
         <Text color="soft">{t('Add someone to your household first.')}</Text>
@@ -48,8 +59,19 @@ export default function Gift() {
               <Chip key={m.id} label={m.name} color={m.color} selected={to === m.id} onPress={() => setTo(m.id)} />
             ))}
           </Row>
-          <AmountPicker label={t('How many coins? (you have {{n}})', { n: hh.balance })} value={amount} onChange={setAmount} coinTypes={hh.settings.coinTypes} />
-          <Field label={t('Message (optional)')} value={message} onChangeText={setMessage} placeholder={t('Thanks for dinner!')} maxLength={200} />
+          <AmountPicker
+            label={t('How many coins? (you have {{n}})', { n: hh.balance })}
+            value={amount}
+            onChange={setAmount}
+            coinTypes={hh.settings.coinTypes}
+          />
+          <Field
+            label={t('Message (optional)')}
+            value={message}
+            onChangeText={setMessage}
+            placeholder={t('Thanks for dinner!')}
+            maxLength={200}
+          />
         </Card>
       )}
       {error ? <Text color="danger">{error}</Text> : null}

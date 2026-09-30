@@ -61,23 +61,57 @@ export default function More() {
             ) : undefined
           }
         />
-        <ListRow icon="gift" title={t('Send a gift')} subtitle={t('Give some of your coins to someone')} onPress={() => router.push('/gift')} />
-        <ListRow icon="target" title={t('Team challenges')} subtitle={t('Earn together for a shared bonus')} onPress={() => router.push('/challenges')} />
+        <ListRow
+          icon="gift"
+          title={t('Send a gift')}
+          subtitle={t('Give some of your coins to someone')}
+          onPress={() => router.push('/gift')}
+        />
+        <ListRow
+          icon="target"
+          title={t('Team challenges')}
+          subtitle={t('Earn together for a shared bonus')}
+          onPress={() => router.push('/challenges')}
+        />
         <ListRow icon="chart" title={t('Stats')} subtitle={t('Earned vs spent, top chores')} onPress={() => router.push('/stats')} />
       </Card>
 
       <Section title={t('Pobe Wrapped')}>
         <Card style={{ paddingVertical: 6 }}>
-          <ListRow icon="sparkle" title={t('This month so far')} onPress={() => router.push({ pathname: '/wrapped/[period]', params: { period: thisMonth } })} />
-          <ListRow icon="sparkle" title={t('Last month')} onPress={() => router.push({ pathname: '/wrapped/[period]', params: { period: last } })} />
-          <ListRow icon="sparkle" title={t('This year')} onPress={() => router.push({ pathname: '/wrapped/[period]', params: { period: String(now.getFullYear()) } })} />
+          <ListRow
+            icon="sparkle"
+            title={t('This month so far')}
+            onPress={() => router.push({ pathname: '/wrapped/[period]', params: { period: thisMonth } })}
+          />
+          <ListRow
+            icon="sparkle"
+            title={t('Last month')}
+            onPress={() => router.push({ pathname: '/wrapped/[period]', params: { period: last } })}
+          />
+          <ListRow
+            icon="sparkle"
+            title={t('This year')}
+            onPress={() => router.push({ pathname: '/wrapped/[period]', params: { period: String(now.getFullYear()) } })}
+          />
         </Card>
       </Section>
 
       <Section title={t('Household')}>
         <Card style={{ paddingVertical: 6 }}>
-          {hh.isAdmin ? <ListRow icon="shield" title={t('Admin')} subtitle={t('Members, join codes, rules, rewards')} onPress={() => router.push('/admin')} /> : null}
-          <ListRow icon="gear" title={t('Settings')} subtitle={t('Theme, notifications, calendar, account')} onPress={() => router.push('/settings')} />
+          {hh.isAdmin ? (
+            <ListRow
+              icon="shield"
+              title={t('Admin')}
+              subtitle={t('Members, join codes, rules, rewards')}
+              onPress={() => router.push('/admin')}
+            />
+          ) : null}
+          <ListRow
+            icon="gear"
+            title={t('Settings')}
+            subtitle={t('Theme, notifications, calendar, account')}
+            onPress={() => router.push('/settings')}
+          />
           <ListRow icon="help" title={t('Help')} subtitle={t('How coins, IOUs and approvals work')} onPress={() => router.push('/help')} />
         </Card>
       </Section>
@@ -93,13 +127,25 @@ export default function More() {
               onPress={p.id === session.active?.id ? undefined : () => session.switchTo(p.id).then(() => router.replace('/'))}
             />
           ))}
-          <ListRow icon="plus" title={t('Add another profile')} subtitle={t('For a shared tablet or a second household')} onPress={() => router.push('/welcome')} />
+          <ListRow
+            icon="plus"
+            title={t('Add another profile')}
+            subtitle={t('For a shared tablet or a second household')}
+            onPress={() => router.push('/welcome')}
+          />
           <ListRow
             icon="swap"
             danger
             title={t('Sign out of this profile')}
             onPress={async () => {
-              if (await confirm({ title: t('Sign out?'), message: t('You can come back with Google/Apple or a new join link.'), confirm: t('Sign out'), danger: true })) {
+              if (
+                await confirm({
+                  title: t('Sign out?'),
+                  message: t('You can come back with Google/Apple or a new join link.'),
+                  confirm: t('Sign out'),
+                  danger: true,
+                })
+              ) {
                 await session.signOut();
                 router.replace('/');
               }

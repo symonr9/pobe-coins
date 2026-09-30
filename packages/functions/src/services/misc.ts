@@ -32,7 +32,8 @@ export async function createUpload(deps: Deps, actor: Actor, input: { contentTyp
   try {
     await deps.db.increment(keys.usage(actor.householdId), 'photoBytes', input.bytes, QUOTAS.photoBytesPerHousehold);
   } catch (err) {
-    if (err instanceof ConditionFailed) throw new ApiError('QUOTA', 'This household has used its photo storage. Delete old purchases with photos to make room.');
+    if (err instanceof ConditionFailed)
+      throw new ApiError('QUOTA', 'This household has used its photo storage. Delete old purchases with photos to make room.');
     throw err;
   }
   const key = `h/${actor.householdId}/${input.purpose}/${ulid(deps.now().getTime())}.${EXT[input.contentType] ?? 'jpg'}`;
@@ -73,7 +74,7 @@ export async function addComment(deps: Deps, actor: Actor, itemId: string, text:
 export async function deleteComment(deps: Deps, actor: Actor, itemId: string, commentId: string) {
   const all = await listByPrefix<Comment>(deps, actor.householdId, `${PREFIX.comment}${itemId}#`);
   const c = all.find((x) => x.id === commentId);
-  if (!c) throw new ApiError('NOT_FOUND', 'That comment wasn\'t found.');
+  if (!c) throw new ApiError('NOT_FOUND', "That comment wasn't found.");
   if (c.memberId !== actor.memberId && actor.role !== 'admin') throw new ApiError('FORBIDDEN', 'You can only delete your own comments.');
   await deps.db.delete(keys.comment(actor.householdId, itemId, commentId));
 }
@@ -90,7 +91,15 @@ export async function listAudit(deps: Deps, actor: Actor, limit = 200) {
 export async function registerPush(deps: Deps, actor: Actor, input: PushRegisterInput) {
   const token = input.kind === 'expo' ? input.token : input.subscription.endpoint;
   const key = keys.pushTarget(actor.householdId, actor.memberId, sha256(token));
-  await deps.db.put({ ...key, type: 'push', memberId: actor.memberId, kind: input.kind, token: input.kind === 'expo' ? input.token : undefined, subscription: input.kind === 'webpush' ? input.subscription : undefined, createdAt: deps.now().toISOString() });
+  await deps.db.put({
+    ...key,
+    type: 'push',
+    memberId: actor.memberId,
+    kind: input.kind,
+    token: input.kind === 'expo' ? input.token : undefined,
+    subscription: input.kind === 'webpush' ? input.subscription : undefined,
+    createdAt: deps.now().toISOString(),
+  });
 }
 
 export async function unregisterPush(deps: Deps, actor: Actor, token: string) {

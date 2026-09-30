@@ -17,12 +17,16 @@ export async function seedDemo(deps: Deps) {
   deps.now = () => new Date(start + offset);
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
-  const { household, member: sam } = await createHousehold(deps, { sub: 'sam', name: 'Sam' }, {
-    name: 'The Cozy Burrow',
-    memberName: 'Sam',
-    timeZone: tz,
-    templateIds: ['dishes', 'trash', 'vacuum', 'bathroom', 'water-plants', 'laundry', 'groceries'],
-  });
+  const { household, member: sam } = await createHousehold(
+    deps,
+    { sub: 'sam', name: 'Sam' },
+    {
+      name: 'The Cozy Burrow',
+      memberName: 'Sam',
+      timeZone: tz,
+      templateIds: ['dishes', 'trash', 'vacuum', 'bathroom', 'water-plants', 'laundry', 'groceries'],
+    },
+  );
   const samActor: Actor = { householdId: household.id, memberId: sam.id, role: 'admin', principal: { kind: 'user', sub: 'sam' } };
   const alex = await addMember(deps, samActor, { name: 'Alex', role: 'admin' });
   const alexMember = await getMember(deps, household.id, alex.id);
@@ -53,7 +57,13 @@ export async function seedDemo(deps: Deps) {
     }
     if (day === 9) await gift(deps, samActor, alex.id, 15, 'for making dinner');
     if (day === 12) {
-      await createPurchase(deps, samActor, { title: 'Cozy socks', description: 'The fuzzy yellow ones', amount: 35, photoKeys: [], allowIou: false });
+      await createPurchase(deps, samActor, {
+        title: 'Cozy socks',
+        description: 'The fuzzy yellow ones',
+        amount: 35,
+        photoKeys: [],
+        allowIou: false,
+      });
     }
   }
   offset = 19 * 86400_000 + 20 * 3600_000;

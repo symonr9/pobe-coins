@@ -3,6 +3,7 @@
 These are drafts for the owner to review. Legal text (`apps/mobile/src/features/Legal.tsx`) needs the operator's name and contact email before submission.
 
 ## Both stores
+
 - [ ] Privacy policy URL: `https://<site>/privacy` (the web app serves it)
 - [ ] Support URL / email
 - [ ] Screenshots: Home (purse), Chores, POBE Shop, Timeline, Wrapped, widget
@@ -11,6 +12,7 @@ These are drafts for the owner to review. Legal text (`apps/mobile/src/features/
 - [ ] In-app account deletion: Settings → Delete my account ✅
 
 ## Apple App Store
+
 - [ ] Apple Developer Program membership; bundle id `app.pobecoins` (or your own via `IOS_BUNDLE_ID`)
 - [ ] Capabilities: Sign in with Apple, Push Notifications, App Groups (`group.<bundle id>`), Associated Domains (`applinks:<site>`)
 - [ ] Sign in with Apple is offered next to Google ✅ (guideline 4.8)
@@ -25,6 +27,7 @@ These are drafts for the owner to review. Legal text (`apps/mobile/src/features/
 - [ ] Age rating: 4+ (no objectionable content). User-generated content is limited to private households.
 
 ## Google Play
+
 - [ ] Google Play Console account ($25); package `app.pobecoins`
 - [ ] New personal accounts: **closed test with 12+ testers for 14 days** before production
 - [ ] **Data safety** form:
@@ -37,5 +40,6 @@ These are drafts for the owner to review. Legal text (`apps/mobile/src/features/
 - [ ] App links: set `ANDROID_SHA256` on Netlify to the Play app signing SHA-256 so `/join/…` links open the app
 
 ## After launch
+
 - [ ] Create an EAS Update channel per build profile; ship JS fixes with `eas update`
 - [ ] Keep an eye on the AWS Budgets alarm email

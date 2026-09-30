@@ -4,7 +4,11 @@ import { createHarness, household, type Harness } from '../testing/harness';
 
 async function purse(h: Harness, token: string) {
   const me = await h.call('GET', '/me', { token });
-  return { purse: me.body.member.purse as Record<string, number>, debt: me.body.member.debt as number, balance: balance(me.body.member.purse) };
+  return {
+    purse: me.body.member.purse as Record<string, number>,
+    debt: me.body.member.debt as number,
+    balance: balance(me.body.member.purse),
+  };
 }
 
 async function newTask(h: Harness, token: string, body: Record<string, unknown>) {
@@ -126,7 +130,11 @@ describe('chores', () => {
   it('rotation alternates whose turn it is', async () => {
     const h = createHarness('2026-06-01T15:00:00Z');
     const { adminToken, memberToken, adminId, memberId } = await household(h);
-    const id = await newTask(h, adminToken, { title: 'Trash', recurrence: { freq: 'daily', anchor: '2026-06-01' }, rotation: [adminId, memberId] });
+    const id = await newTask(h, adminToken, {
+      title: 'Trash',
+      recurrence: { freq: 'daily', anchor: '2026-06-01' },
+      rotation: [adminId, memberId],
+    });
     expect((await h.call('POST', `/tasks/${id}/complete`, { token: memberToken, body: {} })).status).toBe(403);
     expect((await h.call('POST', `/tasks/${id}/complete`, { token: adminToken, body: {} })).status).toBe(200);
     h.advance(86400_000);
@@ -195,7 +203,9 @@ describe('spending', () => {
     expect(ok.status).toBe(201);
     expect(await purse(h, memberToken)).toMatchObject({ balance: 0, debt: 30 });
     // Over the limit (default 50): 30 + 25 > 50
-    expect((await h.call('POST', '/purchases', { token: memberToken, body: { title: 'More', amount: 25, allowIou: true } })).status).toBe(422);
+    expect((await h.call('POST', '/purchases', { token: memberToken, body: { title: 'More', amount: 25, allowIou: true } })).status).toBe(
+      422,
+    );
     await fund(h, adminToken, memberId, 35);
     expect(await purse(h, memberToken)).toMatchObject({ balance: 5, debt: 0 });
     const detail = await h.call('GET', `/purchases/${ok.body.purchase.id}`, { token: memberToken });
@@ -252,7 +262,10 @@ describe('POBE Shop', () => {
     const done = await h.call('POST', `/purchases/${buy.body.purchase.id}/fulfill`, { token: adminToken });
     expect(done.body.redemption).toBe('fulfilled');
 
-    const movie = await h.call('POST', '/shop/items', { token: adminToken, body: { title: 'Pick the movie', price: 10, cooldownHours: 24 } });
+    const movie = await h.call('POST', '/shop/items', {
+      token: adminToken,
+      body: { title: 'Pick the movie', price: 10, cooldownHours: 24 },
+    });
     expect((await h.call('POST', `/shop/items/${movie.body.id}/buy`, { token: memberToken, body: {} })).status).toBe(201);
     const cd = await h.call('POST', `/shop/items/${movie.body.id}/buy`, { token: memberToken, body: {} });
     expect(cd.body.error.message).toMatch(/again in 24 hours/);

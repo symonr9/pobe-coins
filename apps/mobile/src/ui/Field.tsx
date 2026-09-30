@@ -22,7 +22,12 @@ export const Field = forwardRef<TextInput, TextInputProps & { label: string; err
             {...rest}
             style={[
               styles.input,
-              { backgroundColor: t.c.surfaceAlt, color: t.c.ink, borderColor: error ? t.c.danger : 'transparent', fontFamily: t.fonts.bodySemi },
+              {
+                backgroundColor: t.c.surfaceAlt,
+                color: t.c.ink,
+                borderColor: error ? t.c.danger : 'transparent',
+                fontFamily: t.fonts.bodySemi,
+              },
               rest.multiline && { minHeight: 90, textAlignVertical: 'top', paddingTop: 12 },
               style,
             ]}
@@ -43,16 +48,25 @@ export const Field = forwardRef<TextInput, TextInputProps & { label: string; err
   },
 );
 
-export function Chip({ label, selected, onPress, icon, color }: { label: string; selected?: boolean; onPress?: () => void; icon?: IconName; color?: string }) {
+export function Chip({
+  label,
+  selected,
+  onPress,
+  icon,
+  color,
+}: {
+  label: string;
+  selected?: boolean;
+  onPress?: () => void;
+  icon?: IconName;
+  color?: string;
+}) {
   const t = useTheme();
   return (
     <Pressy
       onPress={onPress}
       accessibilityState={{ selected: !!selected }}
-      style={[
-        styles.chip,
-        { backgroundColor: selected ? t.c.primary : t.c.surface, borderColor: selected ? t.c.accent : t.c.line },
-      ]}
+      style={[styles.chip, { backgroundColor: selected ? t.c.primary : t.c.surface, borderColor: selected ? t.c.accent : t.c.line }]}
     >
       <Row gap={6}>
         {color ? <View style={[styles.dot, { backgroundColor: color }]} /> : null}
@@ -65,7 +79,15 @@ export function Chip({ label, selected, onPress, icon, color }: { label: string;
   );
 }
 
-export function Segmented<T extends string>({ options, value, onChange }: { options: { value: T; label: string }[]; value: T; onChange: (v: T) => void }) {
+export function Segmented<T extends string>({
+  options,
+  value,
+  onChange,
+}: {
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (v: T) => void;
+}) {
   const t = useTheme();
   return (
     <View style={[styles.segment, { backgroundColor: t.c.surfaceAlt }]} accessibilityRole="tablist">
@@ -77,7 +99,10 @@ export function Segmented<T extends string>({ options, value, onChange }: { opti
             onPress={() => onChange(o.value)}
             accessibilityRole="tab"
             accessibilityState={{ selected: on }}
-            style={[styles.segmentItem, on && { backgroundColor: t.c.surface, shadowColor: t.c.shadow, shadowOpacity: 1, shadowRadius: 6, elevation: 1 }]}
+            style={[
+              styles.segmentItem,
+              on && { backgroundColor: t.c.surface, shadowColor: t.c.shadow, shadowOpacity: 1, shadowRadius: 6, elevation: 1 },
+            ]}
           >
             <Text variant="smallBold" color={on ? 'ink' : 'soft'} center numberOfLines={1}>
               {o.label}
@@ -89,7 +114,19 @@ export function Segmented<T extends string>({ options, value, onChange }: { opti
   );
 }
 
-export function ToggleRow({ label, hint, value, onChange, disabled }: { label: string; hint?: string; value: boolean; onChange: (v: boolean) => void; disabled?: boolean }) {
+export function ToggleRow({
+  label,
+  hint,
+  value,
+  onChange,
+  disabled,
+}: {
+  label: string;
+  hint?: string;
+  value: boolean;
+  onChange: (v: boolean) => void;
+  disabled?: boolean;
+}) {
   const t = useTheme();
   return (
     <Row style={{ justifyContent: 'space-between', paddingVertical: 6 }}>
@@ -113,7 +150,21 @@ export function ToggleRow({ label, hint, value, onChange, disabled }: { label: s
   );
 }
 
-export function ListRow({ icon, title, subtitle, onPress, right, danger }: { icon?: IconName; title: string; subtitle?: string; onPress?: () => void; right?: ReactNode; danger?: boolean }) {
+export function ListRow({
+  icon,
+  title,
+  subtitle,
+  onPress,
+  right,
+  danger,
+}: {
+  icon?: IconName;
+  title: string;
+  subtitle?: string;
+  onPress?: () => void;
+  right?: ReactNode;
+  danger?: boolean;
+}) {
   const t = useTheme();
   return (
     <Pressy onPress={onPress} scaleTo={0.98} style={styles.listRow} disabled={!onPress && !right}>
@@ -140,7 +191,17 @@ export function ListRow({ icon, title, subtitle, onPress, right, danger }: { ico
 }
 
 const styles = StyleSheet.create({
-  input: { flex: 1, minWidth: 0, width: '100%', borderRadius: 16, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, borderWidth: 2, minHeight: 48 },
+  input: {
+    flex: 1,
+    minWidth: 0,
+    width: '100%',
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 16,
+    borderWidth: 2,
+    minHeight: 48,
+  },
   chip: { borderRadius: 999, borderWidth: 1.5, paddingHorizontal: 12, paddingVertical: 7 },
   dot: { width: 10, height: 10, borderRadius: 5 },
   segment: { flexDirection: 'row', borderRadius: 999, padding: 4, gap: 4 },

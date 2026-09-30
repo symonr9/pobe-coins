@@ -25,7 +25,13 @@ export interface ExportJob {
 
 export async function requestExport(deps: Deps, actor: Actor) {
   await rateLimit(deps, `export:${actor.householdId}`, 3, 3600);
-  const job: ExportJob = { id: ulid(deps.now().getTime()), householdId: actor.householdId, requestedBy: actor.memberId, status: 'queued', createdAt: deps.now().toISOString() };
+  const job: ExportJob = {
+    id: ulid(deps.now().getTime()),
+    householdId: actor.householdId,
+    requestedBy: actor.memberId,
+    status: 'queued',
+    createdAt: deps.now().toISOString(),
+  };
   await deps.db.put({ ...keys.exportJob(actor.householdId, job.id), ttl: Math.floor(deps.now().getTime() / 1000) + 3 * 86400, ...job });
   await deps.startExport(actor.householdId, job.id);
   return job;
@@ -33,13 +39,17 @@ export async function requestExport(deps: Deps, actor: Actor) {
 
 export async function exportStatus(deps: Deps, actor: Actor, jobId: string) {
   const job = await deps.db.get<Item & ExportJob>(keys.exportJob(actor.householdId, jobId));
-  if (!job) throw new ApiError('NOT_FOUND', 'That export wasn\'t found. Exports are kept for 2 days.');
+  if (!job) throw new ApiError('NOT_FOUND', "That export wasn't found. Exports are kept for 2 days.");
   const clean = strip(job) as ExportJob;
   return { ...clean, downloadUrl: clean.status === 'ready' && clean.key ? await deps.storage.presignGet(clean.key, 24 * 3600) : undefined };
 }
 
 function csv(rows: (string | number | undefined)[][]) {
-  return rows.map((r) => r.map((v) => (v === undefined ? '' : /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v))).join(',')).join('\n');
+  return rows
+    .map((r) =>
+      r.map((v) => (v === undefined ? '' : /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v))).join(','),
+    )
+    .join('\n');
 }
 
 export async function runExport(deps: Deps, householdId: string, jobId: string) {
@@ -53,13 +63,22 @@ export async function runExport(deps: Deps, householdId: string, jobId: string) 
     const photoKeys: string[] = [];
     for (const r of rows) {
       const type = String(r.type ?? r.sk.split('#')[0]);
-      if (['push', 'device'].includes(type) || r.sk.startsWith('PT#') || r.sk.startsWith('DL#') || r.sk.startsWith('CALREF#') || r.sk.startsWith('EXP#')) continue;
+      if (
+        ['push', 'device'].includes(type) ||
+        r.sk.startsWith('PT#') ||
+        r.sk.startsWith('DL#') ||
+        r.sk.startsWith('CALREF#') ||
+        r.sk.startsWith('EXP#')
+      )
+        continue;
       (byType[type] ??= []).push(strip(r));
       for (const k of (r.photoKeys as string[] | undefined) ?? []) photoKeys.push(k);
       if (typeof r.photoKey === 'string') photoKeys.push(r.photoKey);
     }
     const files: Zippable = {
-      'README.txt': strToU8('Pobe Coins export.\n\ndata/*.json: every record, one file per type.\nledger.csv: every coin movement.\nphotos/: purchase and chore photos.\n'),
+      'README.txt': strToU8(
+        'Pobe Coins export.\n\ndata/*.json: every record, one file per type.\nledger.csv: every coin movement.\nphotos/: purchase and chore photos.\n',
+      ),
     };
     for (const [type, list] of Object.entries(byType)) files[`data/${type}.json`] = strToU8(JSON.stringify(list, null, 2));
     const ledger = (byType.ledger ?? []) as LedgerEntry[];
@@ -81,9 +100,18 @@ export async function runExport(deps: Deps, householdId: string, jobId: string) 
     const key = `exports/${householdId}/${jobId}.zip`;
     await deps.storage.putObject(key, zip, 'application/zip');
     await deps.db.put({ ...job, status: 'ready', key, finishedAt: deps.now().toISOString() });
-    await deps.notifier.send(householdId, [job.requestedBy], { title: 'Your export is ready', body: 'Open Settings to download your household data.', url: '/settings/export' });
+    await deps.notifier.send(householdId, [job.requestedBy], {
+      title: 'Your export is ready',
+      body: 'Open Settings to download your household data.',
+      url: '/settings/export',
+    });
   } catch (err) {
-    await deps.db.put({ ...job, status: 'failed', error: err instanceof Error ? err.message : 'Export failed', finishedAt: deps.now().toISOString() });
+    await deps.db.put({
+      ...job,
+      status: 'failed',
+      error: err instanceof Error ? err.message : 'Export failed',
+      finishedAt: deps.now().toISOString(),
+    });
     throw err;
   }
 }

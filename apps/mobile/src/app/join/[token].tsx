@@ -24,16 +24,27 @@ export default function Join() {
     void (async () => {
       try {
         const label = Platform.OS === 'web' ? 'Web browser' : (Device.deviceName ?? Device.modelName ?? 'Phone');
-        const r = await api<any>('POST', '/links/redeem', { token, deviceLabel: label, platform: Platform.OS === 'web' ? 'web' : Platform.OS }, { token: null });
+        const r = await api<any>(
+          'POST',
+          '/links/redeem',
+          { token, deviceLabel: label, platform: Platform.OS === 'web' ? 'web' : Platform.OS },
+          { token: null },
+        );
         if (cancelled) return;
         await session.addProfile(
-          { kind: 'device', name: r.session.member.name, householdId: r.session.household.id, householdName: r.session.household.name, memberId: r.session.member.id },
+          {
+            kind: 'device',
+            name: r.session.member.name,
+            householdId: r.session.household.id,
+            householdName: r.session.household.name,
+            memberId: r.session.member.id,
+          },
           r.token,
         );
         setWelcome(t('Welcome to {{household}}, {{name}}!', { household: r.session.household.name, name: r.session.member.name }));
         setTimeout(() => router.replace('/'), 1400);
       } catch (err) {
-        if (!cancelled) setError(err instanceof ApiError ? err.message : t('That link didn\'t work.'));
+        if (!cancelled) setError(err instanceof ApiError ? err.message : t("That link didn't work."));
       }
     })();
     return () => {

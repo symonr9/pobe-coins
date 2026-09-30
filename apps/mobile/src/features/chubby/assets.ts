@@ -16,5 +16,8 @@ const COMMISSIONED: Partial<Record<ChubbyPose, ImageSourcePropType>> = {
 export function chubbyArt(pose: ChubbyPose, accessory: ChubbyAccessory, accent: string, eyesClosed = false): ChubbyArt {
   const image = COMMISSIONED[pose];
   if (image && accessory === 'none') return { kind: 'image', source: image };
-  return { kind: 'svg', xml: chubbybaraSvg({ pose, accessory, accent, eyesClosed, id: `${pose}-${accessory}` }).replace(/ (role|aria-label)="[^"]*"/g, '') };
+  return {
+    kind: 'svg',
+    xml: chubbybaraSvg({ pose, accessory, accent, eyesClosed, id: `${pose}-${accessory}` }).replace(/ (role|aria-label)="[^"]*"/g, ''),
+  };
 }

@@ -57,9 +57,7 @@ export default $config({
         allowMethods: ['GET', 'POST', 'PUT'],
         allowHeaders: ['*'],
       },
-      lifecycle: [
-        { id: 'expire-exports', prefix: 'exports/', expiresIn: '2 days' },
-      ],
+      lifecycle: [{ id: 'expire-exports', prefix: 'exports/', expiresIn: '2 days' }],
     });
 
     // ---------- sign-in: Cognito with Google / Apple ----------

@@ -45,14 +45,14 @@ export function useCompleteTask() {
             { id: c.id },
             {
               onSuccess: () => toast(t('Undone. The coins went back.')),
-              onError: (e) => toast(e instanceof ApiError ? e.message : t('Couldn\'t undo.'), 'error'),
+              onError: (e) => toast(e instanceof ApiError ? e.message : t("Couldn't undo."), 'error'),
             },
           ),
       });
     },
     onError: (e) => {
       haptic.warn();
-      toast(e instanceof ApiError ? e.message : t('Couldn\'t complete that chore.'), 'error');
+      toast(e instanceof ApiError ? e.message : t("Couldn't complete that chore."), 'error');
     },
     onSettled: () => refresh(),
   });

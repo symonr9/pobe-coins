@@ -71,21 +71,37 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     plugins: [
       'expo-router',
-      ['expo-splash-screen', { backgroundColor: '#FFF5F8', image: './assets/icons/splash.png', imageWidth: 180, dark: { backgroundColor: '#1E1418' } }],
+      [
+        'expo-splash-screen',
+        { backgroundColor: '#FFF5F8', image: './assets/icons/splash.png', imageWidth: 180, dark: { backgroundColor: '#1E1418' } },
+      ],
       ['expo-notifications', { icon: './assets/icons/notification.png', color: '#B83E6A', sounds: ['./assets/sounds/coin.wav'] }],
       'expo-secure-store',
       'expo-apple-authentication',
       'expo-localization',
       'expo-web-browser',
-      ['expo-camera', { cameraPermission: 'Pobe Coins uses the camera to scan join codes and photograph purchases.', recordAudioAndroid: false }],
-      ['expo-image-picker', { photosPermission: 'Pobe Coins lets you attach photos of things you bought.', cameraPermission: 'Pobe Coins uses the camera to photograph purchases.' }],
+      [
+        'expo-camera',
+        { cameraPermission: 'Pobe Coins uses the camera to scan join codes and photograph purchases.', recordAudioAndroid: false },
+      ],
+      [
+        'expo-image-picker',
+        {
+          photosPermission: 'Pobe Coins lets you attach photos of things you bought.',
+          cameraPermission: 'Pobe Coins uses the camera to photograph purchases.',
+        },
+      ],
       ['expo-local-authentication', { faceIDPermission: 'Pobe Coins can confirm spending with Face ID.' }],
       ['expo-font', {}],
       'expo-audio',
       [
         'expo-share-intent',
         {
-          iosActivationRules: { NSExtensionActivationSupportsWebURLWithMaxCount: 1, NSExtensionActivationSupportsText: true, NSExtensionActivationSupportsImageWithMaxCount: 1 },
+          iosActivationRules: {
+            NSExtensionActivationSupportsWebURLWithMaxCount: 1,
+            NSExtensionActivationSupportsText: true,
+            NSExtensionActivationSupportsImageWithMaxCount: 1,
+          },
           androidIntentFilters: ['text/*', 'image/*'],
           iosAppGroupIdentifier: appGroup,
         },
@@ -106,7 +122,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
             {
               name: 'PurseWidget',
               displayName: 'My purse',
-              description: 'Your coins and today\'s chores, with Chubbybara.',
+              description: "Your coins and today's chores, with Chubbybara.",
               supportedFamilies: ['systemSmall', 'systemMedium', 'accessoryRectangular'],
               contentMarginsDisabled: false,
             },
@@ -120,7 +136,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
             {
               name: 'PurseWidget',
               label: 'My purse',
-              description: 'Your coins and today\'s chores',
+              description: "Your coins and today's chores",
               minWidth: '180dp',
               minHeight: '110dp',
               targetCellWidth: 3,

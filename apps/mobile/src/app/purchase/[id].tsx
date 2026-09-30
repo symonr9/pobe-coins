@@ -27,7 +27,7 @@ export default function PurchaseDetail() {
   const { toast, confirm } = useFeedback();
   const act = useMutation({
     mutationFn: (fn: () => Promise<unknown>) => fn(),
-    onError: (e) => toast(e instanceof ApiError ? e.message : t('That didn\'t work.'), 'error'),
+    onError: (e) => toast(e instanceof ApiError ? e.message : t("That didn't work."), 'error'),
     onSettled: () => refresh(),
   });
   if (q.isLoading) return <Loading />;
@@ -55,19 +55,31 @@ export default function PurchaseDetail() {
         </Row>
         {p.status !== 'approved' ? (
           <Text variant="smallBold" color={p.status === 'pending' ? 'warning' : 'soft'}>
-            {p.status === 'pending' ? `⏳ ${t('Waiting for approval')}` : p.status === 'rejected' ? t('Declined, coins returned') : t('Undone, coins returned')}
+            {p.status === 'pending'
+              ? `⏳ ${t('Waiting for approval')}`
+              : p.status === 'rejected'
+                ? t('Declined, coins returned')
+                : t('Undone, coins returned')}
           </Text>
         ) : null}
         {p.kind === 'reward' ? (
           <Text variant="smallBold" color={p.redemption === 'fulfilled' ? 'success' : 'accent'}>
-            {p.redemption === 'fulfilled' ? `✓ ${t('Delivered by {{name}}', { name: hh.name(p.fulfilledBy) })}` : `🎁 ${t('Shop reward, waiting to be delivered')}`}
+            {p.redemption === 'fulfilled'
+              ? `✓ ${t('Delivered by {{name}}', { name: hh.name(p.fulfilledBy) })}`
+              : `🎁 ${t('Shop reward, waiting to be delivered')}`}
           </Text>
         ) : null}
         {p.description ? <Text>{p.description}</Text> : null}
         {photoUrls.length ? (
           <Row wrap gap={8}>
             {photoUrls.map((u) => (
-              <Image key={u} source={{ uri: u }} style={{ width: 150, height: 150, borderRadius: 18 }} contentFit="cover" accessibilityLabel={t('Photo of {{item}}', { item: p.title })} />
+              <Image
+                key={u}
+                source={{ uri: u }}
+                style={{ width: 150, height: 150, borderRadius: 18 }}
+                contentFit="cover"
+                accessibilityLabel={t('Photo of {{item}}', { item: p.title })}
+              />
             ))}
           </Row>
         ) : null}
@@ -100,7 +112,14 @@ export default function PurchaseDetail() {
                   <Text variant="number">{f.amount}</Text>
                 </Row>
                 <View style={{ height: 8, borderRadius: 4, backgroundColor: theme.c.surfaceAlt }}>
-                  <View style={{ width: `${(f.amount / total) * 100}%`, height: 8, borderRadius: 4, backgroundColor: f.iou ? theme.c.warning : theme.c.accent }} />
+                  <View
+                    style={{
+                      width: `${(f.amount / total) * 100}%`,
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: f.iou ? theme.c.warning : theme.c.accent,
+                    }}
+                  />
                 </View>
               </View>
             ))}
@@ -110,7 +129,12 @@ export default function PurchaseDetail() {
 
       <Stack gap={8}>
         {p.kind === 'reward' && p.redemption === 'redeemed' && p.status === 'approved' ? (
-          <Button kind="secondary" icon="check" title={t('Mark delivered')} onPress={() => act.mutate(() => actions.fulfill({ id: p.id }))} />
+          <Button
+            kind="secondary"
+            icon="check"
+            title={t('Mark delivered')}
+            onPress={() => act.mutate(() => actions.fulfill({ id: p.id }))}
+          />
         ) : null}
         {mine && recent && (p.status === 'approved' || p.status === 'pending') && p.kind !== 'goal' ? (
           <Button
@@ -118,7 +142,8 @@ export default function PurchaseDetail() {
             icon="undo"
             title={t('Undo purchase')}
             onPress={async () => {
-              if (await confirm({ title: t('Undo this purchase?'), message: t('Your coins come back.'), confirm: t('Undo') })) act.mutate(() => actions.undoPurchase({ id: p.id }), { onSuccess: () => router.back() });
+              if (await confirm({ title: t('Undo this purchase?'), message: t('Your coins come back.'), confirm: t('Undo') }))
+                act.mutate(() => actions.undoPurchase({ id: p.id }), { onSuccess: () => router.back() });
             }}
           />
         ) : null}

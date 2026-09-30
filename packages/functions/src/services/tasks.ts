@@ -20,7 +20,18 @@ import { keys, partition, PREFIX } from '../db/keys';
 import { ConditionFailed, strip, type Item, type WriteOp } from '../db/types';
 import { ApiError, forbidden, notFound } from '../lib/errors';
 import { ulid } from '../lib/ids';
-import { auditOp, getCompletion, getHousehold, getLedgerEntries, getMember, getTask, listByPrefix, listMembers, listTasks, toItem } from '../repo';
+import {
+  auditOp,
+  getCompletion,
+  getHousehold,
+  getLedgerEntries,
+  getMember,
+  getTask,
+  listByPrefix,
+  listMembers,
+  listTasks,
+  toItem,
+} from '../repo';
 import { requireAdmin } from './auth';
 import { commitMoney, credit, grantBonus, newEntry, reverseCredit } from './money';
 
@@ -81,7 +92,8 @@ export async function listTaskViews(deps: Deps, actor: Actor): Promise<TaskView[
 
 export async function createTask(deps: Deps, actor: Actor, input: TaskInput) {
   const open = (await listTasks(deps, actor.householdId)).filter((t) => t.status !== 'archived' && t.status !== 'done');
-  if (open.length >= QUOTAS.openTasksPerHousehold) throw new ApiError('QUOTA', 'This household has too many open tasks. Archive some first.');
+  if (open.length >= QUOTAS.openTasksPerHousehold)
+    throw new ApiError('QUOTA', 'This household has too many open tasks. Archive some first.');
   await validateAssignees(deps, actor, input.assigneeId, input.rotation);
   const now = deps.now().toISOString();
   const task: Task = {
@@ -113,12 +125,13 @@ async function validateAssignees(deps: Deps, actor: Actor, assigneeId?: string |
   const ids = [...(assigneeId ? [assigneeId] : []), ...(rotation ?? [])];
   if (!ids.length) return;
   const members = new Set((await listMembers(deps, actor.householdId)).map((m) => m.id));
-  for (const id of ids) if (!members.has(id)) throw new ApiError('BAD_REQUEST', 'One of the chosen members isn\'t in this household.');
+  for (const id of ids) if (!members.has(id)) throw new ApiError('BAD_REQUEST', "One of the chosen members isn't in this household.");
 }
 
 export async function updateTask(deps: Deps, actor: Actor, taskId: string, input: Partial<TaskInput> & { status?: 'open' | 'archived' }) {
   const task = await getTask(deps, actor.householdId, taskId);
-  if (actor.role !== 'admin' && task.createdBy !== actor.memberId) throw forbidden('Only admins or the person who created a task can edit it.');
+  if (actor.role !== 'admin' && task.createdBy !== actor.memberId)
+    throw forbidden('Only admins or the person who created a task can edit it.');
   await validateAssignees(deps, actor, input.assigneeId, input.rotation);
   const updated: Task = {
     ...task,
@@ -148,8 +161,14 @@ export async function claimTask(deps: Deps, actor: Actor, taskId: string, claim:
     const who = await getMember(deps, actor.householdId, task.claimedBy).catch(() => null);
     throw new ApiError('CONFLICT', `${who?.name ?? 'Someone'} already claimed this task.`);
   }
-  if (!claim && task.claimedBy !== actor.memberId && actor.role !== 'admin') throw forbidden('Only the person who claimed it can release it.');
-  const updated: Task = { ...task, claimedBy: claim ? actor.memberId : undefined, status: claim ? 'claimed' : 'open', updatedAt: deps.now().toISOString() };
+  if (!claim && task.claimedBy !== actor.memberId && actor.role !== 'admin')
+    throw forbidden('Only the person who claimed it can release it.');
+  const updated: Task = {
+    ...task,
+    claimedBy: claim ? actor.memberId : undefined,
+    status: claim ? 'claimed' : 'open',
+    updatedAt: deps.now().toISOString(),
+  };
   const cond = claim ? { equals: { status: 'open' } } : undefined;
   try {
     await deps.db.put(toItem.task(updated), task.status === 'open' ? cond : undefined);
@@ -163,7 +182,7 @@ export async function claimTask(deps: Deps, actor: Actor, taskId: string, claim:
 /** Rotation: skip ahead / swap turns. */
 export async function shiftRotation(deps: Deps, actor: Actor, taskId: string, by: number) {
   const task = await getTask(deps, actor.householdId, taskId);
-  if (!task.rotation?.length) throw new ApiError('BAD_REQUEST', 'This task doesn\'t rotate.');
+  if (!task.rotation?.length) throw new ApiError('BAD_REQUEST', "This task doesn't rotate.");
   const updated: Task = { ...task, rotationOffset: (task.rotationOffset ?? 0) + by, updatedAt: deps.now().toISOString() };
   await deps.db.put(toItem.task(updated));
   return updated;
@@ -177,7 +196,14 @@ interface Payout {
   milestone?: { streak: number; bonus: number };
 }
 
-async function payCompletion(deps: Deps, actor: Actor, household: Household, task: Task, completion: Completion, member: Member): Promise<Payout> {
+async function payCompletion(
+  deps: Deps,
+  actor: Actor,
+  household: Household,
+  task: Task,
+  completion: Completion,
+  member: Member,
+): Promise<Payout> {
   const { coinTypes } = household.settings;
   const earn = credit(member, completion.reward, coinTypes);
   let m = earn.member;
@@ -241,13 +267,14 @@ export async function completeTask(
 ) {
   const household = await getHousehold(deps, actor.householdId);
   const now = deps.now();
-  if (input.photoKey && !input.photoKey.startsWith(`h/${actor.householdId}/`)) throw new ApiError('BAD_REQUEST', 'That photo doesn\'t belong to this household.');
+  if (input.photoKey && !input.photoKey.startsWith(`h/${actor.householdId}/`))
+    throw new ApiError('BAD_REQUEST', "That photo doesn't belong to this household.");
   const members = await listMembers(deps, actor.householdId);
   const result = await commitMoney(deps, async () => {
     const task = await getTask(deps, actor.householdId, taskId);
     if (task.status === 'archived') throw new ApiError('BAD_REQUEST', 'This task is archived.');
     const period = currentPeriodOf(task, household, now);
-    if (task.recurrence && !period) throw new ApiError('BAD_REQUEST', 'This chore hasn\'t started yet.');
+    if (task.recurrence && !period) throw new ApiError('BAD_REQUEST', "This chore hasn't started yet.");
     if (!task.recurrence && (task.status === 'done' || task.status === 'pending')) {
       throw new ApiError('CONFLICT', task.status === 'done' ? 'This task is already done.' : 'This task is already waiting for approval.');
     }
@@ -261,7 +288,8 @@ export async function completeTask(
     }
     if (period) {
       const guardKey = keys.period(actor.householdId, task.id, input.checklistItemId ? `${period}#${input.checklistItemId}` : period);
-      if (await deps.db.get(guardKey)) throw new ApiError('CONFLICT', 'This one is already done for now. It comes back next time it repeats.');
+      if (await deps.db.get(guardKey))
+        throw new ApiError('CONFLICT', 'This one is already done for now. It comes back next time it repeats.');
     }
     let reward = task.reward;
     let item;
@@ -316,7 +344,8 @@ export async function completeTask(
     } else if (!task.recurrence) {
       nextTask = { ...task, status: needsApproval ? 'pending' : 'done' };
     }
-    if (nextTask !== task) ops.push({ put: toItem.task({ ...nextTask, updatedAt: now.toISOString() }), if: { equals: { updatedAt: task.updatedAt } } });
+    if (nextTask !== task)
+      ops.push({ put: toItem.task({ ...nextTask, updatedAt: now.toISOString() }), if: { equals: { updatedAt: task.updatedAt } } });
     ops.push({ put: toItem.completion(completion), if: { notExists: true } });
     return {
       members: payout ? [payout.member] : [],
@@ -356,12 +385,19 @@ export async function decideCompletion(deps: Deps, actor: Actor, completionId: s
     if (completion.memberId === actor.memberId && members.length > 1) throw forbidden('Someone else needs to approve your own chores.');
     const task = await getTask(deps, actor.householdId, completion.taskId);
     const now = deps.now().toISOString();
-    const decided: Completion = { ...completion, status: approve ? 'approved' : 'rejected', decidedBy: actor.memberId, decidedAt: now, note: note ?? completion.note };
+    const decided: Completion = {
+      ...completion,
+      status: approve ? 'approved' : 'rejected',
+      decidedBy: actor.memberId,
+      decidedAt: now,
+      note: note ?? completion.note,
+    };
     const ops: WriteOp[] = [{ put: toItem.completion(decided), if: { equals: { status: 'pending' } } }];
     const guardPeriod = completion.checklistItemId ? `${completion.period}#${completion.checklistItemId}` : completion.period;
     if (!approve) {
       if (guardPeriod) ops.push({ delete: keys.period(actor.householdId, task.id, guardPeriod) });
-      if (!task.recurrence && task.status === 'pending') ops.push({ put: toItem.task({ ...task, status: task.claimedBy ? 'claimed' : 'open', updatedAt: now }) });
+      if (!task.recurrence && task.status === 'pending')
+        ops.push({ put: toItem.task({ ...task, status: task.claimedBy ? 'claimed' : 'open', updatedAt: now }) });
       return { members: [], entries: [], ops, result: { completion: decided, milestone: undefined } };
     }
     const member = await getMember(deps, actor.householdId, completion.memberId);
@@ -370,7 +406,16 @@ export async function decideCompletion(deps: Deps, actor: Actor, completionId: s
     if (payout.streakBefore) (decided as Completion & { streakBefore?: StreakRecord }).streakBefore = payout.streakBefore;
     ops[0] = { put: toItem.completion(decided), if: { equals: { status: 'pending' } } };
     if (payout.streakOp) ops.push(payout.streakOp);
-    if (guardPeriod) ops.push({ put: { ...keys.period(actor.householdId, task.id, guardPeriod), completionId: completion.id, memberId: completion.memberId, status: 'approved', ttl: Math.floor(Date.parse(now) / 1000) + GUARD_TTL_DAYS * 86400 } });
+    if (guardPeriod)
+      ops.push({
+        put: {
+          ...keys.period(actor.householdId, task.id, guardPeriod),
+          completionId: completion.id,
+          memberId: completion.memberId,
+          status: 'approved',
+          ttl: Math.floor(Date.parse(now) / 1000) + GUARD_TTL_DAYS * 86400,
+        },
+      });
     if (!task.recurrence && task.status === 'pending') ops.push({ put: toItem.task({ ...task, status: 'done', updatedAt: now }) });
     return { members: [payout.member], entries: payout.entries, ops, result: { completion: decided, milestone: payout.milestone } };
   });
@@ -382,7 +427,8 @@ export async function decideCompletion(deps: Deps, actor: Actor, completionId: s
       : `${approver?.name ?? 'Someone'} didn't approve "${result.completion.taskTitle}" this time.`,
     url: '/timeline',
   });
-  if (approve && result.completion.reward > 0) await afterEarn(deps, { ...actor, memberId: result.completion.memberId }, result.completion.reward);
+  if (approve && result.completion.reward > 0)
+    await afterEarn(deps, { ...actor, memberId: result.completion.memberId }, result.completion.reward);
   return result;
 }
 
@@ -392,10 +438,14 @@ export async function undoCompletion(deps: Deps, actor: Actor, completionId: str
   return commitMoney(deps, async () => {
     const completion = (await getCompletion(deps, actor.householdId, completionId)) as Completion & { streakBefore?: StreakRecord };
     if (completion.memberId !== actor.memberId) throw forbidden('You can only undo your own chores.');
-    if (completion.status !== 'approved' && completion.status !== 'pending') throw new ApiError('CONFLICT', `This was already ${completion.status}.`);
+    if (completion.status !== 'approved' && completion.status !== 'pending')
+      throw new ApiError('CONFLICT', `This was already ${completion.status}.`);
     const ageMinutes = (now.getTime() - Date.parse(completion.createdAt)) / 60_000;
     if (ageMinutes > household.settings.undoWindowMinutes) {
-      throw new ApiError('CONFLICT', `Undo is only available for ${household.settings.undoWindowMinutes} minutes. Ask an admin to correct it.`);
+      throw new ApiError(
+        'CONFLICT',
+        `Undo is only available for ${household.settings.undoWindowMinutes} minutes. Ask an admin to correct it.`,
+      );
     }
     const task = await getTask(deps, actor.householdId, completion.taskId);
     const ops: WriteOp[] = [{ put: toItem.completion({ ...completion, status: 'undone' }), if: { equals: { status: completion.status } } }];
@@ -403,7 +453,11 @@ export async function undoCompletion(deps: Deps, actor: Actor, completionId: str
     if (guardPeriod) ops.push({ delete: keys.period(actor.householdId, task.id, guardPeriod) });
     let nextTask = task;
     if (completion.checklistItemId) {
-      nextTask = { ...task, checklist: task.checklist?.map((c) => (c.id === completion.checklistItemId ? { id: c.id, label: c.label } : c)), status: task.recurrence ? task.status : task.claimedBy ? 'claimed' : 'open' };
+      nextTask = {
+        ...task,
+        checklist: task.checklist?.map((c) => (c.id === completion.checklistItemId ? { id: c.id, label: c.label } : c)),
+        status: task.recurrence ? task.status : task.claimedBy ? 'claimed' : 'open',
+      };
     } else if (!task.recurrence) nextTask = { ...task, status: task.claimedBy ? 'claimed' : 'open' };
     if (nextTask !== task) ops.push({ put: toItem.task({ ...nextTask, updatedAt: now.toISOString() }) });
     if (completion.streakBefore) ops.push({ put: toItem.streak(actor.householdId, completion.streakBefore) });
@@ -412,10 +466,25 @@ export async function undoCompletion(deps: Deps, actor: Actor, completionId: str
     const originals = await getLedgerEntries(deps, actor.householdId, completion.ledgerEntryIds);
     for (const e of originals.reverse()) {
       const r = reverseCredit(member, e, household.settings.coinTypes);
-      entries.push(newEntry(deps, actor, member, 'UNDO', { value: -e.value, label: `Undo: ${e.label}`, coinsIn: r.coinsIn, coinsOut: r.coinsOut, debtDelta: r.debtDelta, reverses: e.id, ref: e.ref }));
+      entries.push(
+        newEntry(deps, actor, member, 'UNDO', {
+          value: -e.value,
+          label: `Undo: ${e.label}`,
+          coinsIn: r.coinsIn,
+          coinsOut: r.coinsOut,
+          debtDelta: r.debtDelta,
+          reverses: e.id,
+          ref: e.ref,
+        }),
+      );
       member = r.member;
     }
-    return { members: entries.length ? [member] : [], entries, ops, result: { completion: { ...completion, status: 'undone' as const }, member } };
+    return {
+      members: entries.length ? [member] : [],
+      entries,
+      ops,
+      result: { completion: { ...completion, status: 'undone' as const }, member },
+    };
   });
 }
 
@@ -459,11 +528,15 @@ export async function afterEarn(deps: Deps, actor: Actor, amount: number) {
     if (c.bonus > 0) {
       for (const m of members) await grantBonus(deps, { ...actor, memberId: m.id }, m.id, c.bonus, `Challenge won: ${c.title}`);
     }
-    await deps.notifier.send(actor.householdId, members.map((m) => m.id), {
-      title: 'Challenge complete!',
-      body: `You did "${c.title}" together.${c.bonus ? ` Everyone gets ${c.bonus} coins!` : ''}`,
-      url: '/',
-    });
+    await deps.notifier.send(
+      actor.householdId,
+      members.map((m) => m.id),
+      {
+        title: 'Challenge complete!',
+        body: `You did "${c.title}" together.${c.bonus ? ` Everyone gets ${c.bonus} coins!` : ''}`,
+        url: '/',
+      },
+    );
   }
 }
 

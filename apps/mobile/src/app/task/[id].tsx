@@ -34,13 +34,14 @@ export default function TaskDetail() {
   const [photo, setPhoto] = useState<{ uri: string; key?: string; uploading: boolean } | null>(null);
   const act = useMutation({
     mutationFn: async (fn: () => Promise<unknown>) => fn(),
-    onError: (e) => toast(e instanceof ApiError ? e.message : t('That didn\'t work.'), 'error'),
+    onError: (e) => toast(e instanceof ApiError ? e.message : t("That didn't work."), 'error'),
     onSettled: () => refresh(),
   });
 
   const task = tasks.data?.find((x) => x.id === id);
   if (tasks.isLoading) return <Loading />;
-  if (!task) return <ErrorState error={new Error(t('This chore wasn\'t found. It may have been archived.'))} onRetry={() => router.back()} />;
+  if (!task)
+    return <ErrorState error={new Error(t("This chore wasn't found. It may have been archived."))} onRetry={() => router.back()} />;
   const me = hh.me?.id;
   const mine = task.effectiveAssigneeId === me || (task.effectiveAssigneeId === null && (!task.claimedBy || task.claimedBy === me));
   const canEdit = hh.isAdmin || task.createdBy === me;
@@ -54,7 +55,7 @@ export default function TaskDetail() {
       setPhoto({ uri, key, uploading: false });
     } catch (e) {
       setPhoto(null);
-      toast(e instanceof Error ? e.message : t('The photo didn\'t upload.'), 'error');
+      toast(e instanceof Error ? e.message : t("The photo didn't upload."), 'error');
     }
   };
 
@@ -72,13 +73,30 @@ export default function TaskDetail() {
     <Screen
       footer={
         !task.doneThisPeriod && mine && !task.checklist?.length ? (
-          <Button full icon="check" title={t('Mark done · +{{n}}', { n: task.reward })} loading={complete.isPending} disabled={photo?.uploading} onPress={() => doComplete()} />
+          <Button
+            full
+            icon="check"
+            title={t('Mark done · +{{n}}', { n: task.reward })}
+            loading={complete.isPending}
+            disabled={photo?.uploading}
+            onPress={() => doComplete()}
+          />
         ) : undefined
       }
     >
       <Header
         title={`${task.emoji ? `${task.emoji} ` : ''}${task.title}`}
-        right={canEdit ? <Button small kind="soft" icon="edit" title={t('Edit')} onPress={() => router.push({ pathname: '/task/edit', params: { id: task.id } })} /> : undefined}
+        right={
+          canEdit ? (
+            <Button
+              small
+              kind="soft"
+              icon="edit"
+              title={t('Edit')}
+              onPress={() => router.push({ pathname: '/task/edit', params: { id: task.id } })}
+            />
+          ) : undefined
+        }
       />
       <Card style={{ gap: 10 }}>
         <Row style={{ justifyContent: 'space-between' }}>
@@ -89,15 +107,24 @@ export default function TaskDetail() {
             </Text>
           ) : null}
         </Row>
-        {task.recurrence ? <Text color="soft">🔁 {t(describeRecurrence(task.recurrence))}{task.recurrence.dueTime ? ` · ${t('due {{time}}', { time: task.recurrence.dueTime })}` : ''}</Text> : null}
+        {task.recurrence ? (
+          <Text color="soft">
+            🔁 {t(describeRecurrence(task.recurrence))}
+            {task.recurrence.dueTime ? ` · ${t('due {{time}}', { time: task.recurrence.dueTime })}` : ''}
+          </Text>
+        ) : null}
         {task.dueAt ? <Text color="soft">📅 {t('Due {{date}}', { date: new Date(task.dueAt).toLocaleString() })}</Text> : null}
         {task.streak ? (
           <Text color="accent" variant="bodyBold">
             🔥 {t('Streak {{n}} · best {{best}}', { n: task.streak.current, best: task.streak.best })}
-            {task.streakRule ? ` · ${t('+{{bonus}} every {{every}} in a row', { bonus: task.streakRule.bonus, every: task.streakRule.every })}` : ''}
+            {task.streakRule
+              ? ` · ${t('+{{bonus}} every {{every}} in a row', { bonus: task.streakRule.bonus, every: task.streakRule.every })}`
+              : ''}
           </Text>
         ) : task.streakRule ? (
-          <Text color="accent">{t('Streak bonus: +{{bonus}} every {{every}} in a row', { bonus: task.streakRule.bonus, every: task.streakRule.every })}</Text>
+          <Text color="accent">
+            {t('Streak bonus: +{{bonus}} every {{every}} in a row', { bonus: task.streakRule.bonus, every: task.streakRule.every })}
+          </Text>
         ) : null}
         {task.requiresApproval ? <Text color="soft">✋ {t('Someone else approves this one before coins are paid.')}</Text> : null}
         {task.notes ? <Text>{task.notes}</Text> : null}
@@ -105,10 +132,16 @@ export default function TaskDetail() {
           {task.effectiveAssigneeId ? (
             <>
               <Avatar name={hh.name(task.effectiveAssigneeId)} color={hh.color(task.effectiveAssigneeId)} size={28} />
-              <Text variant="bodyBold">{task.rotation?.length ? t("{{name}}'s turn", { name: hh.name(task.effectiveAssigneeId) }) : hh.name(task.effectiveAssigneeId)}</Text>
+              <Text variant="bodyBold">
+                {task.rotation?.length
+                  ? t("{{name}}'s turn", { name: hh.name(task.effectiveAssigneeId) })
+                  : hh.name(task.effectiveAssigneeId)}
+              </Text>
             </>
           ) : (
-            <Text variant="bodyBold">{task.claimedBy ? t('Claimed by {{name}}', { name: hh.name(task.claimedBy) }) : t('In the pool: anyone can do it')}</Text>
+            <Text variant="bodyBold">
+              {task.claimedBy ? t('Claimed by {{name}}', { name: hh.name(task.claimedBy) }) : t('In the pool: anyone can do it')}
+            </Text>
           )}
         </Row>
         {task.rotation?.length ? (
@@ -133,7 +166,18 @@ export default function TaskDetail() {
                   style={{ paddingVertical: 8 }}
                 >
                   <Row>
-                    <View style={{ width: 28, height: 28, borderRadius: 8, borderWidth: 2.5, borderColor: theme.c.primary, backgroundColor: done ? theme.c.primary : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+                    <View
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 8,
+                        borderWidth: 2.5,
+                        borderColor: theme.c.primary,
+                        backgroundColor: done ? theme.c.primary : 'transparent',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
                       {done ? <Icon name="check" size={16} color={theme.c.onPrimary} strokeWidth={3} /> : null}
                     </View>
                     <Text style={{ flex: 1, textDecorationLine: done ? 'line-through' : 'none' }} color={done ? 'soft' : 'ink'}>
@@ -171,13 +215,26 @@ export default function TaskDetail() {
       <Stack gap={8}>
         {task.effectiveAssigneeId === null && !task.doneThisPeriod ? (
           task.claimedBy === me ? (
-            <Button kind="ghost" title={t('Release it back to the pool')} onPress={() => act.mutate(() => actions.claimTask({ id: task.id, claim: false }))} />
+            <Button
+              kind="ghost"
+              title={t('Release it back to the pool')}
+              onPress={() => act.mutate(() => actions.claimTask({ id: task.id, claim: false }))}
+            />
           ) : !task.claimedBy ? (
-            <Button kind="secondary" title={t("Claim it: I'll do this")} onPress={() => act.mutate(() => actions.claimTask({ id: task.id, claim: true }))} />
+            <Button
+              kind="secondary"
+              title={t("Claim it: I'll do this")}
+              onPress={() => act.mutate(() => actions.claimTask({ id: task.id, claim: true }))}
+            />
           ) : null
         ) : null}
         {task.rotation?.length && (task.effectiveAssigneeId === me || hh.isAdmin) ? (
-          <Button kind="ghost" icon="swap" title={t('Skip to the next person')} onPress={() => act.mutate(() => actions.rotateTask({ id: task.id, by: 1 }))} />
+          <Button
+            kind="ghost"
+            icon="swap"
+            title={t('Skip to the next person')}
+            onPress={() => act.mutate(() => actions.rotateTask({ id: task.id, by: 1 }))}
+          />
         ) : null}
         {canEdit ? (
           <Button
@@ -185,7 +242,14 @@ export default function TaskDetail() {
             icon="trash"
             title={t('Archive chore')}
             onPress={async () => {
-              if (await confirm({ title: t('Archive "{{task}}"?', { task: task.title }), message: t('It disappears from the list. History and coins stay.'), confirm: t('Archive'), danger: true })) {
+              if (
+                await confirm({
+                  title: t('Archive "{{task}}"?', { task: task.title }),
+                  message: t('It disappears from the list. History and coins stay.'),
+                  confirm: t('Archive'),
+                  danger: true,
+                })
+              ) {
                 act.mutate(() => actions.archiveTask({ id: task.id }), { onSuccess: () => router.back() });
               }
             }}

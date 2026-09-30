@@ -17,6 +17,8 @@ jobs:
         run: npx -y npm@11.20.0 ci
       - name: Unit & API tests
         run: npm test
+      - name: Format
+        run: npm run lint
       - name: Typecheck
         run: npm run typecheck
       - name: Web build (PWA)

@@ -1,15 +1,7 @@
 import { CoinError } from '@pobe/core';
 
 export type ErrorCode =
-  | 'BAD_REQUEST'
-  | 'UNAUTHORIZED'
-  | 'FORBIDDEN'
-  | 'NOT_FOUND'
-  | 'CONFLICT'
-  | 'INSUFFICIENT'
-  | 'QUOTA'
-  | 'RATE_LIMITED'
-  | 'GONE';
+  'BAD_REQUEST' | 'UNAUTHORIZED' | 'FORBIDDEN' | 'NOT_FOUND' | 'CONFLICT' | 'INSUFFICIENT' | 'QUOTA' | 'RATE_LIMITED' | 'GONE';
 
 const STATUS: Record<ErrorCode, number> = {
   BAD_REQUEST: 400,

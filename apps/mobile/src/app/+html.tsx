@@ -20,10 +20,15 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="apple-mobile-web-app-title" content="Pobe" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <ScrollViewStyleReset />
-        <style dangerouslySetInnerHTML={{ __html: 'html,body{background:#FFF5F8}@media (prefers-color-scheme: dark){html,body{background:#1E1418}}' }} />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: 'html,body{background:#FFF5F8}@media (prefers-color-scheme: dark){html,body{background:#1E1418}}',
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
-            __html: "if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})})}",
+            __html:
+              "if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})})}",
           }}
         />
       </head>

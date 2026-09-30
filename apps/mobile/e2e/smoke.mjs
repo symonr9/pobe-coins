@@ -36,7 +36,10 @@ try {
 
   let before = 0;
   await step('home shows the purse', async () => {
-    const total = await page.getByLabel(/^\d+ coins$/).first().getAttribute('aria-label');
+    const total = await page
+      .getByLabel(/^\d+ coins$/)
+      .first()
+      .getAttribute('aria-label');
     before = Number(total?.split(' ')[0]);
     assert.ok(before >= 0);
   });
@@ -46,7 +49,10 @@ try {
     await page.getByText('Pool', { exact: true }).click();
     await page.getByRole('checkbox').first().waitFor();
     await page.getByRole('checkbox').first().click();
-    await page.getByText(/^\+\d+$/).first().waitFor({ timeout: 5000 });
+    await page
+      .getByText(/^\+\d+$/)
+      .first()
+      .waitFor({ timeout: 5000 });
   });
 
   await step('log a purchase with change', async () => {

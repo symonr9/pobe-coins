@@ -56,7 +56,8 @@ export function useTimeline(memberId?: string) {
   const ready = useReady();
   return useInfiniteQuery({
     queryKey: k('timeline', memberId ?? 'all'),
-    queryFn: ({ pageParam }) => get<TimelinePage>(`/timeline?limit=30${memberId ? `&memberId=${memberId}` : ''}${pageParam ? `&cursor=${pageParam}` : ''}`),
+    queryFn: ({ pageParam }) =>
+      get<TimelinePage>(`/timeline?limit=30${memberId ? `&memberId=${memberId}` : ''}${pageParam ? `&cursor=${pageParam}` : ''}`),
     initialPageParam: '' as string,
     getNextPageParam: (last) => last.nextCursor ?? undefined,
     enabled: ready,
@@ -78,19 +79,32 @@ export function useGoals() {
 export function useApprovals() {
   const k = useKey();
   const ready = useReady();
-  return useQuery({ queryKey: k('approvals'), queryFn: () => get<{ completions: any[]; purchases: any[] }>('/approvals'), refetchInterval: 60_000, enabled: ready });
+  return useQuery({
+    queryKey: k('approvals'),
+    queryFn: () => get<{ completions: any[]; purchases: any[] }>('/approvals'),
+    refetchInterval: 60_000,
+    enabled: ready,
+  });
 }
 
 export function useStats(memberId?: string, weeks = 12) {
   const k = useKey();
   const ready = useReady();
-  return useQuery({ queryKey: k('stats', memberId ?? 'all', weeks), queryFn: () => get<StatsResponse>(`/stats?weeks=${weeks}${memberId ? `&memberId=${memberId}` : ''}`), enabled: ready });
+  return useQuery({
+    queryKey: k('stats', memberId ?? 'all', weeks),
+    queryFn: () => get<StatsResponse>(`/stats?weeks=${weeks}${memberId ? `&memberId=${memberId}` : ''}`),
+    enabled: ready,
+  });
 }
 
 export function useWrapped(period: string, memberId?: string) {
   const k = useKey();
   const ready = useReady();
-  return useQuery({ queryKey: k('wrapped', period, memberId ?? 'me'), queryFn: () => get<WrappedResponse>(`/wrapped/${period}${memberId ? `?memberId=${memberId}` : ''}`), enabled: ready });
+  return useQuery({
+    queryKey: k('wrapped', period, memberId ?? 'me'),
+    queryFn: () => get<WrappedResponse>(`/wrapped/${period}${memberId ? `?memberId=${memberId}` : ''}`),
+    enabled: ready,
+  });
 }
 
 export function useChallenges() {
@@ -108,7 +122,11 @@ export function usePurchase(id: string) {
 export function useSocial(itemId: string) {
   const k = useKey();
   const ready = useReady();
-  return useQuery({ queryKey: k('social', itemId), queryFn: () => get<{ reactions: Reaction[]; comments: Comment[] }>(`/items/${itemId}/social`), enabled: ready });
+  return useQuery({
+    queryKey: k('social', itemId),
+    queryFn: () => get<{ reactions: Reaction[]; comments: Comment[] }>(`/items/${itemId}/social`),
+    enabled: ready,
+  });
 }
 
 export function useLinks(enabled = true) {
@@ -132,7 +150,12 @@ export function useAudit() {
 export function useWidgetSnapshot(enabled: boolean) {
   const k = useKey();
   const ready = useReady();
-  return useQuery({ queryKey: k('widget'), queryFn: () => get<WidgetSnapshot>('/widget'), enabled: enabled && ready, staleTime: 5 * 60_000 });
+  return useQuery({
+    queryKey: k('widget'),
+    queryFn: () => get<WidgetSnapshot>('/widget'),
+    enabled: enabled && ready,
+    staleTime: 5 * 60_000,
+  });
 }
 
 /** Invalidates everything money-related after a change. */
@@ -149,7 +172,8 @@ export function useAction<TVars, TResult = any>(fn: (vars: TVars) => Promise<TRe
 }
 
 export const actions = {
-  completeTask: (v: { id: string; note?: string; photoKey?: string; checklistItemId?: string }) => post(`/tasks/${v.id}/complete`, { note: v.note, photoKey: v.photoKey, checklistItemId: v.checklistItemId }),
+  completeTask: (v: { id: string; note?: string; photoKey?: string; checklistItemId?: string }) =>
+    post(`/tasks/${v.id}/complete`, { note: v.note, photoKey: v.photoKey, checklistItemId: v.checklistItemId }),
   claimTask: (v: { id: string; claim: boolean }) => post(`/tasks/${v.id}/${v.claim ? 'claim' : 'release'}`),
   rotateTask: (v: { id: string; by: number }) => post(`/tasks/${v.id}/rotate`, { by: v.by }),
   createTask: (v: any) => post('/tasks', v),
@@ -176,15 +200,18 @@ export const actions = {
   correction: (v: { memberId: string; delta: number; reason: string }) => post('/corrections', v),
   createChallenge: (v: any) => post('/challenges', v),
   deleteChallenge: (v: { id: string }) => del(`/challenges/${v.id}`),
-  react: (v: { itemId: string; emoji: string | null }) => (v.emoji ? put(`/items/${v.itemId}/reaction`, { emoji: v.emoji }) : del(`/items/${v.itemId}/reaction`)),
-  comment: (v: { itemId: string; text: string; ownerId?: string }) => post(`/items/${v.itemId}/comments`, { text: v.text, ownerId: v.ownerId }),
+  react: (v: { itemId: string; emoji: string | null }) =>
+    v.emoji ? put(`/items/${v.itemId}/reaction`, { emoji: v.emoji }) : del(`/items/${v.itemId}/reaction`),
+  comment: (v: { itemId: string; text: string; ownerId?: string }) =>
+    post(`/items/${v.itemId}/comments`, { text: v.text, ownerId: v.ownerId }),
   deleteComment: (v: { itemId: string; id: string }) => del(`/items/${v.itemId}/comments/${v.id}`),
   updateHousehold: (v: any) => patch('/household', v),
   deleteHousehold: () => del('/household'),
   addMember: (v: { name: string; role?: string }) => post('/members', v),
   updateMember: (v: { id: string } & Record<string, unknown>) => patch(`/members/${v.id}`, { ...v, id: undefined }),
   removeMember: (v: { id: string }) => del(`/members/${v.id}`),
-  createLink: (v: { memberId: string; expiresInHours?: number }) => post<{ token: string; url: string; expiresAt: string; id: string }>('/links', v),
+  createLink: (v: { memberId: string; expiresInHours?: number }) =>
+    post<{ token: string; url: string; expiresAt: string; id: string }>('/links', v),
   deleteLink: (v: { id: string }) => del(`/links/${v.id}`),
   revokeDevice: (v: { id: string }) => del(`/devices/${v.id}`),
   createHousehold: (v: { name: string; memberName: string; timeZone: string; templateIds: string[] }) => post('/households', v),

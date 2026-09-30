@@ -37,7 +37,12 @@ export function setAuthBridge(b: AuthBridge) {
   bridge = b;
 }
 
-export async function api<T = any>(method: string, path: string, body?: unknown, opts: { token?: string | null; auth?: boolean } = {}): Promise<T> {
+export async function api<T = any>(
+  method: string,
+  path: string,
+  body?: unknown,
+  opts: { token?: string | null; auth?: boolean } = {},
+): Promise<T> {
   const headers: Record<string, string> = { accept: 'application/json' };
   if (body !== undefined) headers['content-type'] = 'application/json';
   const token = opts.token !== undefined ? opts.token : opts.auth === false ? null : await bridge.token();

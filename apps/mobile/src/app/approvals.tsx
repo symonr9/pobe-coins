@@ -28,7 +28,7 @@ export default function Approvals() {
       haptic.success();
       toast(v.approve ? t('Approved!') : t('Sent back'), 'success');
     },
-    onError: (e) => toast(e instanceof ApiError ? e.message : t('That didn\'t work.'), 'error'),
+    onError: (e) => toast(e instanceof ApiError ? e.message : t("That didn't work."), 'error'),
     onSettled: () => refresh(),
   });
   // Web Push action buttons land here as ?approve=completion:<id> or ?reject=purchase:<id>.
@@ -61,15 +61,29 @@ export default function Approvals() {
                 <View style={{ flex: 1 }}>
                   <Text variant="title">{c.taskTitle}</Text>
                   <Text variant="small" color="soft">
-                    {t('{{name}} · {{time}}', { name: hh.name(c.memberId), time: new Date(c.createdAt).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' }) })}
+                    {t('{{name}} · {{time}}', {
+                      name: hh.name(c.memberId),
+                      time: new Date(c.createdAt).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' }),
+                    })}
                   </Text>
                 </View>
                 <CoinAmount amount={c.reward} sign />
               </Row>
               {c.note ? <Text color="soft">“{c.note}”</Text> : null}
               <Row>
-                <Button small title={t('Approve')} icon="check" loading={decide.isPending && decide.variables?.id === c.id} onPress={() => decide.mutate({ kind: 'completion', id: c.id, approve: true })} />
-                <Button small kind="ghost" title={t('Not yet')} onPress={() => decide.mutate({ kind: 'completion', id: c.id, approve: false })} />
+                <Button
+                  small
+                  title={t('Approve')}
+                  icon="check"
+                  loading={decide.isPending && decide.variables?.id === c.id}
+                  onPress={() => decide.mutate({ kind: 'completion', id: c.id, approve: true })}
+                />
+                <Button
+                  small
+                  kind="ghost"
+                  title={t('Not yet')}
+                  onPress={() => decide.mutate({ kind: 'completion', id: c.id, approve: false })}
+                />
               </Row>
             </Card>
           ))}
@@ -91,9 +105,24 @@ export default function Approvals() {
                 <CoinAmount amount={-p.amount} sign />
               </Row>
               <Row wrap>
-                <Button small title={t('Approve')} icon="check" onPress={() => decide.mutate({ kind: 'purchase', id: p.id, approve: true })} />
-                <Button small kind="ghost" title={t('Decline')} onPress={() => decide.mutate({ kind: 'purchase', id: p.id, approve: false })} />
-                <Button small kind="ghost" title={t('Details')} onPress={() => router.push({ pathname: '/purchase/[id]', params: { id: p.id } })} />
+                <Button
+                  small
+                  title={t('Approve')}
+                  icon="check"
+                  onPress={() => decide.mutate({ kind: 'purchase', id: p.id, approve: true })}
+                />
+                <Button
+                  small
+                  kind="ghost"
+                  title={t('Decline')}
+                  onPress={() => decide.mutate({ kind: 'purchase', id: p.id, approve: false })}
+                />
+                <Button
+                  small
+                  kind="ghost"
+                  title={t('Details')}
+                  onPress={() => router.push({ pathname: '/purchase/[id]', params: { id: p.id } })}
+                />
               </Row>
             </Card>
           ))}

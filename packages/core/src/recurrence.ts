@@ -72,7 +72,11 @@ function dtf(timeZone: string) {
 }
 
 function zonedParts(instant: Date, timeZone: string) {
-  const parts = Object.fromEntries(dtf(timeZone).formatToParts(instant).map((p) => [p.type, p.value]));
+  const parts = Object.fromEntries(
+    dtf(timeZone)
+      .formatToParts(instant)
+      .map((p) => [p.type, p.value]),
+  );
   return {
     year: Number(parts.year),
     month: Number(parts.month),

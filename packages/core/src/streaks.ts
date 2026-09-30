@@ -25,17 +25,11 @@ export interface StreakUpdate {
 }
 
 /** Applies a completion in `period` to a streak. */
-export function applyCompletion(
-  rule: Recurrence,
-  streak: Streak,
-  period: LocalDate,
-  streakRule?: StreakRule,
-): StreakUpdate {
+export function applyCompletion(rule: Recurrence, streak: Streak, period: LocalDate, streakRule?: StreakRule): StreakUpdate {
   if (streak.lastPeriodKey === period || (streak.lastPeriodKey && period < streak.lastPeriodKey)) {
     return { streak, bonus: 0, milestone: false, duplicate: true };
   }
-  const continues =
-    streak.lastPeriodKey !== undefined && followingOccurrence(rule, streak.lastPeriodKey) === period;
+  const continues = streak.lastPeriodKey !== undefined && followingOccurrence(rule, streak.lastPeriodKey) === period;
   const current = continues ? streak.current + 1 : 1;
   const next: Streak = { current, best: Math.max(streak.best, current), lastPeriodKey: period };
   const milestone = !!streakRule && streakRule.every > 0 && current % streakRule.every === 0;

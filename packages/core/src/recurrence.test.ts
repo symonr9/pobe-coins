@@ -64,19 +64,13 @@ describe('time zones', () => {
 
   it('converts wall time across DST', () => {
     // US DST starts 2026-03-08. 09:00 local is 17:00Z before and 16:00Z after.
-    expect(zonedTimeToUtc('2026-03-07', '09:00', 'America/Los_Angeles').toISOString()).toBe(
-      '2026-03-07T17:00:00.000Z',
-    );
-    expect(zonedTimeToUtc('2026-03-09', '09:00', 'America/Los_Angeles').toISOString()).toBe(
-      '2026-03-09T16:00:00.000Z',
-    );
+    expect(zonedTimeToUtc('2026-03-07', '09:00', 'America/Los_Angeles').toISOString()).toBe('2026-03-07T17:00:00.000Z');
+    expect(zonedTimeToUtc('2026-03-09', '09:00', 'America/Los_Angeles').toISOString()).toBe('2026-03-09T16:00:00.000Z');
   });
 
   it('due at end of period by default, or at dueTime', () => {
     expect(dueAt(daily, '2026-06-01', 'UTC').toISOString()).toBe('2026-06-01T23:59:59.000Z');
-    expect(dueAt({ ...daily, dueTime: '20:30' }, '2026-06-01', 'Asia/Tokyo').toISOString()).toBe(
-      '2026-06-01T11:30:00.000Z',
-    );
+    expect(dueAt({ ...daily, dueTime: '20:30' }, '2026-06-01', 'Asia/Tokyo').toISOString()).toBe('2026-06-01T11:30:00.000Z');
   });
 });
 

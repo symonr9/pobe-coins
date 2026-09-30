@@ -35,12 +35,16 @@ export async function uploadPhoto(uri: string, purpose: PhotoPurpose): Promise<s
   const small = await shrink(uri);
   const blob = await (await fetch(small)).blob();
   const bytes = Math.max(1, blob.size || 500_000);
-  const target = await post<{ key: string; url: string; fields: Record<string, string> }>('/uploads', { contentType: 'image/jpeg', bytes, purpose });
+  const target = await post<{ key: string; url: string; fields: Record<string, string> }>('/uploads', {
+    contentType: 'image/jpeg',
+    bytes,
+    purpose,
+  });
   const form = new FormData();
   for (const [k, v] of Object.entries(target.fields)) form.append(k, v);
   if (Platform.OS === 'web') form.append('file', blob, 'photo.jpg');
   else form.append('file', { uri: small, name: 'photo.jpg', type: 'image/jpeg' } as unknown as Blob);
   const res = await fetch(target.url, { method: 'POST', body: form });
-  if (!res.ok && res.status !== 204) throw new Error('The photo didn\'t upload. Please try again.');
+  if (!res.ok && res.status !== 204) throw new Error("The photo didn't upload. Please try again.");
   return target.key;
 }

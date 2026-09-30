@@ -57,8 +57,7 @@ function eyes(pose: ChubbyPose): string {
 function mouth(pose: ChubbyPose): string {
   if (pose === 'sleepy') return `<ellipse cx="120" cy="156" rx="4" ry="3.2" fill="${INK}" opacity="0.75"/>`;
   if (pose === 'thinking') return `<path d="M115 155 q5 4 10 0" stroke="${INK}" stroke-width="3.2" stroke-linecap="round" fill="none"/>`;
-  if (pose === 'cheer')
-    return `<path d="M110 152 q10 14 20 0 z" fill="${INK}"/><path d="M114 157 q6 5 12 0" fill="#F58FA8"/>`;
+  if (pose === 'cheer') return `<path d="M110 152 q10 14 20 0 z" fill="${INK}"/><path d="M114 157 q6 5 12 0" fill="#F58FA8"/>`;
   return `<path d="M111 153 q4.5 5 9 0 q4.5 5 9 0" stroke="${INK}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
 }
 

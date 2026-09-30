@@ -13,14 +13,22 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import { ConditionFailed, type Condition, type Db, type Item, type Key, type QueryOptions, type WriteOp } from './types';
 
-type Expr = { ConditionExpression?: string; ExpressionAttributeNames?: Record<string, string>; ExpressionAttributeValues?: Record<string, unknown> };
+type Expr = {
+  ConditionExpression?: string;
+  ExpressionAttributeNames?: Record<string, string>;
+  ExpressionAttributeValues?: Record<string, unknown>;
+};
 
 function condition(cond: Condition | undefined): Expr {
   if (!cond) return {};
   if ('notExists' in cond) return { ConditionExpression: 'attribute_not_exists(pk)' };
   if ('exists' in cond) return { ConditionExpression: 'attribute_exists(pk)' };
   if ('version' in cond)
-    return { ConditionExpression: '#v = :v', ExpressionAttributeNames: { '#v': 'version' }, ExpressionAttributeValues: { ':v': cond.version } };
+    return {
+      ConditionExpression: '#v = :v',
+      ExpressionAttributeNames: { '#v': 'version' },
+      ExpressionAttributeValues: { ':v': cond.version },
+    };
   if ('fieldMissing' in cond)
     return {
       ConditionExpression: 'attribute_exists(pk) AND attribute_not_exists(#f)',
@@ -148,7 +156,12 @@ export class DynamoDb implements Db {
       if ('check' in op) {
         const c = condition(op.if);
         return {
-          ConditionCheck: cleanExpr({ TableName: this.table, Key: { pk: op.check.pk, sk: op.check.sk }, ...c, ConditionExpression: c.ConditionExpression! }),
+          ConditionCheck: cleanExpr({
+            TableName: this.table,
+            Key: { pk: op.check.pk, sk: op.check.sk },
+            ...c,
+            ConditionExpression: c.ConditionExpression!,
+          }),
         };
       }
       return { Update: cleanExpr({ TableName: this.table, Key: { pk: op.increment.pk, sk: op.increment.sk }, ...incrementExpr(op) }) };
@@ -173,9 +186,13 @@ export class DynamoDb implements Db {
   private async single(op: WriteOp) {
     if ('put' in op) await this.doc.send(new PutCommand(cleanExpr({ TableName: this.table, Item: op.put, ...condition(op.if) })));
     else if ('delete' in op)
-      await this.doc.send(new DeleteCommand(cleanExpr({ TableName: this.table, Key: { pk: op.delete.pk, sk: op.delete.sk }, ...condition(op.if) })));
+      await this.doc.send(
+        new DeleteCommand(cleanExpr({ TableName: this.table, Key: { pk: op.delete.pk, sk: op.delete.sk }, ...condition(op.if) })),
+      );
     else if ('increment' in op)
-      await this.doc.send(new UpdateCommand(cleanExpr({ TableName: this.table, Key: { pk: op.increment.pk, sk: op.increment.sk }, ...incrementExpr(op) })));
+      await this.doc.send(
+        new UpdateCommand(cleanExpr({ TableName: this.table, Key: { pk: op.increment.pk, sk: op.increment.sk }, ...incrementExpr(op) })),
+      );
   }
 
   async put(item: Item, cond?: Condition) {
@@ -190,7 +207,9 @@ export class DynamoDb implements Db {
     const op = { increment: key, field, by, max, init };
     try {
       const r = await this.doc.send(
-        new UpdateCommand(cleanExpr({ TableName: this.table, Key: { pk: key.pk, sk: key.sk }, ...incrementExpr(op), ReturnValues: 'UPDATED_NEW' })),
+        new UpdateCommand(
+          cleanExpr({ TableName: this.table, Key: { pk: key.pk, sk: key.sk }, ...incrementExpr(op), ReturnValues: 'UPDATED_NEW' }),
+        ),
       );
       return Number(r.Attributes?.[field] ?? 0);
     } catch (err) {

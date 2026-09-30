@@ -45,9 +45,16 @@ async function main() {
   // Android adaptive icon: foreground inside the 66% safe zone on transparent.
   await shot(page(1024, 'transparent', happy, 0.56), 1024, join(assets, 'icons', 'adaptive-foreground.png'), true);
   // Splash: waving Chubbybara on transparent (background color set in config).
-  await shot(page(512, 'transparent', chubbybaraSvg({ pose: 'wave', accent: pink.primary, id: 's' }), 0.9), 512, join(assets, 'icons', 'splash.png'), true);
+  await shot(
+    page(512, 'transparent', chubbybaraSvg({ pose: 'wave', accent: pink.primary, id: 's' }), 0.9),
+    512,
+    join(assets, 'icons', 'splash.png'),
+    true,
+  );
   // Android notification icon: white coin silhouette.
-  const coinWhite = coinSvg(25).replace(/fill="#[0-9A-Fa-f]{6}"/g, 'fill="#FFFFFF"').replace(/stroke="#[0-9A-Fa-f]{6}"/g, 'stroke="#FFFFFF"');
+  const coinWhite = coinSvg(25)
+    .replace(/fill="#[0-9A-Fa-f]{6}"/g, 'fill="#FFFFFF"')
+    .replace(/stroke="#[0-9A-Fa-f]{6}"/g, 'stroke="#FFFFFF"');
   await shot(page(96, 'transparent', coinWhite, 0.8), 96, join(assets, 'icons', 'notification.png'), true);
   // Web / PWA
   const bg = `radial-gradient(circle at 50% 35%, ${pink.surfaceAlt}, ${pink.primary})`;
@@ -57,7 +64,8 @@ async function main() {
   await shot(page(512, pink.primary, happy, 0.6), 512, join(pub, 'icons', 'maskable-512.png'));
   await shot(page(180, bg, happy, 0.8), 180, join(pub, 'icons', 'apple-touch-icon.png'));
   // Coin art as PNG for the Android widget and notifications.
-  for (const d of [1, 5, 10, 25, 50, 100]) await shot(page(128, 'transparent', coinSvg(d), 1), 128, join(assets, 'icons', `coin-${d}.png`), true);
+  for (const d of [1, 5, 10, 25, 50, 100])
+    await shot(page(128, 'transparent', coinSvg(d), 1), 128, join(assets, 'icons', `coin-${d}.png`), true);
   await browser.close();
   writeFileSync(join(assets, 'sounds', 'coin.wav'), coinSound());
   console.log('assets written');

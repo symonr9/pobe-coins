@@ -104,11 +104,7 @@ export async function createHousehold(deps: Deps, user: { sub: string; name?: st
   return { household, member: admin };
 }
 
-export async function updateHousehold(
-  deps: Deps,
-  actor: Actor,
-  input: { name?: string; settings?: Partial<HouseholdSettings> },
-) {
+export async function updateHousehold(deps: Deps, actor: Actor, input: { name?: string; settings?: Partial<HouseholdSettings> }) {
   requireAdmin(actor);
   const h = await getHousehold(deps, actor.householdId);
   const settings = { ...h.settings, ...input.settings };
@@ -207,10 +203,10 @@ export async function removeMember(deps: Deps, actor: Actor, memberId: string) {
   if (!self) requireAdmin(actor);
   const members = await listMembers(deps, actor.householdId);
   const m = members.find((x) => x.id === memberId);
-  if (!m) throw new ApiError('NOT_FOUND', 'That member wasn\'t found.');
+  if (!m) throw new ApiError('NOT_FOUND', "That member wasn't found.");
   const admins = members.filter((x) => x.role === 'admin');
   if (m.role === 'admin' && admins.length === 1 && members.length > 1) {
-    throw new ApiError('CONFLICT', 'You\'re the only admin. Make someone else an admin first, or delete the household.');
+    throw new ApiError('CONFLICT', "You're the only admin. Make someone else an admin first, or delete the household.");
   }
   if (members.length === 1) {
     await deleteHousehold(deps, { ...actor, role: 'admin' });
@@ -218,16 +214,16 @@ export async function removeMember(deps: Deps, actor: Actor, memberId: string) {
   }
   const rows = await deps.db.query<Item & { memberId?: string; hash?: string }>(partition(actor.householdId));
   const personal = rows.filter(
-    (r) =>
-      (r.sk.startsWith('D#') && r.memberId === memberId) ||
-      r.sk.startsWith(`PT#${memberId}#`) ||
-      r.sk === `CALREF#${memberId}`,
+    (r) => (r.sk.startsWith('D#') && r.memberId === memberId) || r.sk.startsWith(`PT#${memberId}#`) || r.sk === `CALREF#${memberId}`,
   );
-  const tombstone: Member = { ...m, name: 'Former member', userSub: undefined, deletedAt: deps.now().toISOString(), version: m.version + 1 };
-  await deps.db.transact([
-    { put: toItem.member(tombstone), if: { version: m.version } },
-    auditOp(deps, actor, 'member.remove', memberId),
-  ]);
+  const tombstone: Member = {
+    ...m,
+    name: 'Former member',
+    userSub: undefined,
+    deletedAt: deps.now().toISOString(),
+    version: m.version + 1,
+  };
+  await deps.db.transact([{ put: toItem.member(tombstone), if: { version: m.version } }, auditOp(deps, actor, 'member.remove', memberId)]);
   for (const r of personal) {
     await deps.db.delete({ pk: r.pk, sk: r.sk });
     if (r.sk.startsWith('CALREF#') && r.hash) await deps.db.delete(keys.calendar(r.hash)).catch(() => undefined);
@@ -247,7 +243,8 @@ export async function deleteAccount(deps: Deps, actor: Actor | null, sub?: strin
     for (const link of links) {
       if (actor && link.householdId === actor.householdId) continue;
       const m = await getMember(deps, link.householdId, link.memberId).catch(() => null);
-      if (m) await removeMember(deps, { householdId: link.householdId, memberId: m.id, role: m.role, principal: { kind: 'user', sub } }, m.id);
+      if (m)
+        await removeMember(deps, { householdId: link.householdId, memberId: m.id, role: m.role, principal: { kind: 'user', sub } }, m.id);
     }
     await deps.db.deletePartition(`U#${sub}`);
   }

@@ -178,7 +178,7 @@ export function spendFrom(member: Member, amount: number, coinTypes: number[], d
 // ---------- simple transfers ----------
 
 export async function gift(deps: Deps, actor: Actor, toMemberId: string, amount: number, message?: string) {
-  if (toMemberId === actor.memberId) throw new ApiError('BAD_REQUEST', 'You can\'t send coins to yourself.');
+  if (toMemberId === actor.memberId) throw new ApiError('BAD_REQUEST', "You can't send coins to yourself.");
   const household = await getHousehold(deps, actor.householdId);
   const { coinTypes } = household.settings;
   return commitMoney(deps, async () => {
@@ -188,7 +188,14 @@ export async function gift(deps: Deps, actor: Actor, toMemberId: string, amount:
     const out = debit(from, amount, coinTypes, 0);
     const inn = credit(to, amount, coinTypes);
     const label = message ? `Gift: ${message}` : `Gift to ${to.name}`;
-    const outEntry = newEntry(deps, actor, from, 'GIFT_OUT', { value: -amount, label, coinsIn: out.coinsIn, coinsOut: out.coinsOut, counterpartId: to.id, ref: { type: 'member', id: to.id } });
+    const outEntry = newEntry(deps, actor, from, 'GIFT_OUT', {
+      value: -amount,
+      label,
+      coinsIn: out.coinsIn,
+      coinsOut: out.coinsOut,
+      counterpartId: to.id,
+      ref: { type: 'member', id: to.id },
+    });
     const inEntry = newEntry(deps, actor, to, 'GIFT_IN', {
       value: amount,
       label: message ? `Gift: ${message}` : `Gift from ${from.name}`,
@@ -197,16 +204,33 @@ export async function gift(deps: Deps, actor: Actor, toMemberId: string, amount:
       counterpartId: from.id,
       ref: { type: 'member', id: from.id },
     });
-    return { members: [out.member, inn.member], entries: [outEntry, inEntry], result: { from: out.member, to: inn.member, entries: [outEntry, inEntry] } };
+    return {
+      members: [out.member, inn.member],
+      entries: [outEntry, inEntry],
+      result: { from: out.member, to: inn.member, entries: [outEntry, inEntry] },
+    };
   });
 }
 
-export async function grantBonus(deps: Deps, actor: Actor, memberId: string, amount: number, reason: string, kind: 'BONUS' | 'CORRECTION' = 'BONUS') {
+export async function grantBonus(
+  deps: Deps,
+  actor: Actor,
+  memberId: string,
+  amount: number,
+  reason: string,
+  kind: 'BONUS' | 'CORRECTION' = 'BONUS',
+) {
   const household = await getHousehold(deps, actor.householdId);
   return commitMoney(deps, async () => {
     const m = await getMember(deps, actor.householdId, memberId);
     const c = credit(m, amount, household.settings.coinTypes);
-    const e = newEntry(deps, actor, m, kind, { value: amount, label: kind === 'BONUS' ? `Bonus: ${reason}` : `Correction: ${reason}`, coinsIn: c.coinsIn, debtDelta: c.debtDelta, reason });
+    const e = newEntry(deps, actor, m, kind, {
+      value: amount,
+      label: kind === 'BONUS' ? `Bonus: ${reason}` : `Correction: ${reason}`,
+      coinsIn: c.coinsIn,
+      debtDelta: c.debtDelta,
+      reason,
+    });
     return { members: [c.member], entries: [e], result: { member: c.member, entry: e } };
   });
 }
@@ -218,7 +242,14 @@ export async function correct(deps: Deps, actor: Actor, memberId: string, delta:
   return commitMoney(deps, async () => {
     const m = await getMember(deps, actor.householdId, memberId);
     const d = debit(m, -delta, household.settings.coinTypes, Number.MAX_SAFE_INTEGER);
-    const e = newEntry(deps, actor, m, 'CORRECTION', { value: delta, label: `Correction: ${reason}`, coinsIn: d.coinsIn, coinsOut: d.coinsOut, debtDelta: d.debtDelta, reason });
+    const e = newEntry(deps, actor, m, 'CORRECTION', {
+      value: delta,
+      label: `Correction: ${reason}`,
+      coinsIn: d.coinsIn,
+      coinsOut: d.coinsOut,
+      debtDelta: d.debtDelta,
+      reason,
+    });
     return { members: [d.member], entries: [e], result: { member: d.member, entry: e } };
   });
 }

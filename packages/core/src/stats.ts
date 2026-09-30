@@ -21,13 +21,7 @@ export interface WeekPoint {
 }
 
 /** Earned vs spent per week for the last `weeks` weeks (oldest first). */
-export function weeklySeries(
-  entries: LedgerEntry[],
-  timeZone: string,
-  now: Date,
-  weeks = 12,
-  memberId?: string,
-): WeekPoint[] {
+export function weeklySeries(entries: LedgerEntry[], timeZone: string, now: Date, weeks = 12, memberId?: string): WeekPoint[] {
   const thisWeek = weekStart(toLocalDate(now, timeZone));
   const points = new Map<LocalDate, WeekPoint>();
   for (let i = weeks - 1; i >= 0; i--) {
@@ -100,14 +94,7 @@ export interface Wrapped {
 }
 
 /** Pobe Wrapped recap for a member over [from, to). `bestStreak` comes from streak records. */
-export function wrapped(
-  entries: LedgerEntry[],
-  memberId: string,
-  from: Date,
-  to: Date,
-  timeZone: string,
-  bestStreak = 0,
-): Wrapped {
+export function wrapped(entries: LedgerEntry[], memberId: string, from: Date, to: Date, timeZone: string, bestStreak = 0): Wrapped {
   const mine = liveEntries(entries).filter((e) => {
     const t = new Date(e.createdAt);
     return e.memberId === memberId && t >= from && t < to;

@@ -69,11 +69,18 @@ function Overlay({ c, onClose }: { c: Celebration & { key: number }; onClose: ()
   }, [c]);
   return (
     <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(200)} style={StyleSheet.absoluteFill} pointerEvents="box-none">
-      <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(20,10,15,0.18)' }]} onPress={onClose} accessibilityLabel="Dismiss celebration" />
+      <Pressable
+        style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(20,10,15,0.18)' }]}
+        onPress={onClose}
+        accessibilityLabel="Dismiss celebration"
+      />
       {!reduce && c.big ? <Confetti colors={[t.c.primary, t.c.secondary, '#FCE6A6', '#C4EBD2', '#DCCDF8']} /> : null}
       <View style={styles.center} pointerEvents="none">
         {!reduce ? coins.map((d, i) => <FallingCoin key={`${c.key}-${i}`} denom={d} index={i} total={coins.length} />) : null}
-        <Animated.View entering={reduce ? FadeIn : ZoomIn.springify().damping(11)} style={[styles.card, { backgroundColor: t.c.surface, borderColor: t.c.line }]}>
+        <Animated.View
+          entering={reduce ? FadeIn : ZoomIn.springify().damping(11)}
+          style={[styles.card, { backgroundColor: t.c.surface, borderColor: t.c.line }]}
+        >
           <Chubby pose={c.pose ?? 'cheer'} size={110} bounceKey={c.key} />
           {c.amount ? (
             <Text variant="hero" color="success" center accessibilityLiveRegion="polite">
@@ -133,7 +140,23 @@ function Confetti({ colors }: { colors: string[] }) {
   );
 }
 
-function ConfettiBit({ x, dx, dy, rot, color, w, startY }: { x: number; dx: number; dy: number; rot: number; color: string; w: number; startY: number }) {
+function ConfettiBit({
+  x,
+  dx,
+  dy,
+  rot,
+  color,
+  w,
+  startY,
+}: {
+  x: number;
+  dx: number;
+  dy: number;
+  rot: number;
+  color: string;
+  w: number;
+  startY: number;
+}) {
   const p = useSharedValue(0);
   useEffect(() => {
     p.value = withTiming(1, { duration: 1800, easing: Easing.out(Easing.quad) });
@@ -142,10 +165,18 @@ function ConfettiBit({ x, dx, dy, rot, color, w, startY }: { x: number; dx: numb
     const up = -Math.sin(p.value * Math.PI) * 260;
     return {
       opacity: 1 - p.value * p.value,
-      transform: [{ translateX: x + dx * p.value }, { translateY: startY + up + dy * p.value * p.value }, { rotate: `${rot * p.value}deg` }],
+      transform: [
+        { translateX: x + dx * p.value },
+        { translateY: startY + up + dy * p.value * p.value },
+        { rotate: `${rot * p.value}deg` },
+      ],
     };
   });
-  return <Animated.View style={[{ position: 'absolute', left: 0, top: 0, width: w, height: w * 0.55, backgroundColor: color, borderRadius: 2 }, style]} />;
+  return (
+    <Animated.View
+      style={[{ position: 'absolute', left: 0, top: 0, width: w, height: w * 0.55, backgroundColor: color, borderRadius: 2 }, style]}
+    />
+  );
 }
 
 const styles = StyleSheet.create({

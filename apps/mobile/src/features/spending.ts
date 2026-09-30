@@ -21,8 +21,13 @@ export function useSpend() {
   const celebrate = useCelebrate();
   const refresh = useRefreshAll();
   return useCallback(
-    async <R extends { purchase?: { status: string; title: string } }>(label: string, amount: number, run: (allowIou: boolean) => Promise<R>): Promise<R | null> => {
-      if (prefs.biometricSpend && !(await confirmWithBiometrics(t('Spend {{n}} coins on {{item}}', { n: amount, item: label })))) return null;
+    async <R extends { purchase?: { status: string; title: string } }>(
+      label: string,
+      amount: number,
+      run: (allowIou: boolean) => Promise<R>,
+    ): Promise<R | null> => {
+      if (prefs.biometricSpend && !(await confirmWithBiometrics(t('Spend {{n}} coins on {{item}}', { n: amount, item: label }))))
+        return null;
       const attempt = async (allowIou: boolean): Promise<R | null> => {
         try {
           const r = await run(allowIou);
@@ -38,12 +43,14 @@ export function useSpend() {
           if (e instanceof ApiError && e.code === 'INSUFFICIENT' && e.details?.canBorrow > 0 && !allowIou) {
             const ok = await confirm({
               title: t('Borrow {{n}} coins?', { n: e.details.canBorrow }),
-              message: t('You have {{have}}. The rest goes on an IOU, and your next chores pay it back first.', { have: e.details.balance }),
+              message: t('You have {{have}}. The rest goes on an IOU, and your next chores pay it back first.', {
+                have: e.details.balance,
+              }),
               confirm: t('Borrow'),
             });
             return ok ? attempt(true) : null;
           }
-          toast(e instanceof ApiError ? e.message : t('That didn\'t go through.'), 'error');
+          toast(e instanceof ApiError ? e.message : t("That didn't go through."), 'error');
           return null;
         }
       };

@@ -29,11 +29,18 @@ export function loadConfig(): Config {
       env('COGNITO_USER_POOL_ID') && env('COGNITO_CLIENT_ID')
         ? { userPoolId: env('COGNITO_USER_POOL_ID'), clientId: env('COGNITO_CLIENT_ID') }
         : null,
-    appleAudiences: env('APPLE_AUDIENCES').split(',').map((s) => s.trim()).filter(Boolean),
+    appleAudiences: env('APPLE_AUDIENCES')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean),
     deviceTokenSecret: secret,
     vapid:
       env('VAPID_PUBLIC_KEY') && env('VAPID_PRIVATE_KEY')
-        ? { publicKey: env('VAPID_PUBLIC_KEY'), privateKey: env('VAPID_PRIVATE_KEY'), subject: env('VAPID_SUBJECT') || 'mailto:admin@example.com' }
+        ? {
+            publicKey: env('VAPID_PUBLIC_KEY'),
+            privateKey: env('VAPID_PRIVATE_KEY'),
+            subject: env('VAPID_SUBJECT') || 'mailto:admin@example.com',
+          }
         : null,
     expoAccessToken: env('EXPO_ACCESS_TOKEN') || undefined,
     exportFunctionName: env('EXPORT_FUNCTION_NAME') || undefined,
