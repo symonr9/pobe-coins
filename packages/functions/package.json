@@ -23,6 +23,7 @@
     "zod": "^4.1.0"
   },
   "devDependencies": {
+    "@hono/node-server": "^2.1.3",
     "@types/aws-lambda": "^8.10.164",
     "@types/node": "^22.0.0",
     "@types/web-push": "^3.6.4",
