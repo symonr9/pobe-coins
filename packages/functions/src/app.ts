@@ -74,6 +74,12 @@ export function createApp(deps: Deps) {
     return c.json(await auth.redeemDeviceLink(deps, input.token, input.deviceLabel, input.platform));
   });
 
+  app.post('/auth/exchange', async (c) => {
+    await misc.rateLimit(deps, `exchange:${clientIp(c)}`, 20, 60);
+    const { idToken } = await body(c, S.linkAccountSchema);
+    return c.json(await auth.exchangeIdentity(deps, idToken));
+  });
+
   app.get('/cal/:token', async (c) => {
     await misc.rateLimit(deps, `cal:${clientIp(c)}`, 60, 60);
     const ics = await calendar.renderCalendar(deps, c.req.param('token'));

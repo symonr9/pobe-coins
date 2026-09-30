@@ -18,6 +18,8 @@ export interface ChubbyOptions {
   accent?: string;
   /** Unique suffix for gradient ids when several drawings share a page. */
   id?: string;
+  /** Draw the eyes closed (used for blinking). */
+  eyesClosed?: boolean;
 }
 
 const FUR = '#C99A6E';
@@ -131,7 +133,7 @@ export function chubbybaraSvg(options: ChubbyOptions = {}): string {
   <rect x="72" y="112" width="96" height="60" rx="30" fill="${FUR_DARK}" opacity="0.5"/>
   <ellipse cx="106" cy="126" rx="3.2" ry="5" fill="${INK}" transform="rotate(20 106 126)"/>
   <ellipse cx="134" cy="126" rx="3.2" ry="5" fill="${INK}" transform="rotate(-20 134 126)"/>
-  ${eyes(pose)}
+  ${options.eyesClosed && pose !== 'happy' && pose !== 'cheer' && pose !== 'sleepy' ? eyes('sleepy') : eyes(pose)}
   <ellipse cx="66" cy="136" rx="14" ry="8" fill="${BLUSH}" opacity="0.65"/>
   <ellipse cx="174" cy="136" rx="14" ry="8" fill="${BLUSH}" opacity="0.65"/>
   ${mouth(pose)}

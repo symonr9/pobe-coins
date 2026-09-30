@@ -10,6 +10,7 @@
  */
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 import type { Deps, Storage } from '../context';
 import { createApp } from '../app';
 import { MemoryDb } from '../db/memory';
@@ -81,6 +82,7 @@ const deps: Deps = {
 };
 
 const root = new Hono();
+root.use('/dev-*', cors({ origin: (o) => o }));
 root.post('/dev-upload', async (c) => {
   const form = await c.req.formData();
   const file = form.get('file');

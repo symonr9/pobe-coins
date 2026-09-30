@@ -27,6 +27,29 @@ export async function issueDeviceToken(deps: Deps, device: Pick<Device, 'id' | '
     .sign(secretKey(deps));
 }
 
+const USER_TOKEN_DAYS = 60;
+
+/** App session for a signed-in person (after Google/Apple sign-in was verified once). */
+export async function issueUserToken(deps: Deps, claims: { sub: string; name?: string; email?: string }) {
+  const now = Math.floor(deps.now().getTime() / 1000);
+  return new SignJWT({ name: claims.name, email: claims.email })
+    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+    .setSubject(claims.sub)
+    .setIssuedAt(now)
+    .setExpirationTime(now + USER_TOKEN_DAYS * 86400)
+    .setIssuer('pobe-coins')
+    .setAudience('pobe-user')
+    .sign(secretKey(deps));
+}
+
+/** Exchanges a provider ID token (Cognito, native Apple, dev) for an app session token. */
+export async function exchangeIdentity(deps: Deps, idToken: string) {
+  const claims = await deps.identity.verify(idToken).catch(() => {
+    throw new ApiError('UNAUTHORIZED', 'That sign-in didn\'t work. Please try again.');
+  });
+  return { token: await issueUserToken(deps, claims), user: claims };
+}
+
 // Revocation checks are cached briefly per Lambda instance.
 const deviceCache = new Map<string, { ok: boolean; at: number }>();
 
@@ -65,6 +88,18 @@ export async function authenticate(deps: Deps, bearer: string): Promise<{ princi
     const ageDays = (deps.now().getTime() / 1000 - Number(payload.iat)) / 86400;
     const refreshToken = ageDays > REFRESH_AFTER_DAYS ? await issueDeviceToken(deps, { id: did, householdId: hid, memberId: mid }) : undefined;
     return { principal: { kind: 'device', householdId: hid, memberId: mid, deviceId: did }, refreshToken };
+  }
+  if (aud === 'pobe-user') {
+    let payload;
+    try {
+      ({ payload } = await jwtVerify(bearer, secretKey(deps), { issuer: 'pobe-coins', audience: 'pobe-user', currentDate: deps.now() }));
+    } catch {
+      throw new ApiError('UNAUTHORIZED', 'Your sign-in expired. Please sign in again.');
+    }
+    const claims = { sub: String(payload.sub), name: payload.name as string | undefined, email: payload.email as string | undefined };
+    const ageDays = (deps.now().getTime() / 1000 - Number(payload.iat)) / 86400;
+    const refreshToken = ageDays > REFRESH_AFTER_DAYS ? await issueUserToken(deps, claims) : undefined;
+    return { principal: { kind: 'user', ...claims }, refreshToken };
   }
   try {
     const claims = await deps.identity.verify(bearer);

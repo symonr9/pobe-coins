@@ -181,3 +181,21 @@ describe('federated identity ids', () => {
     expect(normalizeCognitoSub('c-1', undefined)).toBe('c-1');
   });
 });
+
+describe('session exchange', () => {
+  it('exchanges a provider token for an app session that refreshes', async () => {
+    const h = createHarness();
+    const ex = await h.call('POST', '/auth/exchange', { body: { idToken: userToken('ex-user', 'Robin') } });
+    expect(ex.status).toBe(200);
+    expect(ex.body.user.sub).toBe('ex-user');
+    const created = await h.call('POST', '/households', { token: ex.body.token, body: { name: 'H', memberName: 'Robin', timeZone: 'UTC' } });
+    expect(created.status).toBe(201);
+    h.advance(8 * 86400_000);
+    const me = await h.call('GET', '/me', { token: ex.body.token });
+    expect(me.status).toBe(200);
+    expect(me.headers.get('x-refreshed-token')).toBeTruthy();
+    h.advance(70 * 86400_000);
+    expect((await h.call('GET', '/me', { token: ex.body.token })).status).toBe(401);
+    expect((await h.call('POST', '/auth/exchange', { body: { idToken: 'garbage.token.here.and.more.garbage' } })).status).toBe(401);
+  });
+});
