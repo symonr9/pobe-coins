@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
-import { pickLine } from '@pobe/core';
 import { actions, useApprovals, useRefreshAll } from '@/api/hooks';
 import { ApiError } from '@/api/client';
 import { useTranslation } from '@/i18n';
@@ -14,6 +13,7 @@ import { Text } from '@/ui/Text';
 import { CoinAmount } from '@/ui/Coins';
 import { useFeedback } from '@/ui/Feedback';
 import { haptic } from '@/lib/feedback';
+import { say } from '@/features/chubby/say';
 
 export default function Approvals() {
   const { t } = useTranslation();
@@ -100,7 +100,7 @@ export default function Approvals() {
         </Section>
       ) : null}
       <Text variant="small" color="soft" center>
-        {t(pickLine('affirmation', { seed: new Date().toDateString() }).text)}
+        {say('affirmation', { seed: new Date().toDateString() }).text}
       </Text>
     </Screen>
   );

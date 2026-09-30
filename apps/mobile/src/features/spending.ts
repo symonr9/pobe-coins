@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { pickLine } from '@pobe/core';
 import { ApiError } from '@/api/client';
 import { useRefreshAll } from '@/api/hooks';
 import { useTranslation } from '@/i18n';
@@ -9,6 +8,7 @@ import { track } from '@/lib/monitoring';
 import { useCelebrate } from './celebrate';
 export { describeCoins, previewPayment, type ChangePreview } from './payment-preview';
 import { useFeedback } from '@/ui/Feedback';
+import { say } from '@/features/chubby/say';
 
 /**
  * Runs a spend with the app's rules: optional Face ID, IOU confirmation when the purse
@@ -31,7 +31,7 @@ export function useSpend() {
           if (r.purchase?.status === 'pending') {
             toast(t('Sent for approval. The coins are set aside until then.'), 'info');
           } else {
-            celebrate({ pose: 'shopkeeper', title: label, line: t(pickLine('purchase', { vars: { item: label } }).text), big: amount >= 100 });
+            celebrate({ pose: 'shopkeeper', title: label, line: say('purchase', { vars: { item: label } }).text, big: amount >= 100 });
           }
           return r;
         } catch (e) {

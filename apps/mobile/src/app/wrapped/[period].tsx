@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 're
 import { router, useLocalSearchParams } from 'expo-router';
 import Animated, { FadeInUp, ZoomIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { THEMES, pickLine, type ChubbyPose } from '@pobe/core';
+import { THEMES, type ChubbyPose } from '@pobe/core';
 import { useWrapped } from '@/api/hooks';
 import { useTranslation } from '@/i18n';
 import { useTheme } from '@/theme';
@@ -12,6 +12,7 @@ import { Chubby } from '@/features/chubby/Chubby';
 import { Loading } from '@/ui/bits';
 import { Icon } from '@/ui/Icon';
 import { Text } from '@/ui/Text';
+import { say } from '@/features/chubby/say';
 
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -112,7 +113,7 @@ export default function Wrapped() {
           <Text variant="h1" center>
             {t('Thank you for making home cozy.')}
           </Text>
-          <Text center>{t(pickLine('affirmation', { seed: period }).text)}</Text>
+          <Text center>{say('affirmation', { seed: period }).text}</Text>
         </>
       ),
     },

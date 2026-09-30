@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
-import { balance, pickLine, type ChubbyAccessory } from '@pobe/core';
+import { balance, type ChubbyAccessory } from '@pobe/core';
 import { actions, useGoals, useRefreshAll, useShop } from '@/api/hooks';
 import { ApiError } from '@/api/client';
 import type { WishlistGoal } from '@/api/types';
@@ -20,6 +20,7 @@ import { Card, Row, Screen, Stack } from '@/ui/layout';
 import { Text } from '@/ui/Text';
 import { CoinAmount } from '@/ui/Coins';
 import { useFeedback } from '@/ui/Feedback';
+import { say } from '@/features/chubby/say';
 
 type Tab = 'rewards' | 'wishlist' | 'cosmetics';
 
@@ -28,7 +29,7 @@ export default function Shop() {
   const { t } = useTranslation();
   const hh = useHousehold();
   const [tab, setTab] = useState<Tab>(params.tab ?? 'rewards');
-  const line = pickLine('shopGreeting', { seed: `${new Date().toDateString()}:${hh.me?.id}`, vars: { coins: hh.balance } });
+  const line = say('shopGreeting', { seed: `${new Date().toDateString()}:${hh.me?.id}`, vars: { coins: hh.balance } });
   return (
     <Screen>
       <Row style={{ justifyContent: 'space-between' }}>
@@ -40,7 +41,7 @@ export default function Shop() {
       <Row style={{ alignItems: 'flex-end' }} gap={4}>
         <Chubby pose="shopkeeper" accessory={hh.me?.equipped.accessory} size={100} />
         <View style={{ flex: 1, paddingBottom: 30 }}>
-          <Bubble text={t(line.text)} />
+          <Bubble text={line.text} />
         </View>
       </Row>
       <Segmented<Tab>
@@ -69,7 +70,7 @@ function Rewards() {
   return (
     <Stack>
       {items.length === 0 ? (
-        <EmptyState pose="shopkeeper" line={t(pickLine('emptyShop', { seed: 'x' }).text)} action={hh.isAdmin ? { title: t('Stock the shop'), onPress: () => router.push('/admin/shop') } : undefined} />
+        <EmptyState pose="shopkeeper" line={say('emptyShop', { seed: 'x' }).text} action={hh.isAdmin ? { title: t('Stock the shop'), onPress: () => router.push('/admin/shop') } : undefined} />
       ) : (
         <Row wrap gap={12}>
           {items.map((item) => {
@@ -123,7 +124,7 @@ function Wishlist() {
     mutationFn: actions.contribute,
     onSuccess: (r: any) => {
       setGiving(null);
-      if (r.reached) celebrate({ title: r.goal.title, line: t(pickLine('goalReached', { vars: { goal: r.goal.title } }).text), big: true });
+      if (r.reached) celebrate({ title: r.goal.title, line: say('goalReached', { vars: { goal: r.goal.title } }).text, big: true });
       else toast(t('Saved {{n}} toward {{goal}}', { n: r.contributed, goal: r.goal.title }), 'success');
     },
     onError: (e) => toast(e instanceof ApiError ? e.message : t('That didn\'t work.'), 'error'),
@@ -134,7 +135,7 @@ function Wishlist() {
   return (
     <Stack>
       <Button kind="secondary" icon="plus" title={t('New wish')} onPress={() => router.push('/goal/new')} />
-      {list.length === 0 ? <EmptyState line={t(pickLine('emptyGoals', { seed: 'x' }).text)} /> : null}
+      {list.length === 0 ? <EmptyState line={say('emptyGoals', { seed: 'x' }).text} /> : null}
       {list.map((g) => {
         const shared = g.ownerId === null;
         const saved = shared ? Object.values(g.contributions).reduce((a, b) => a + b, 0) : balance(hh.me?.purse ?? {});
@@ -157,7 +158,7 @@ function Wishlist() {
                 ) : null}
                 {!ready ? (
                   <Text variant="smallBold" color="accent">
-                    {t(pickLine('goalProgress', { vars: { goal: g.title, left: g.target - saved }, seed: g.id }).text)}
+                    {say('goalProgress', { vars: { goal: g.title, left: g.target - saved }, seed: g.id }).text}
                   </Text>
                 ) : null}
               </View>
@@ -268,7 +269,7 @@ function Cosmetics() {
                         await actions.buyCosmetic({ cosmeticId: c.id });
                         if (c.accessory) await actions.equip({ accessory: c.accessory });
                       },
-                      () => celebrate({ pose: 'cheer', title: c.name, line: t(pickLine('cosmetic', {}).text) }),
+                      () => celebrate({ pose: 'cheer', title: c.name, line: say('cosmetic', {}).text }),
                     );
                   }}
                 />

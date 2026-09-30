@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { balance, greetingContext, pickLine, toLocalDate } from '@pobe/core';
+import { balance, greetingContext, toLocalDate } from '@pobe/core';
 import { useApprovals, useChallenges, useGoals, useMembers, useRefreshAll, useTasks } from '@/api/hooks';
 import { useTranslation } from '@/i18n';
 import { usePrefs } from '@/lib/prefs-context';
@@ -18,6 +18,7 @@ import { Card, Row, Screen, Section } from '@/ui/layout';
 import { Pressy } from '@/ui/Pressy';
 import { Text } from '@/ui/Text';
 import { useFeedback } from '@/ui/Feedback';
+import { say } from '@/features/chubby/say';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -37,7 +38,7 @@ export default function Home() {
   const hour = new Date().getHours();
   const line = useMemo(() => {
     if (!me) return null;
-    return pickLine(greetingContext(hour), { seed: `${today}:${me.id}`, vars: { name: me.name, coins: balance(me.purse) }, recent: prefs.recentLines });
+    return say(greetingContext(hour), { seed: `${today}:${me.id}`, vars: { name: me.name, coins: balance(me.purse) }, recent: prefs.recentLines });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me?.id, today, hour]);
   useEffect(() => {
@@ -79,7 +80,7 @@ export default function Home() {
         <Pressy onPress={() => router.push('/shop')} noHaptic scaleTo={0.94} accessibilityLabel={t('Chubbybara')}>
           <Chubby pose={line?.pose ?? 'wave'} accessory={me.equipped.accessory} size={112} />
         </Pressy>
-        <View style={{ flex: 1, paddingBottom: 36 }}>{line ? <Bubble text={t(line.text)} /> : null}</View>
+        <View style={{ flex: 1, paddingBottom: 36 }}>{line ? <Bubble text={line.text} /> : null}</View>
       </Row>
 
       <Animated.View entering={FadeInDown.springify().damping(16)}>
@@ -139,7 +140,7 @@ export default function Home() {
           {tasks.isLoading ? (
             <Text color="soft">{t('Loading…')}</Text>
           ) : dueToday.length === 0 ? (
-            <EmptyState pose="happy" line={t(pickLine(mine.length ? 'allDone' : 'emptyTasks', { vars: { name: me.name }, seed: today }).text)} />
+            <EmptyState pose="happy" line={say(mine.length ? 'allDone' : 'emptyTasks', { vars: { name: me.name }, seed: today }).text} />
           ) : (
             dueToday.slice(0, 5).map((task) => <TaskRow key={task.id} task={task} />)
           )}

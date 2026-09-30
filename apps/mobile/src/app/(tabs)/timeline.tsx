@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { pickLine } from '@pobe/core';
 import { useRefreshAll, useTimeline } from '@/api/hooks';
 import type { TimelineItem } from '@/api/types';
 import { useTranslation } from '@/i18n';
@@ -12,6 +11,7 @@ import { EmptyState, ErrorState, Loading } from '@/ui/bits';
 import { Card, Row, Screen, Section } from '@/ui/layout';
 import { Text } from '@/ui/Text';
 import { Pressy } from '@/ui/Pressy';
+import { say } from '@/features/chubby/say';
 
 function dayLabel(iso: string, t: (s: string) => string) {
   const d = new Date(iso);
@@ -79,7 +79,7 @@ export default function Timeline() {
       ) : q.error && !q.data ? (
         <ErrorState error={q.error} onRetry={() => q.refetch()} />
       ) : groups.length === 0 ? (
-        <EmptyState pose="idle" line={t(pickLine('emptyTimeline', { seed: 'x' }).text)} />
+        <EmptyState pose="idle" line={say('emptyTimeline', { seed: 'x' }).text} />
       ) : (
         groups.map((g) => (
           <Section key={g.day} title={g.day}>

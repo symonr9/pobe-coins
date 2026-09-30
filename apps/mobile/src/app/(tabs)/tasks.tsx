@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { router } from 'expo-router';
-import { pickLine } from '@pobe/core';
 import { useRefreshAll, useTasks } from '@/api/hooks';
 import type { TaskView } from '@/api/types';
 import { useTranslation } from '@/i18n';
@@ -11,6 +10,7 @@ import { Segmented } from '@/ui/Field';
 import { EmptyState, ErrorState, Loading } from '@/ui/bits';
 import { Card, Row, Screen, Section } from '@/ui/layout';
 import { Text } from '@/ui/Text';
+import { say } from '@/features/chubby/say';
 
 type Filter = 'mine' | 'pool' | 'recurring' | 'everyone';
 
@@ -58,7 +58,7 @@ export default function Tasks() {
         <ErrorState error={tasks.error} onRetry={() => tasks.refetch()} />
       ) : list.length === 0 ? (
         <EmptyState
-          line={t(pickLine(filter === 'pool' ? 'emptyTasks' : 'emptyTasks', { seed: filter }).text)}
+          line={say(filter === 'pool' ? 'emptyTasks' : 'emptyTasks', { seed: filter }).text}
           action={{ title: t('Add a chore'), onPress: () => router.push('/task/edit') }}
         />
       ) : (

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { router } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
-import { pickLine } from '@pobe/core';
 import { actions, useRefreshAll } from '@/api/hooks';
 import { ApiError } from '@/api/client';
 import { useTranslation } from '@/i18n';
@@ -13,6 +12,7 @@ import { Chip, Field } from '@/ui/Field';
 import { Header } from '@/ui/bits';
 import { Card, Row, Screen } from '@/ui/layout';
 import { Text } from '@/ui/Text';
+import { say } from '@/features/chubby/say';
 
 export default function Gift() {
   const { t } = useTranslation();
@@ -28,7 +28,7 @@ export default function Gift() {
     mutationFn: () => actions.gift({ toMemberId: to!, amount, message: message.trim() || undefined }),
     onSuccess: () => {
       void refresh();
-      celebrate({ pose: 'happy', title: t('Gift sent!'), line: t(pickLine('giftSent', { vars: { partner: hh.name(to), coins: amount } }).text) });
+      celebrate({ pose: 'happy', title: t('Gift sent!'), line: say('giftSent', { vars: { partner: hh.name(to), coins: amount } }).text });
       router.back();
     },
     onError: (e) => setError(e instanceof ApiError ? e.message : t('Couldn\'t send the gift.')),

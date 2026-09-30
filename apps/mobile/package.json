@@ -73,7 +73,8 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "build:web": "expo export -p web && node scripts/well-known.mjs && node scripts/pwa.mjs"
+    "build:web": "expo export -p web && node scripts/well-known.mjs && node scripts/pwa.mjs",
+    "i18n:extract": "tsx scripts/i18n-extract.mjs"
   },
   "private": true
 }
