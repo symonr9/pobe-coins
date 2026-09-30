@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { balance } from '@pobe/core';
-import { createHarness, household, type Harness } from '../testing/harness';
+import { createHarness, household, ledgerMismatches, type Harness } from '../testing/harness';
 
 async function purse(h: Harness, token: string) {
   const me = await h.call('GET', '/me', { token });
@@ -329,5 +329,38 @@ describe('co-op challenges', () => {
     expect(ch.body[0].status).toBe('won');
     expect((await purse(h, memberToken)).balance).toBe(65);
     expect((await purse(h, adminToken)).balance).toBe(10);
+  });
+});
+
+describe('ledger invariant', () => {
+  it('replaying the ledger reproduces every purse and debt after a mixed day', async () => {
+    const h = createHarness();
+    const { hid, adminToken, adminId, memberToken, memberId } = await household(h);
+    const bonus = (id: string, amount: number) =>
+      h.call('POST', '/bonuses', { token: adminToken, body: { memberId: id, amount, reason: 'test' } });
+    await bonus(memberId, 37);
+    await bonus(adminId, 120);
+    // Earn, then undo one.
+    const t1 = await newTask(h, adminToken, { assigneeId: memberId, reward: 30 });
+    const done = await h.call('POST', `/tasks/${t1}/complete`, { token: memberToken, body: {} });
+    expect((await h.call('POST', `/completions/${done.body.completion.id}/undo`, { token: memberToken })).status).toBe(200);
+    const t2 = await newTask(h, adminToken, { assigneeId: memberId, reward: 26 });
+    await h.call('POST', `/tasks/${t2}/complete`, { token: memberToken, body: {} });
+    // Spend with change, borrow on an IOU, get paid back.
+    await h.call('POST', '/purchases', { token: memberToken, body: { title: 'Snack', amount: 18 } });
+    expect((await h.call('POST', '/purchases', { token: memberToken, body: { title: 'Book', amount: 70, allowIou: true } })).status).toBe(
+      201,
+    );
+    expect((await purse(h, memberToken)).debt).toBeGreaterThan(0);
+    await bonus(memberId, 40);
+    // A held purchase that gets rejected, and a gift both ways.
+    const held = await h.call('POST', '/purchases', { token: adminToken, body: { title: 'Headphones', amount: 110 } });
+    expect(held.body.purchase.status).toBe('pending');
+    expect(
+      (await h.call('POST', `/purchases/${held.body.purchase.id}/decide`, { token: memberToken, body: { approve: false } })).status,
+    ).toBe(200);
+    await h.call('POST', '/gifts', { token: adminToken, body: { toMemberId: memberId, amount: 15 } });
+    await h.call('POST', '/gifts', { token: memberToken, body: { toMemberId: adminId, amount: 3 } });
+    expect(await ledgerMismatches(h, hid)).toEqual([]);
   });
 });

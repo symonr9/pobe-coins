@@ -370,22 +370,35 @@ export const LINES: Record<LineContext, LineSet> = {
   },
   emptyTimeline: {
     pose: 'idle',
-    lines: ["Your story starts with the first chore. Let's go!", 'Nothing here yet. Complete a task and it shows up here.'],
+    lines: [
+      "Your story starts with the first chore. Let's go!",
+      'Nothing here yet. Complete a task and it shows up here.',
+      "A blank page! I'm sitting here with my yuzu, ready to watch it fill up.",
+    ],
   },
   emptyGoals: {
     pose: 'thinking',
-    lines: ['What are you saving for? Add a wish and watch the jar fill up.', 'No goals yet. Dream a little! Add something you want.'],
+    lines: [
+      'What are you saving for? Add a wish and watch the jar fill up.',
+      'No goals yet. Dream a little! Add something you want.',
+      'Every big jar starts with one tiny coin. What should we save for?',
+    ],
   },
   emptyShop: {
     pose: 'shopkeeper',
     lines: [
       'The shelves are empty! Add rewards your household can buy with coins.',
       'Stock the shop! Ideas: breakfast in bed, pick the movie, skip a chore.',
+      "My counter is sparkling and my shelves are bare. Let's add some treats!",
     ],
   },
   offline: {
     pose: 'sleepy',
-    lines: ["We're offline. You can look around, and changes will work once we're back.", "No internet right now. I'll wait with you."],
+    lines: [
+      "We're offline. You can look around, and changes will work once we're back.",
+      "No internet right now. I'll wait with you.",
+      "The internet wandered off for a nap. Everything's still here to look at.",
+    ],
   },
 };
 

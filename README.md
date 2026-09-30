@@ -127,6 +127,19 @@ The infrastructure avoids the usual AWS surprise bills: no VPC/NAT gateway, no a
 - `packages/functions/src/db/memory.ts` implements the same `Db` interface in memory with the same conditional-write rules. The API tests (51) run the real router against it, and so does the local dev server.
 - Chubbybara's art comes from `apps/mobile/src/features/chubby/assets.ts`. When the commissioned art arrives, add files there (see `docs/design/mascot-spec.md`).
 
+## Working on it with Claude Code
+
+The repo is set up for agentic development:
+
+- `CLAUDE.md` (root and each workspace) gives an agent the map, commands, rules and gotchas.
+- `.claude/skills/` holds the maintenance playbooks: `dev-setup`, `verify`, `api-endpoint`, `money-changes`, `ui-screen`, `chubbybara`, `deploy`, `release-mobile`, `expo-upgrade`.
+- Hooks in `.claude/settings.json` (scripts in `scripts/claude/`):
+  - A new session installs dependencies and reports server status.
+  - Prompts are matched to the right skill.
+  - Edited files are formatted, with a reminder of the rules for that area.
+  - Before an agent finishes, the touched workspaces are typechecked and tested. Set `POBE_SKIP_STOP_CHECKS=1` to skip this.
+- `npm run screens` captures the main screens at phone and desktop widths, for checking UI changes by eye.
+
 ## Docs
 
 - `docs/PLAN.md`: the product and technical plan

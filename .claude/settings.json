@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(npm test:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run format:*)",
+      "Bash(npm run screens:*)",
+      "Bash(npm run e2e:*)",
+      "Bash(npm run i18n\\:extract:*)",
+      "Bash(npm run build\\:web:*)",
+      "Bash(npm run dev\\:api:*)",
+      "Bash(npm run dev\\:web:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx prettier:*)",
+      "Bash(npx tsx apps/mobile/scripts/make-assets.ts:*)",
+      "Bash(npx tsx docs/design/build-stylebook.ts:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)"
+    ],
+    "ask": [
+      "Bash(npx sst deploy:*)",
+      "Bash(npm run deploy:*)",
+      "Bash(npx sst remove:*)",
+      "Bash(npx eas-cli@latest submit:*)",
+      "Bash(npx eas-cli@latest update:*)"
+    ],
+    "deny": ["Read(./.env)", "Read(./.env.*)", "Bash(git push --force:*)", "Bash(npx sst secret list:*)"]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/scripts/claude/session-start.mjs\"", "timeout": 600 }]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/scripts/claude/route-prompt.mjs\"", "timeout": 10 }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/scripts/claude/after-edit.mjs\"", "timeout": 60 }]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/scripts/claude/stop-checks.mjs\"", "timeout": 900 }]
+      }
+    ]
+  }
+}

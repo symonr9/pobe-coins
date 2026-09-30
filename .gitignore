@@ -13,3 +13,7 @@ coverage/
 web-build/
 .DS_Store
 *.log
+
+# Claude Code: personal settings and hook caches
+.claude/settings.local.json
+.claude/.cache/

@@ -17,7 +17,8 @@
     "deploy:prod": "sst deploy --stage prod",
     "dev:api": "tsx packages/functions/src/dev/server.ts",
     "dev:demo": "SEED=1 tsx packages/functions/src/dev/server.ts",
-    "e2e": "node apps/mobile/e2e/smoke.mjs"
+    "e2e": "node apps/mobile/e2e/smoke.mjs",
+    "screens": "node apps/mobile/e2e/screens.mjs"
   },
   "engines": {
     "node": ">=22"

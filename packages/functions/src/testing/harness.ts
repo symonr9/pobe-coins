@@ -7,6 +7,9 @@ import { createApp } from '../app';
 import { MemoryDb } from '../db/memory';
 import { RecordingNotifier } from '../adapters/push';
 import { clearDeviceCache } from '../services/auth';
+import { listByPrefix, listMembers } from '../repo';
+import { PREFIX } from '../db/keys';
+import type { LedgerEntry } from '@pobe/core';
 
 export class FakeStorage implements Storage {
   readonly objects = new Map<string, Uint8Array>();
@@ -138,4 +141,33 @@ export async function household(h: Harness, opts: { templates?: string[]; sub?: 
     memberId: wife.body.id as string,
     deviceId: redeemed.body.device.id as string,
   };
+}
+
+/**
+ * The money invariant: replaying every ledger entry must reproduce each member's purse and debt
+ * exactly. Returns human-readable mismatches (empty when consistent).
+ */
+export async function ledgerMismatches(h: Harness, hid: string): Promise<string[]> {
+  const members = await listMembers(h.deps, hid, true);
+  const entries = await listByPrefix<LedgerEntry>(h.deps, hid, PREFIX.ledger);
+  const problems: string[] = [];
+  for (const m of members) {
+    const coins: Record<string, number> = {};
+    let debt = 0;
+    for (const e of entries.filter((x) => x.memberId === m.id)) {
+      for (const [d, n] of Object.entries(e.coinsIn)) coins[d] = (coins[d] ?? 0) + n;
+      for (const [d, n] of Object.entries(e.coinsOut)) coins[d] = (coins[d] ?? 0) - n;
+      debt += e.debtDelta;
+    }
+    const replayed = Object.fromEntries(Object.entries(coins).filter(([, n]) => n !== 0));
+    const actual = Object.fromEntries(Object.entries(m.purse).filter(([, n]) => n !== 0));
+    if (JSON.stringify(sortKeys(replayed)) !== JSON.stringify(sortKeys(actual)))
+      problems.push(`${m.name}: purse ${JSON.stringify(actual)} but ledger replays to ${JSON.stringify(replayed)}`);
+    if (debt !== m.debt) problems.push(`${m.name}: debt ${m.debt} but ledger replays to ${debt}`);
+  }
+  return problems;
+}
+
+function sortKeys(o: Record<string, number>) {
+  return Object.fromEntries(Object.entries(o).sort(([a], [b]) => Number(a) - Number(b)));
 }
