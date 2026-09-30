@@ -1,7 +1,8 @@
 /**
  * iOS home-screen widget (expo-widgets + SwiftUI via @expo/ui).
- * The layout function runs in the widget extension, so it may only use the SwiftUI
- * components and the props passed in (no app state, no hooks).
+ * The layout must be a `function` (not an arrow) with the 'widget' directive: the Expo babel
+ * plugin turns it into a string that runs inside the widget extension, where SwiftUI
+ * components and modifiers are globals. It can only use its props (no app state, no hooks).
  */
 import { createWidget } from 'expo-widgets';
 import { HStack, Spacer, Text, VStack } from '@expo/ui/swift-ui';
@@ -19,7 +20,7 @@ export interface PurseWidgetProps {
   soft: string;
 }
 
-const PurseWidgetLayout = (props: PurseWidgetProps) => {
+function PurseWidgetLayout(props: PurseWidgetProps) {
   'widget';
   return (
     <VStack alignment="leading" spacing={4} modifiers={[containerBackground(props.bg, 'widget'), padding({ all: 2 })]}>
@@ -38,6 +39,6 @@ const PurseWidgetLayout = (props: PurseWidgetProps) => {
       ))}
     </VStack>
   );
-};
+}
 
 export const purseWidget = createWidget<PurseWidgetProps>('PurseWidget', PurseWidgetLayout);

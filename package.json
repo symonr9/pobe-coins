@@ -16,7 +16,8 @@
     "deploy:dev": "sst deploy --stage dev",
     "deploy:prod": "sst deploy --stage prod",
     "dev:api": "tsx packages/functions/src/dev/server.ts",
-    "dev:demo": "SEED=1 tsx packages/functions/src/dev/server.ts"
+    "dev:demo": "SEED=1 tsx packages/functions/src/dev/server.ts",
+    "e2e": "node apps/mobile/e2e/smoke.mjs"
   },
   "engines": {
     "node": ">=22"
@@ -24,7 +25,9 @@
   "packageManager": "npm@11.20.0",
   "devDependencies": {
     "esbuild": "^0.28.2",
+    "playwright": "^1.56.1",
     "prettier": "^3.9.9",
+    "serve": "^14.2.6",
     "sst": "^4.17.1",
     "tsx": "^4.23.15"
   }

@@ -1,0 +1,66 @@
+# Netlify builds the Expo web app (PWA). The API runs on AWS (see sst.config.ts).
+# Set these in Netlify → Site settings → Environment variables:
+#   EXPO_PUBLIC_API_URL, EXPO_PUBLIC_WEB_URL, EXPO_PUBLIC_COGNITO_DOMAIN,
+#   EXPO_PUBLIC_COGNITO_CLIENT_ID, EXPO_PUBLIC_VAPID_PUBLIC_KEY
+#   optional: APPLE_TEAM_ID, ANDROID_SHA256 (universal/app links), EXPO_PUBLIC_SENTRY_DSN, EXPO_PUBLIC_POSTHOG_KEY
+[build]
+  command = "npx -y npm@11.20.0 ci && npm run build:web -w @pobe/mobile"
+  publish = "apps/mobile/dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  EXPO_NO_TELEMETRY = "1"
+
+# Dynamic routes from the static export.
+[[redirects]]
+  from = "/join/*"
+  to = "/join/[token].html"
+  status = 200
+
+[[redirects]]
+  from = "/purchase/*"
+  to = "/purchase/[id].html"
+  status = 200
+
+[[redirects]]
+  from = "/item/*"
+  to = "/item/[id].html"
+  status = 200
+
+[[redirects]]
+  from = "/wrapped/*"
+  to = "/wrapped/[period].html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/member/*"
+  to = "/admin/member/[id].html"
+  status = 200
+
+[[redirects]]
+  from = "/task/*"
+  to = "/task/[id].html"
+  status = 200
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/_expo/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/.well-known/apple-app-site-association"
+  [headers.values]
+    Content-Type = "application/json"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=()"
