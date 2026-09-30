@@ -1,0 +1,28 @@
+{
+  "name": "pobe-coins",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Earn pobe coins by doing chores, spend them at Chubbybara's POBE Shop.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "dev:web": "npm run web -w @pobe/mobile",
+    "deploy:dev": "sst deploy --stage dev",
+    "deploy:prod": "sst deploy --stage prod"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "npm@11.20.0",
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "prettier": "^3.9.9",
+    "tsx": "^4.23.15"
+  }
+}

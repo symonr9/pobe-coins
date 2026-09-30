@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.expo/
+.sst/
+sst-env.d.ts
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+coverage/
+ios/
+android/
+web-build/
+.DS_Store
+*.log
