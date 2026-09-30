@@ -38,15 +38,15 @@ const use = (prefix: 'l' | 'd') => tokenKeys.map((k) => `--${kebab(k)}: var(--${
 const html = `<title>Pobe Coins Style Book</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">
 <style>
 /* Layout: one cozy column (max 1040px) of chapters; each chapter = label + live specimen. Theme picker restyles everything. */
 :root {
   ${block('l', pink.light)}
   ${block('d', pink.dark)}
   ${use('l')}
-  --display: 'Baloo 2', 'Nunito', ui-rounded, system-ui, sans-serif;
-  --body: 'Nunito', ui-rounded, system-ui, sans-serif;
+  --display: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --body: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --r-sm: 10px; --r-md: 16px; --r-lg: 24px;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { ${use('d')} color-scheme: dark; } }
@@ -193,10 +193,10 @@ canvas.confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-
   </section>
 
   <section class="chapter">
-    <header><div class="eyebrow">2 · Type</div><h2>Baloo 2 for headings and numbers, Nunito for everything else</h2>
-    <p class="soft">Both are rounded and friendly, to match the plushie. Coin counts use tabular figures so totals don't jiggle while they count up.</p></header>
+    <header><div class="eyebrow">2 · Type</div><h2>Plus Jakarta Sans, one family at four weights</h2>
+    <p class="soft">A crisp, modern geometric sans: ExtraBold with tight tracking for headings and numbers, Medium for reading. The warmth comes from the colors and Chubbybara, not the letterforms. Coin counts use tabular figures so totals don't jiggle while they count up.</p></header>
     <div>
-      <div class="type-row"><code>hero · 44</code><div style="font-family:var(--display);font-size:44px;font-weight:800;line-height:1.05">1,284 coins</div></div>
+      <div class="type-row"><code>hero · 44</code><div style="font-family:var(--display);font-size:44px;font-weight:800;line-height:1.05;letter-spacing:-0.035em">1,284 coins</div></div>
       <div class="type-row"><code>xxl · 32</code><div style="font-family:var(--display);font-size:32px;font-weight:700">Saving for a picnic basket</div></div>
       <div class="type-row"><code>xl · 24</code><div style="font-family:var(--display);font-size:24px;font-weight:700">Today's chores</div></div>
       <div class="type-row"><code>lg · 20</code><div style="font-weight:800;font-size:20px">Take out the recycling</div></div>

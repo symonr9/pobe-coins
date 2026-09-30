@@ -137,21 +137,22 @@ export function coinStyle(denom: number) {
 }
 
 export const TYPE = {
-  display: 'Baloo2_700Bold',
-  displaySemi: 'Baloo2_600SemiBold',
-  body: 'Nunito_500Medium',
-  bodyBold: 'Nunito_700Bold',
-  bodyHeavy: 'Nunito_800ExtraBold',
+  /** One family, many weights: Plus Jakarta Sans — modern, crisp, still warm. */
+  display: 'PlusJakartaSans_800ExtraBold',
+  displaySemi: 'PlusJakartaSans_700Bold',
+  body: 'PlusJakartaSans_500Medium',
+  bodyBold: 'PlusJakartaSans_700Bold',
+  bodyHeavy: 'PlusJakartaSans_800ExtraBold',
   /** Web font-family stacks for the same roles. */
   web: {
-    display: "'Baloo 2', 'Nunito', ui-rounded, system-ui, sans-serif",
-    body: "'Nunito', ui-rounded, system-ui, sans-serif",
+    display: "'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif",
+    body: "'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif",
   },
-  scale: { xs: 12, sm: 14, md: 16, lg: 20, xl: 24, xxl: 32, hero: 44 },
+  scale: { xs: 12, sm: 14, md: 16, lg: 19, xl: 23, xxl: 30, hero: 44 },
 } as const;
 
 export const SPACE = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
-export const RADIUS = { sm: 10, md: 16, lg: 24, pill: 999 } as const;
+export const RADIUS = { sm: 10, md: 14, lg: 20, pill: 999 } as const;
 
 /** Motion tokens (ms / spring configs for Reanimated). */
 export const MOTION = {

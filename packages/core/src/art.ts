@@ -22,61 +22,68 @@ export interface ChubbyOptions {
   eyesClosed?: boolean;
 }
 
-const FUR = '#C99A6E';
-const FUR_DARK = '#A97A52';
-const FUR_LIGHT = '#E6C7A3';
-const INK = '#3A2A22';
-const BLUSH = '#F4A0B6';
-const YUZU = '#F8D35E';
-const LEAF = '#7DBE8C';
+const FUR = '#D9A879';
+const FUR_DARK = '#B8844F';
+const FUR_LIGHT = '#F3D9B8';
+const SNOUT = '#C99466';
+const INK = '#2E211C';
+const BLUSH = '#F6A2B9';
+const YUZU = '#F9D25C';
+const LEAF = '#7CC495';
+
+/** Big shiny eyes: the single biggest factor in "cute". */
+function eye(cx: number, cy: number) {
+  return `<ellipse cx="${cx}" cy="${cy}" rx="9.5" ry="10.5" fill="${INK}"/>
+    <circle cx="${cx - 3}" cy="${cy - 4}" r="3.6" fill="#fff"/>
+    <circle cx="${cx + 3.4}" cy="${cy + 3.6}" r="1.6" fill="#fff" opacity="0.9"/>`;
+}
 
 function eyes(pose: ChubbyPose): string {
   switch (pose) {
     case 'happy':
     case 'cheer':
-      return `<path d="M72 100 q10 -12 20 0" stroke="${INK}" stroke-width="5" stroke-linecap="round" fill="none"/>
-        <path d="M148 100 q10 -12 20 0" stroke="${INK}" stroke-width="5" stroke-linecap="round" fill="none"/>`;
+      return `<path d="M76 118 q10 -12 20 0" stroke="${INK}" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M144 118 q10 -12 20 0" stroke="${INK}" stroke-width="5" stroke-linecap="round" fill="none"/>`;
     case 'sleepy':
-      return `<path d="M72 100 q10 8 20 0" stroke="${INK}" stroke-width="5" stroke-linecap="round" fill="none"/>
-        <path d="M148 100 q10 8 20 0" stroke="${INK}" stroke-width="5" stroke-linecap="round" fill="none"/>`;
+      return `<path d="M76 116 q10 9 20 0" stroke="${INK}" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M144 116 q10 9 20 0" stroke="${INK}" stroke-width="5" stroke-linecap="round" fill="none"/>`;
     case 'thinking':
-      return `<circle cx="84" cy="96" r="7" fill="${INK}"/><circle cx="86" cy="93" r="2.4" fill="#fff"/>
-        <circle cx="160" cy="96" r="7" fill="${INK}"/><circle cx="162" cy="93" r="2.4" fill="#fff"/>`;
+      return eye(88, 112) + eye(156, 112);
     default:
-      return `<circle cx="82" cy="98" r="7" fill="${INK}"/><circle cx="84.5" cy="95.5" r="2.4" fill="#fff"/>
-        <circle cx="158" cy="98" r="7" fill="${INK}"/><circle cx="160.5" cy="95.5" r="2.4" fill="#fff"/>`;
+      return eye(86, 116) + eye(154, 116);
   }
 }
 
 function mouth(pose: ChubbyPose): string {
-  if (pose === 'sleepy') return `<ellipse cx="120" cy="155" rx="4" ry="3" fill="${INK}" opacity="0.8"/>`;
-  if (pose === 'thinking') return `<path d="M113 155 h14" stroke="${INK}" stroke-width="3.5" stroke-linecap="round"/>`;
-  if (pose === 'happy' || pose === 'cheer' || pose === 'wave' || pose === 'shopkeeper')
-    return `<path d="M108 152 q6 8 12 0 q6 8 12 0" stroke="${INK}" stroke-width="3.5" stroke-linecap="round" fill="none"/>`;
-  return `<path d="M111 153 q9 6 18 0" stroke="${INK}" stroke-width="3.5" stroke-linecap="round" fill="none"/>`;
+  if (pose === 'sleepy') return `<ellipse cx="120" cy="156" rx="4" ry="3.2" fill="${INK}" opacity="0.75"/>`;
+  if (pose === 'thinking') return `<path d="M114 157 q6 -3 12 0" stroke="${INK}" stroke-width="3.2" stroke-linecap="round" fill="none"/>`;
+  if (pose === 'cheer')
+    return `<path d="M110 152 q10 14 20 0 z" fill="${INK}"/><path d="M114 157 q6 5 12 0" fill="#F58FA8"/>`;
+  return `<path d="M111 153 q4.5 5 9 0 q4.5 5 9 0" stroke="${INK}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
 }
 
 function arms(pose: ChubbyPose): string {
   const arm = (x: number, y: number, r: number) =>
-    `<ellipse cx="${x}" cy="${y}" rx="11" ry="20" fill="${FUR_DARK}" transform="rotate(${r} ${x} ${y})"/>`;
-  if (pose === 'cheer') return arm(36, 108, -35) + arm(204, 108, 35);
-  if (pose === 'wave') return arm(216, 88, 35) + arm(40, 168, 25);
-  return arm(40, 168, 25) + arm(200, 168, -25);
+    `<ellipse cx="${x}" cy="${y}" rx="12" ry="17" fill="${FUR_DARK}" transform="rotate(${r} ${x} ${y})"/>
+     <ellipse cx="${x}" cy="${y - 4}" rx="7" ry="9" fill="${FUR}" opacity="0.5" transform="rotate(${r} ${x} ${y})"/>`;
+  if (pose === 'cheer') return arm(40, 112, -38) + arm(200, 112, 38);
+  if (pose === 'wave') return arm(214, 96, 36) + arm(46, 176, 28);
+  return arm(46, 176, 28) + arm(194, 176, -28);
 }
 
 function extras(pose: ChubbyPose, accent: string): string {
   switch (pose) {
     case 'cheer':
-      return `<g fill="${YUZU}"><path d="M28 60 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4z"/><path d="M206 52 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/></g>`;
+      return `<g fill="${YUZU}"><path d="M30 58 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4z"/><path d="M206 50 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/><circle cx="22" cy="104" r="3"/><circle cx="220" cy="92" r="2.5"/></g>`;
     case 'sleepy':
-      return `<g fill="${INK}" opacity="0.55" font-family="Baloo 2, Nunito, sans-serif" font-weight="700"><text x="182" y="60" font-size="22">z</text><text x="200" y="40" font-size="16">z</text></g>`;
+      return `<g fill="${INK}" opacity="0.5" font-family="Plus Jakarta Sans, system-ui, sans-serif" font-weight="800"><text x="182" y="62" font-size="22">z</text><text x="200" y="42" font-size="15">z</text></g>`;
     case 'thinking':
-      return `<g><circle cx="200" cy="44" r="20" fill="#fff" stroke="${FUR_DARK}" stroke-width="3"/><circle cx="182" cy="72" r="5" fill="#fff" stroke="${FUR_DARK}" stroke-width="2.5"/><text x="200" y="53" text-anchor="middle" font-size="24" font-weight="800" fill="${INK}" font-family="Baloo 2, Nunito, sans-serif">?</text></g>`;
+      return `<g><circle cx="202" cy="46" r="20" fill="#fff" stroke="${FUR_DARK}" stroke-width="2.5"/><circle cx="184" cy="74" r="5" fill="#fff" stroke="${FUR_DARK}" stroke-width="2"/><text x="202" y="54" text-anchor="middle" font-size="22" font-weight="800" fill="${INK}" font-family="Plus Jakarta Sans, system-ui, sans-serif">?</text></g>`;
     case 'shopkeeper':
-      return `<path d="M70 184 q50 -20 100 0 v28 q-50 16 -100 0z" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2.5"/>
-        <rect x="104" y="192" width="32" height="14" rx="6" fill="#fff" opacity="0.85"/>
-        <path d="M120 176 l-16 -10 v20z M120 176 l16 -10 v20z" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2"/>
-        <circle cx="120" cy="176" r="5" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2"/>`;
+      return `<path d="M72 186 q48 -18 96 0 v26 q-48 14 -96 0z" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2"/>
+        <rect x="106" y="193" width="28" height="12" rx="5" fill="#fff" opacity="0.85"/>
+        <path d="M120 178 l-15 -9 v18z M120 178 l15 -9 v18z" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="120" cy="178" r="4.5" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2"/>`;
     default:
       return '';
   }
@@ -85,60 +92,72 @@ function extras(pose: ChubbyPose, accent: string): string {
 function accessory(kind: ChubbyAccessory, accent: string): string {
   switch (kind) {
     case 'beanie':
-      return `<path d="M62 70 q58 -62 116 0 z" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2.5"/><rect x="58" y="64" width="124" height="14" rx="7" fill="#fff" stroke="${FUR_DARK}" stroke-width="2.5"/><circle cx="120" cy="18" r="10" fill="#fff" stroke="${FUR_DARK}" stroke-width="2.5"/>`;
+      return `<path d="M60 74 q60 -64 120 0 z" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2"/><rect x="56" y="68" width="128" height="14" rx="7" fill="#fff" stroke="${FUR_DARK}" stroke-width="2"/><circle cx="120" cy="20" r="10" fill="#fff" stroke="${FUR_DARK}" stroke-width="2"/>`;
     case 'bow':
-      return `<g transform="translate(168 58)"><path d="M0 0 l-20 -14 v28z M0 0 l20 -14 v28z" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2.5"/><circle r="6" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2.5"/></g>`;
+      return `<g transform="translate(170 62)"><path d="M0 0 l-19 -13 q-4 13 0 26z M0 0 l19 -13 q4 13 0 26z" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2" stroke-linejoin="round"/><circle r="5.5" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2"/></g>`;
     case 'scarf':
-      return `<path d="M52 150 q68 34 136 0 v18 q-68 34 -136 0z" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2.5"/><rect x="150" y="160" width="20" height="44" rx="8" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2.5"/>`;
+      return `<path d="M50 160 q70 32 140 0 v17 q-70 32 -140 0z" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2"/><rect x="150" y="170" width="20" height="42" rx="8" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2"/>`;
     case 'crown':
-      return `<path d="M88 50 l8 -28 16 18 8 -24 8 24 16 -18 8 28z" fill="${YUZU}" stroke="#B9892A" stroke-width="2.5" stroke-linejoin="round"/>`;
+      return `<path d="M90 54 l7 -28 15 17 8 -23 8 23 15 -17 7 28z" fill="${YUZU}" stroke="#C99A2E" stroke-width="2" stroke-linejoin="round"/><circle cx="120" cy="44" r="3.5" fill="#F58FA8"/>`;
     case 'flower':
-      return `<g transform="translate(64 62)">${[0, 72, 144, 216, 288]
-        .map((a) => `<ellipse rx="7" ry="11" cy="-10" fill="#fff" stroke="${accent}" stroke-width="2" transform="rotate(${a})"/>`)
-        .join('')}<circle r="6" fill="${YUZU}"/></g>`;
+      return `<g transform="translate(66 66)">${[0, 72, 144, 216, 288]
+        .map((a) => `<ellipse rx="6.5" ry="10.5" cy="-9.5" fill="#fff" stroke="${accent}" stroke-width="2" transform="rotate(${a})"/>`)
+        .join('')}<circle r="5.5" fill="${YUZU}"/></g>`;
     case 'party-hat':
-      return `<path d="M100 56 l20 -50 20 50z" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2.5" stroke-linejoin="round"/><circle cx="120" cy="6" r="6" fill="${YUZU}"/>`;
+      return `<path d="M101 60 l19 -52 19 52z" fill="${accent}" stroke="${FUR_DARK}" stroke-width="2" stroke-linejoin="round"/><path d="M108 42 h24 M114 26 h12" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.8"/><circle cx="120" cy="8" r="6" fill="${YUZU}"/>`;
     case 'glasses':
-      return `<g fill="none" stroke="${INK}" stroke-width="3.5"><circle cx="83" cy="97" r="15"/><circle cx="157" cy="97" r="15"/><path d="M98 96 h44"/></g>`;
+      return `<g fill="none" stroke="${INK}" stroke-width="3.2"><circle cx="86" cy="116" r="16"/><circle cx="154" cy="116" r="16"/><path d="M102 114 q18 -8 36 0"/></g>`;
     default:
       return '';
   }
 }
 
-/** Chubbybara the capybara: round, cozy, wearing his yuzu. */
+/** Chubbybara: a round, soft capybara with sparkly eyes, rosy cheeks and his yuzu. */
 export function chubbybaraSvg(options: ChubbyOptions = {}): string {
   const pose = options.pose ?? 'idle';
   const acc = options.accessory ?? 'none';
   const accent = options.accent ?? '#F9B9CD';
   const id = options.id ?? pose;
   const hat = acc === 'beanie' || acc === 'crown' || acc === 'party-hat';
+  const closed = options.eyesClosed && pose !== 'happy' && pose !== 'cheer' && pose !== 'sleepy';
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Chubbybara the capybara">
   <defs>
-    <radialGradient id="fur-${id}" cx="40%" cy="35%" r="75%">
+    <radialGradient id="fur-${id}" cx="42%" cy="30%" r="78%">
       <stop offset="0" stop-color="${FUR_LIGHT}"/>
-      <stop offset="0.55" stop-color="${FUR}"/>
+      <stop offset="0.5" stop-color="${FUR}"/>
       <stop offset="1" stop-color="${FUR_DARK}"/>
     </radialGradient>
   </defs>
-  <ellipse cx="120" cy="226" rx="78" ry="9" fill="${INK}" opacity="0.12"/>
+  <ellipse cx="120" cy="226" rx="72" ry="8" fill="${INK}" opacity="0.1"/>
   ${arms(pose)}
-  <ellipse cx="84" cy="214" rx="20" ry="10" fill="${FUR_DARK}"/>
-  <ellipse cx="156" cy="214" rx="20" ry="10" fill="${FUR_DARK}"/>
-  <ellipse cx="64" cy="66" rx="11" ry="8" fill="${FUR_DARK}" transform="rotate(-25 64 66)"/>
-  <ellipse cx="64" cy="67" rx="5" ry="3.5" fill="${BLUSH}" opacity="0.7" transform="rotate(-25 64 67)"/>
-  <ellipse cx="176" cy="66" rx="11" ry="8" fill="${FUR_DARK}" transform="rotate(25 176 66)"/>
-  <ellipse cx="176" cy="67" rx="5" ry="3.5" fill="${BLUSH}" opacity="0.7" transform="rotate(25 176 67)"/>
-  <ellipse cx="120" cy="136" rx="92" ry="84" fill="url(#fur-${id})"/>
-  <ellipse cx="120" cy="190" rx="54" ry="26" fill="${FUR_LIGHT}" opacity="0.75"/>
-  <rect x="72" y="112" width="96" height="60" rx="30" fill="${FUR_DARK}" opacity="0.5"/>
-  <ellipse cx="106" cy="126" rx="3.2" ry="5" fill="${INK}" transform="rotate(20 106 126)"/>
-  <ellipse cx="134" cy="126" rx="3.2" ry="5" fill="${INK}" transform="rotate(-20 134 126)"/>
-  ${options.eyesClosed && pose !== 'happy' && pose !== 'cheer' && pose !== 'sleepy' ? eyes('sleepy') : eyes(pose)}
-  <ellipse cx="66" cy="136" rx="14" ry="8" fill="${BLUSH}" opacity="0.65"/>
-  <ellipse cx="174" cy="136" rx="14" ry="8" fill="${BLUSH}" opacity="0.65"/>
+  <g>
+    <ellipse cx="88" cy="214" rx="21" ry="11" fill="${FUR_DARK}"/>
+    <ellipse cx="152" cy="214" rx="21" ry="11" fill="${FUR_DARK}"/>
+    <g fill="${BLUSH}" opacity="0.8"><circle cx="81" cy="216" r="2.6"/><circle cx="88" cy="218.5" r="2.6"/><circle cx="95" cy="216" r="2.6"/><circle cx="145" cy="216" r="2.6"/><circle cx="152" cy="218.5" r="2.6"/><circle cx="159" cy="216" r="2.6"/></g>
+  </g>
+  <ellipse cx="68" cy="68" rx="12" ry="9" fill="${FUR_DARK}" transform="rotate(-28 68 68)"/>
+  <ellipse cx="68" cy="69" rx="6" ry="4" fill="${BLUSH}" transform="rotate(-28 68 69)"/>
+  <ellipse cx="172" cy="68" rx="12" ry="9" fill="${FUR_DARK}" transform="rotate(28 172 68)"/>
+  <ellipse cx="172" cy="69" rx="6" ry="4" fill="${BLUSH}" transform="rotate(28 172 69)"/>
+  <path d="M120 58 C 182 58 212 100 212 146 C 212 196 172 222 120 222 C 68 222 28 196 28 146 C 28 100 58 58 120 58 Z" fill="url(#fur-${id})"/>
+  <ellipse cx="92" cy="86" rx="30" ry="14" fill="#fff" opacity="0.22" transform="rotate(-18 92 86)"/>
+  <ellipse cx="120" cy="198" rx="50" ry="20" fill="${FUR_LIGHT}" opacity="0.7"/>
+  <ellipse cx="120" cy="146" rx="40" ry="26" fill="${SNOUT}" opacity="0.55"/>
+  <ellipse cx="108" cy="136" rx="3.4" ry="4.4" fill="${INK}" opacity="0.85" transform="rotate(18 108 136)"/>
+  <ellipse cx="132" cy="136" rx="3.4" ry="4.4" fill="${INK}" opacity="0.85" transform="rotate(-18 132 136)"/>
+  ${closed ? eyes('sleepy') : eyes(pose)}
+  <ellipse cx="66" cy="142" rx="14" ry="9" fill="${BLUSH}" opacity="0.7"/>
+  <ellipse cx="174" cy="142" rx="14" ry="9" fill="${BLUSH}" opacity="0.7"/>
   ${mouth(pose)}
   ${extras(pose, accent)}
-  ${hat ? '' : `<circle cx="120" cy="52" r="17" fill="${YUZU}" stroke="#D9A93A" stroke-width="2"/><path d="M120 36 q10 -14 22 -8 q-8 12 -22 8z" fill="${LEAF}"/>`}
+  ${
+    hat
+      ? ''
+      : `<path d="M112 60 q4 -10 8 -2 q4 -10 8 2" stroke="${FUR_DARK}" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <circle cx="120" cy="46" r="16" fill="${YUZU}" stroke="#DBA83A" stroke-width="2"/>
+  <circle cx="114" cy="40" r="4" fill="#fff" opacity="0.6"/>
+  <path d="M121 31 q11 -13 22 -6 q-9 11 -22 6z" fill="${LEAF}"/>`
+  }
   ${accessory(acc, accent)}
 </svg>`;
 }
@@ -158,6 +177,6 @@ export function coinSvg(denom: number, size = 64): string {
   <circle cx="32" cy="31" r="24" fill="${s.face}"/>
   <circle cx="32" cy="31" r="20" fill="none" stroke="${s.rim}" stroke-width="1.5" stroke-dasharray="2 3" opacity="0.7"/>
   ${crown}
-  <text x="32" y="${31 + fontSize * 0.36}" text-anchor="middle" font-family="Baloo 2, Nunito, sans-serif" font-weight="800" font-size="${fontSize}" fill="${s.ink}">${label}</text>
+  <text x="32" y="${31 + fontSize * 0.36}" text-anchor="middle" font-family="Plus Jakarta Sans, system-ui, sans-serif" font-weight="800" font-size="${fontSize}" fill="${s.ink}">${label}</text>
 </svg>`;
 }

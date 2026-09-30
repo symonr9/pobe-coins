@@ -4,13 +4,13 @@ import { DEFAULT_THEME, MOTION, RADIUS, SPACE, THEMES, type Palette, type ThemeN
 import { usePrefs } from '@/lib/prefs-context';
 
 export const FONTS = {
-  display: 'Baloo2_700Bold',
-  displayHeavy: 'Baloo2_800ExtraBold',
-  displaySemi: 'Baloo2_600SemiBold',
-  body: 'Nunito_500Medium',
-  bodySemi: 'Nunito_600SemiBold',
-  bodyBold: 'Nunito_700Bold',
-  bodyHeavy: 'Nunito_800ExtraBold',
+  display: 'PlusJakartaSans_700Bold',
+  displayHeavy: 'PlusJakartaSans_800ExtraBold',
+  displaySemi: 'PlusJakartaSans_700Bold',
+  body: 'PlusJakartaSans_500Medium',
+  bodySemi: 'PlusJakartaSans_600SemiBold',
+  bodyBold: 'PlusJakartaSans_700Bold',
+  bodyHeavy: 'PlusJakartaSans_800ExtraBold',
 } as const;
 
 export interface AppTheme {

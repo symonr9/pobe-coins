@@ -119,7 +119,7 @@ Every change to a purse is a **`TransactWriteItems`** (purse/debt update guarded
 
 ## UX/UI research & design system (phase 0)
 - Research pass (web search + teardown notes) of cozy, gamified habit/finance apps: Finch, Habitica, Duolingo (reward animations, streaks), Monzo/Qapital pots (savings goals), Sweepy/Tody (chores), Apple Fitness (rings/celebrations). Plus guidance on pastel accessibility (contrast on light pinks and yellows), motion (150–300ms micro-interactions, spring physics, respecting reduced-motion) and thumb-reach layout.
-- Deliverable: `docs/design/` research summary + a **design-system artifact page** (palettes with WCAG-checked text colors per theme, type scale with a rounded font such as Nunito/Quicksand, spacing/radius tokens, coin illustrations for each denomination, motion specs) for the user to review **before** screens are built.
+- Deliverable: `docs/design/` research summary + a **design-system artifact page** (palettes with WCAG-checked text colors per theme, type scale (Plus Jakarta Sans: sleek and modern), spacing/radius tokens, coin illustrations for each denomination, motion specs) for the user to review **before** screens are built.
 - Implementation: theme tokens in `src/theme/` (NativeWind CSS variables per theme and mode), `ThemeProvider` saved per device, Reanimated + `moti` for motion (coin drop/bounce on earn, purse jingle, confetti on goal reached, spring list and card transitions, animated progress rings for goals and streaks), `expo-haptics` paired with key animations, and `AccessibilityInfo.isReduceMotionEnabled` fallbacks.
 
 ## Build order (each a commit; web-testable first, native last)

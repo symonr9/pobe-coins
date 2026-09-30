@@ -90,6 +90,6 @@ const styles = StyleSheet.create({
   fill: { flex: 1 },
   column: { width: '100%', maxWidth: 720, alignSelf: 'center', gap: 16 },
   padded: { paddingHorizontal: 16 },
-  card: { borderRadius: 24, borderWidth: 1.5, padding: 16, shadowOpacity: 1, shadowRadius: 14, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
+  card: { borderRadius: 20, borderWidth: 1, padding: 16, shadowOpacity: 0.7, shadowRadius: 18, shadowOffset: { width: 0, height: 6 }, elevation: 1 },
   footer: { paddingHorizontal: 16, paddingTop: 12, borderTopWidth: 1, alignItems: 'center' },
 });

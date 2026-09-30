@@ -22,18 +22,19 @@ export function Text({ variant = 'body', color = 'ink', center, style, ...rest }
     danger: t.c.danger,
   };
   const variants: Record<Variant, TextStyle> = {
-    hero: { fontFamily: t.fonts.displayHeavy, fontSize: 44, lineHeight: 50, fontVariant: ['tabular-nums'] },
-    h1: { fontFamily: t.fonts.display, fontSize: 32, lineHeight: 38 },
-    h2: { fontFamily: t.fonts.display, fontSize: 24, lineHeight: 30 },
-    h3: { fontFamily: t.fonts.displaySemi, fontSize: 20, lineHeight: 26 },
-    title: { fontFamily: t.fonts.bodyHeavy, fontSize: 17, lineHeight: 23 },
-    body: { fontFamily: t.fonts.body, fontSize: 16, lineHeight: 23 },
-    bodyBold: { fontFamily: t.fonts.bodyBold, fontSize: 16, lineHeight: 23 },
+    hero: { fontFamily: t.fonts.displayHeavy, fontSize: 46, lineHeight: 50, letterSpacing: -1.6, fontVariant: ['tabular-nums'] },
+    h1: { fontFamily: t.fonts.displayHeavy, fontSize: 30, lineHeight: 36, letterSpacing: -0.9 },
+    h2: { fontFamily: t.fonts.display, fontSize: 23, lineHeight: 29, letterSpacing: -0.5 },
+    h3: { fontFamily: t.fonts.display, fontSize: 19, lineHeight: 25, letterSpacing: -0.3 },
+    title: { fontFamily: t.fonts.bodyBold, fontSize: 16, lineHeight: 22, letterSpacing: -0.15 },
+    body: { fontFamily: t.fonts.body, fontSize: 16, lineHeight: 24 },
+    bodyBold: { fontFamily: t.fonts.bodyBold, fontSize: 16, lineHeight: 24, letterSpacing: -0.1 },
     small: { fontFamily: t.fonts.body, fontSize: 14, lineHeight: 20 },
-    smallBold: { fontFamily: t.fonts.bodyBold, fontSize: 14, lineHeight: 20 },
-    label: { fontFamily: t.fonts.bodyHeavy, fontSize: 12, lineHeight: 16, letterSpacing: 1.2, textTransform: 'uppercase' },
-    number: { fontFamily: t.fonts.display, fontSize: 18, lineHeight: 22, fontVariant: ['tabular-nums'] },
+    smallBold: { fontFamily: t.fonts.bodySemi, fontSize: 14, lineHeight: 20 },
+    label: { fontFamily: t.fonts.bodyBold, fontSize: 11.5, lineHeight: 16, letterSpacing: 0.9, textTransform: 'uppercase' },
+    number: { fontFamily: t.fonts.displayHeavy, fontSize: 18, lineHeight: 22, letterSpacing: -0.4, fontVariant: ['tabular-nums'] },
   };
+
   return (
     <RNText
       {...rest}
