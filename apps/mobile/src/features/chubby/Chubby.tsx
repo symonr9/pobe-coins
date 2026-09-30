@@ -3,7 +3,7 @@ import { Image, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import type { ChubbyAccessory, ChubbyPose } from '@pobe/core';
-import { useTheme } from '@/theme';
+import { FONTS, useTheme } from '@/theme';
 import { Text } from '@/ui/Text';
 import { chubbyArt } from './assets';
 
@@ -67,9 +67,9 @@ export function Bubble({ text, tail = 'left' }: { text: string; tail?: 'left' | 
       style={{
         backgroundColor: t.c.surface,
         borderColor: t.c.line,
-        borderWidth: 2,
-        borderRadius: 20,
-        borderBottomLeftRadius: tail === 'left' ? 6 : 20,
+        borderWidth: 1,
+        borderRadius: 18,
+        borderBottomLeftRadius: tail === 'left' ? 4 : 18,
         paddingHorizontal: 14,
         paddingVertical: 10,
         flexShrink: 1,
@@ -85,5 +85,5 @@ export function Bubble({ text, tail = 'left' }: { text: string; tail?: 'left' | 
 }
 
 function BubbleText({ text }: { text: string }) {
-  return <Text variant="bodyBold">{text}</Text>;
+  return <Text variant="body" style={{ fontFamily: FONTS.bodySemi }}>{text}</Text>;
 }

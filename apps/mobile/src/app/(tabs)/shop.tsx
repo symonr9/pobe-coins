@@ -16,7 +16,7 @@ import { AmountPicker } from '@/features/AmountPicker';
 import { Button } from '@/ui/Button';
 import { Segmented } from '@/ui/Field';
 import { EmptyState, Loading, ProgressRing, Sheet } from '@/ui/bits';
-import { Card, Row, Screen, Stack } from '@/ui/layout';
+import { Card, Row, Screen, Stack, useWide } from '@/ui/layout';
 import { Text } from '@/ui/Text';
 import { CoinAmount } from '@/ui/Coins';
 import { useFeedback } from '@/ui/Feedback';
@@ -59,6 +59,7 @@ export default function Shop() {
 }
 
 function Rewards() {
+  const basis = useWide() ? '31%' : '46%';
   const { t } = useTranslation();
   const theme = useTheme();
   const hh = useHousehold();
@@ -76,7 +77,7 @@ function Rewards() {
           {items.map((item) => {
             const soldOut = item.remaining === 0;
             return (
-              <Card key={item.id} style={{ flexBasis: '46%', flexGrow: 1, gap: 8, alignItems: 'center' }}>
+              <Card key={item.id} style={{ flexBasis: basis, flexGrow: 1, gap: 8, alignItems: 'center' }}>
                 <View style={{ width: 64, height: 64, borderRadius: 20, backgroundColor: theme.c.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
                   <Text style={{ fontSize: 34, lineHeight: 42 }}>{item.emoji ?? '🎁'}</Text>
                 </View>
@@ -199,6 +200,7 @@ function Wishlist() {
 }
 
 function Cosmetics() {
+  const basis = useWide() ? '31%' : '46%';
   const { t } = useTranslation();
   const hh = useHousehold();
   const shop = useShop();
@@ -227,7 +229,7 @@ function Cosmetics() {
         {(shop.data?.cosmetics ?? []).map((c) => {
           const wearing = c.accessory && c.owned && equipped === c.accessory;
           return (
-            <Card key={c.id} style={{ flexBasis: '46%', flexGrow: 1, alignItems: 'center', gap: 6 }}>
+            <Card key={c.id} style={{ flexBasis: basis, flexGrow: 1, alignItems: 'center', gap: 6 }}>
               {c.kind === 'accessory' ? (
                 <Chubby pose="happy" accessory={c.accessory as ChubbyAccessory} size={88} animate={false} />
               ) : (

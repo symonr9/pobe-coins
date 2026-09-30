@@ -1,8 +1,17 @@
-import { type ReactNode } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
+import { createContext, useContext, type ReactNode } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme';
 import { Text } from './Text';
+
+/** Width at which the app switches to the desktop/tablet layout (side rail, two columns). */
+export const WIDE_BREAKPOINT = 900;
+export function useWide() {
+  return useWindowDimensions().width >= WIDE_BREAKPOINT;
+}
+
+/** Set by the tab layout: how much room the side rail takes on wide screens (0 on phones). */
+export const RailContext = createContext(0);
 
 /** Full screen: themed background, safe areas, centered column (max 720 on web/tablets). */
 export function Screen({
@@ -13,6 +22,7 @@ export function Screen({
   padded = true,
   footer,
   topInset = true,
+  wide = false,
 }: {
   children: ReactNode;
   scroll?: boolean;
@@ -21,17 +31,31 @@ export function Screen({
   padded?: boolean;
   footer?: ReactNode;
   topInset?: boolean;
+  /** Allow a wider column (up to 1120) for dashboards that use <Columns>. */
+  wide?: boolean;
 }) {
   const t = useTheme();
   const insets = useSafeAreaInsets();
+  const rail = useContext(RailContext);
+  const isWide = useWide();
   const inner = (
-    <View style={[styles.column, padded && styles.padded, { paddingTop: (topInset ? insets.top : 0) + (padded ? 12 : 0) }]}>{children}</View>
+    <View
+      style={[
+        styles.column,
+        wide && { maxWidth: 1120 },
+        padded && styles.padded,
+        padded && isWide && { paddingHorizontal: 32 },
+        { paddingTop: (topInset ? insets.top : 0) + (padded ? (isWide ? 32 : 12) : 0) },
+      ]}
+    >
+      {children}
+    </View>
   );
   return (
-    <View style={[styles.fill, { backgroundColor: t.c.bg }]}>
+    <View style={[styles.fill, { backgroundColor: t.c.bg, paddingLeft: rail }]}>
       {scroll ? (
         <ScrollView
-          contentContainerStyle={{ paddingBottom: insets.bottom + 110 }}
+          contentContainerStyle={{ paddingBottom: insets.bottom + (rail ? 40 : 110) }}
           keyboardShouldPersistTaps="handled"
           refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={t.c.accent} /> : undefined}
         >
@@ -70,7 +94,7 @@ export function Stack({ children, gap = 12, style }: { children: ReactNode; gap?
 
 export function Section({ title, action, children }: { title: string; action?: ReactNode; children: ReactNode }) {
   return (
-    <View style={{ gap: 10, marginTop: 8 }}>
+    <View style={{ gap: 10, marginTop: 6 }}>
       <Row style={{ justifyContent: 'space-between' }}>
         <Text variant="label" color="soft">
           {title}
@@ -78,6 +102,25 @@ export function Section({ title, action, children }: { title: string; action?: R
         {action}
       </Row>
       {children}
+    </View>
+  );
+}
+
+/** Two columns on wide screens, one stacked column on phones. */
+export function Columns({ left, right, gap = 20 }: { left: ReactNode; right: ReactNode; gap?: number }) {
+  const isWide = useWide();
+  if (!isWide) {
+    return (
+      <>
+        {left}
+        {right}
+      </>
+    );
+  }
+  return (
+    <View style={{ flexDirection: 'row', gap, alignItems: 'flex-start' }}>
+      <View style={{ flex: 5, gap: 16, minWidth: 0 }}>{left}</View>
+      <View style={{ flex: 6, gap: 16, minWidth: 0 }}>{right}</View>
     </View>
   );
 }
