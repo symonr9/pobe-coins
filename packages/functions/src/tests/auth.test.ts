@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createHarness, household, userToken } from '../testing/harness';
+import { issueDeviceToken } from '../services/auth';
 
 describe('households and sign-in', () => {
   it('creates a household with templates and a starter shop', async () => {
@@ -202,5 +203,19 @@ describe('session exchange', () => {
     h.advance(70 * 86400_000);
     expect((await h.call('GET', '/me', { token: ex.body.token })).status).toBe(401);
     expect((await h.call('POST', '/auth/exchange', { body: { idToken: 'garbage.token.here.and.more.garbage' } })).status).toBe(401);
+  });
+});
+
+describe('token signing key', () => {
+  it('refuses to sign without a real secret (no built-in fallback key)', async () => {
+    const h = createHarness();
+    const device = { id: 'd1', householdId: 'h1', memberId: 'm1' };
+    await expect(issueDeviceToken({ ...h.deps, config: { ...h.deps.config, deviceTokenSecret: '' } }, device)).rejects.toThrow(
+      /DEVICE_TOKEN_SECRET/,
+    );
+    await expect(issueDeviceToken({ ...h.deps, config: { ...h.deps.config, deviceTokenSecret: 'short' } }, device)).rejects.toThrow(
+      /too short/,
+    );
+    await expect(issueDeviceToken(h.deps, device)).resolves.toMatch(/^ey/);
   });
 });

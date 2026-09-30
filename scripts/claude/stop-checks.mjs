@@ -68,6 +68,8 @@ if (formattable.length) {
     run('prettier --check (fix: npm run format)', 'npx', ['--no-install', 'prettier', '--check', '--ignore-unknown', ...existing]);
 }
 
+run('secret scan (the repo is public)', 'node', ['scripts/check-secrets.mjs']);
+
 if (failures.length) {
   console.log(
     JSON.stringify({

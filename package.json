@@ -20,7 +20,8 @@
     "e2e": "node apps/mobile/e2e/smoke.mjs",
     "screens": "node apps/mobile/e2e/screens.mjs",
     "deploy:check": "node scripts/deploy/check.mjs",
-    "deploy:secrets": "node scripts/deploy/secrets.mjs"
+    "deploy:secrets": "node scripts/deploy/secrets.mjs",
+    "check:secrets": "node scripts/check-secrets.mjs"
   },
   "engines": {
     "node": ">=22"

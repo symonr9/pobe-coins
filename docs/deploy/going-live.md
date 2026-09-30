@@ -16,6 +16,20 @@ We deploy stage **`dev`** first as a rehearsal, which is easy to delete. Then we
 
 ---
 
+> **Interactive version:** a checklist that fills in your values and remembers your ticks: https://claude.ai/artifact/9bADFyu2SuCE7M3XtGc9Ze (private to your Claude account).
+
+## Keeping secrets safe (the repo is public)
+
+| Safe to share / paste into chat                                | Never share or commit                                             |
+| -------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `sst deploy` outputs (`api`, `authDomain`, `userPoolClientId`) | AWS access keys (they stay in `~/.aws` on your computer)          |
+| Your Netlify URL, the VAPID **public** key                     | The Google **client secret** (it goes only into `deploy:secrets`) |
+| Error messages and screenshots of the app                      | `.env` files and anything from `sst secret list`                  |
+
+- `npm run deploy:secrets` stores secrets in AWS (SSM, encrypted) and never writes them to disk or the repo.
+- CI and `npm run check:secrets` fail if anything credential-shaped is committed.
+- Also turn on GitHub's own protection: repo **Settings → Code security → Secret scanning** and **Push protection**. It's free for public repos and blocks a push that contains a known key format.
+
 ## 0. On your computer (once)
 
 - **Node 22+** (`node -v`) and **git**.

@@ -20,6 +20,7 @@ npx -y npm@11.20.0 ci         # install. NEVER plain `npm install/ci` with npm 1
 npm test                      # core + API + app unit tests (vitest)
 npm run typecheck             # all workspaces
 npm run lint                  # prettier --check (npm run format to fix)
+npm run check:secrets         # the repo is PUBLIC: fails on anything credential-shaped (CI + stop hook run it too)
 SEED=1 npm run dev:api        # in-memory API on :3001 with demo household "The Cozy Burrow" (sam = admin, alex)
 npm run dev:web               # Expo web on :8081 → Dev sign-in as sam/alex
 npm run screens               # screenshot tour (phone + desktop) → .claude/.cache/screens/
@@ -34,6 +35,7 @@ npm run e2e                   # Playwright smoke test (needs both servers)
 - **UI:** use theme tokens (`useTheme()`), the `src/ui` kit and `Text` variants. Never hard-code colors or fonts. All copy goes through `t()`, and Chubbybara's lines through `say()` (never `t(say(...))`). Check phone and desktop widths. Skill: `ui-screen`.
 - **Look:** clean card-based UI on neutral backgrounds (soft white by day, true black by night), with the chosen pastel palette (pink default, blue, purple, yellow, green) as the accent. Elevation comes from `Card level` / `elevation()`. The font is Plus Jakarta Sans (500/600/700/800). Core tests enforce WCAG AA contrast for every palette × mode.
 - **Native dirs** `apps/mobile/ios|android` are generated (CNG). Never commit them; configure through `app.config.ts` and plugins. Keep `.gitignore` patterns anchored (`/apps/mobile/android/`).
+- **The repo is public.** Never commit keys, tokens, `.env` files or deploy secrets. Secrets live in SST (AWS SSM) via `npm run deploy:secrets`, and AWS keys stay in `~/.aws` on the user's computer. Only non-secret `EXPO_PUBLIC_*` values go to Netlify, since they're baked into the public bundle.
 - Keep AWS costs near $0: no VPC/NAT, no RDS, no Secrets Manager, on-demand DynamoDB, 14-day logs.
 
 ## Environment gotchas

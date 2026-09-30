@@ -9,7 +9,7 @@ Run the cheapest checks first, and only run the heavy ones when the change touch
 
 | Changed                         | Run                                                                                                                                                                                |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| anything                        | `npm test` · `npm run typecheck` · `npm run lint`                                                                                                                                  |
+| anything                        | `npm test` · `npm run typecheck` · `npm run lint` · `npm run check:secrets` (the repo is public)                                                                                   |
 | `packages/core`                 | all of the above (core is imported by the API and the app)                                                                                                                         |
 | UI (`apps/mobile/src`)          | `npm run screens` and **look at the PNGs** in `.claude/.cache/screens/` (phone + desktop; use `ONLY=home,shop` to limit)                                                           |
 | routes/auth/flows               | `npm run e2e` (needs the dev API + web servers; see `dev-setup`)                                                                                                                   |

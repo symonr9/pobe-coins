@@ -11,8 +11,11 @@ import { auditOp, getHousehold, getMember, listMembers, toItem } from '../repo';
 const DEVICE_TOKEN_DAYS = 180;
 const REFRESH_AFTER_DAYS = 7;
 
+/** Signing key for device and session tokens. Never fall back to a built-in key: it would be public. */
 function secretKey(deps: Deps) {
-  return new TextEncoder().encode(deps.config.deviceTokenSecret || 'test-secret-test-secret-test-secret');
+  const secret = deps.config.deviceTokenSecret;
+  if (!secret || secret.length < 32) throw new Error('DEVICE_TOKEN_SECRET is missing or too short (need 32+ characters).');
+  return new TextEncoder().encode(secret);
 }
 
 export async function issueDeviceToken(deps: Deps, device: Pick<Device, 'id' | 'householdId' | 'memberId'>) {
