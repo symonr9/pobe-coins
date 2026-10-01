@@ -9,7 +9,7 @@ import { actions, useRefreshAll } from '@/api/hooks';
 import { ApiError } from '@/api/client';
 import { useSession } from '@/auth/session';
 import { providerIdToken } from '@/auth/signin';
-import { OAUTH_ENABLED } from '@/config';
+import { APPLE_WEB_ENABLED, OAUTH_ENABLED } from '@/config';
 import { useTranslation } from '@/i18n';
 import { usePrefs } from '@/lib/prefs-context';
 import { biometricAvailable } from '@/lib/biometric';
@@ -270,7 +270,9 @@ export default function Settings() {
               {t('You joined with a link. Link your Apple or Google account to sign in on new devices without a new link.')}
             </Text>
             <Row wrap>
-              <Button small kind="soft" title={t('Link Apple')} onPress={() => link('apple')} />
+              {Platform.OS === 'ios' || APPLE_WEB_ENABLED ? (
+                <Button small kind="soft" title={t('Link Apple')} onPress={() => link('apple')} />
+              ) : null}
               <Button small kind="soft" title={t('Link Google')} onPress={() => link('google')} />
             </Row>
           </Card>
