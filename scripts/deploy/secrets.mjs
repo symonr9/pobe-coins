@@ -69,7 +69,10 @@ function setSecret(name, value) {
     console.log(`  would set ${name} (${value.length} chars)`);
     return;
   }
-  const r = spawnSync(isWindows ? 'npx.cmd' : 'npx', ['sst', 'secret', 'set', name, '--stage', stage], {
+  const args = ['sst', 'secret', 'set', name, '--stage', stage];
+  // Windows: pass one command string (all parts are fixed names or the validated stage), which
+  // avoids Node's DEP0190 warning about shell + argument arrays.
+  const r = spawnSync(isWindows ? `npx.cmd ${args.join(' ')}` : 'npx', isWindows ? [] : args, {
     cwd: ROOT,
     shell: isWindows,
     input: value,

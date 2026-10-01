@@ -29,7 +29,13 @@ export function sh(cmd, args, opts = {}) {
   // npm/npx are .cmd shims on Windows, which Node can only start through a shell.
   if (process.platform === 'win32' && (cmd === 'npm' || cmd === 'npx')) {
     const quoted = args.map((a) => (/^[\w@./:=-]+$/.test(a) ? a : `"${a.replace(/"/g, '\\"')}"`));
-    return execFileSync(`${cmd}.cmd`, quoted, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], shell: true, ...opts });
+    return execFileSync(`${cmd}.cmd ${quoted.join(' ')}`, [], {
+      cwd: ROOT,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: true,
+      ...opts,
+    });
   }
   return execFileSync(cmd, args, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], ...opts });
 }
