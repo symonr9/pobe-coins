@@ -155,6 +155,20 @@ On Windows: `$env:AUTH_PREFIX = "pobe-<you>-prod"` instead of the `export` line.
 
 `prod` is protected: `sst remove --stage prod` refuses, and the table and bucket are retained even if the stack is deleted.
 
+## Redeploying later (one command)
+
+After the first setup, every backend deploy is one command from the repo folder on your computer:
+
+```bash
+npm run deploy:dev                          # asks for your settings the first time, then remembers them
+npm run deploy:prod -- --confirm-prod       # production
+npm run deploy:dev -- --verify-only         # just check the live API
+```
+
+It pulls `main`, runs the pre-flight, checks the secrets exist, deploys, then tests the live API (health, CORS from your site, sign-in required). Finally it tells you whether anything in Netlify needs changing.
+
+With Claude Code running on your computer (`npm install -g @anthropic-ai/claude-code`, then `claude` in this folder), type `/ship` and Claude does the same, asking before it deploys.
+
 ## What it costs
 
 For one household, expect about **$0–1/month**. Everything is pay-per-use and within the free tier. You'll get an email from the Budget alarm at $5 and $20. Check **Billing → Bills** after the first week.

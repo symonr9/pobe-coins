@@ -17,3 +17,6 @@ web-build/
 # Claude Code: personal settings and hook caches
 .claude/settings.local.json
 .claude/.cache/
+
+# Personal deploy settings written by npm run deploy:dev (not secrets, but not shared)
+/.deploy/

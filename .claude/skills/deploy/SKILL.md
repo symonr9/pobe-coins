@@ -5,7 +5,7 @@ description: Deploy or change Pobe Coins infrastructure — SST v4 on AWS (Dynam
 
 # Deploy
 
-**Always get the user's explicit OK before running a deploy or remove.** The settings file makes these commands ask first.
+**Always get the user's explicit OK before running a deploy or remove.** To actually run a deploy, use skill `ship` (`npm run deploy:dev`), which does the pre-flight, deploy and live checks in one go. The settings file makes these commands ask first.
 
 - The user deploys from **their own computer**; AWS credentials never go in the sandbox or the chat. Walk them through `docs/deploy/going-live.md`.
   - `npm run deploy:check` checks Node, AWS identity, `WEB_ORIGIN`, `AUTH_PREFIX` and the branch.
