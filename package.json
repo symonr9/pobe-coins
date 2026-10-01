@@ -13,15 +13,16 @@
     "lint": "prettier --check .",
     "format": "prettier --write .",
     "dev:web": "npm run web -w @pobe/mobile",
-    "deploy:dev": "sst deploy --stage dev",
-    "deploy:prod": "sst deploy --stage prod",
+    "deploy:dev": "node scripts/deploy/ship.mjs --stage dev",
+    "deploy:prod": "node scripts/deploy/ship.mjs --stage prod",
     "dev:api": "tsx packages/functions/src/dev/server.ts",
     "dev:demo": "SEED=1 tsx packages/functions/src/dev/server.ts",
     "e2e": "node apps/mobile/e2e/smoke.mjs",
     "screens": "node apps/mobile/e2e/screens.mjs",
     "deploy:check": "node scripts/deploy/check.mjs",
     "deploy:secrets": "node scripts/deploy/secrets.mjs",
-    "check:secrets": "node scripts/check-secrets.mjs"
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "deploy:setup-ci": "node scripts/deploy/setup-ci.mjs"
   },
   "engines": {
     "node": ">=22"

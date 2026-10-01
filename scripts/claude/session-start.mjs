@@ -53,7 +53,7 @@ lines.push(
   `Local servers: API ${api ? 'up on :3001' : 'down (SEED=1 npm run dev:api)'}, web ${web ? 'up on :8081' : 'down (npm run dev:web)'}.`,
 );
 lines.push(
-  'Project guide: CLAUDE.md. Task playbooks live in .claude/skills/ (dev-setup, verify, api-endpoint, money-changes, ui-screen, chubbybara, deploy, release-mobile, expo-upgrade).',
+  'Project guide: CLAUDE.md. Task playbooks live in .claude/skills/ (dev-setup, verify, api-endpoint, money-changes, ui-screen, chubbybara, deploy, ship, release-mobile, expo-upgrade).',
 );
 
 console.log(lines.join('\n'));

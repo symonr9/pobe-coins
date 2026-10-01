@@ -10,6 +10,7 @@ const ROUTES = [
   [/\b(endpoint|route|api|lambda|hono|dynamo|schema|zod|backend)\b/i, 'api-endpoint'],
   [/\b(screen|page|layout|ui|ux|design|theme|colou?r|font|button|card|animation|dark mode)\b/i, 'ui-screen'],
   [/\b(chubby|chubbybara|capybara|mascot|affirmation|illustrat|artwork|app icon)/i, 'chubbybara'],
+  [/\b(deploy|redeploy|ship|release the (api|backend))\b/i, 'ship'],
   [/\b(deploy|sst|aws|netlify|cognito|secret|budget|stage|prod)\b/i, 'deploy'],
   [/\b(eas|testflight|app store|play store|release|submit|ota|widget|share extension|native build)\b/i, 'release-mobile'],
   [/\b(upgrade|bump|sdk \d+|expo sdk|dependency|dependencies|npm install|package version)\b/i, 'expo-upgrade'],
