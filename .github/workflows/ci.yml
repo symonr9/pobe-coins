@@ -1,0 +1,63 @@
+name: CI
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install
+        run: npx -y npm@11.20.0 ci
+      - name: Unit & API tests
+        run: npm test
+      - name: Format
+        run: npm run lint
+      - name: No secrets in the repo
+        run: npm run check:secrets
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Web build (PWA)
+        run: npm run build:web -w @pobe/mobile
+        env:
+          EXPO_NO_TELEMETRY: '1'
+          CI: '1'
+
+  e2e:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npx -y npm@11.20.0 ci
+      - run: npx playwright install --with-deps chromium
+      - name: Build web app against the local dev API
+        run: npm run build:web -w @pobe/mobile
+        env:
+          CI: '1'
+          EXPO_NO_TELEMETRY: '1'
+          EXPO_PUBLIC_DEV_AUTH: '1'
+          EXPO_PUBLIC_API_URL: http://localhost:3001
+      - name: Start dev API (demo household) and static server
+        run: |
+          SEED=1 npm run dev:api > api.log 2>&1 &
+          npx serve -l 8081 apps/mobile/dist > serve.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf localhost:3001/health && curl -sf localhost:8081 > /dev/null && break; sleep 1; done
+      - name: Smoke test
+        run: node apps/mobile/e2e/smoke.mjs
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-failure
+          path: |
+            e2e-failure.png
+            api.log

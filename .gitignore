@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.expo/
+.sst/
+sst-env.d.ts
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+coverage/
+/apps/mobile/ios/
+/apps/mobile/android/
+web-build/
+.DS_Store
+*.log
+
+# Claude Code: personal settings and hook caches
+.claude/settings.local.json
+.claude/.cache/

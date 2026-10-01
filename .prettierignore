@@ -1,0 +1,16 @@
+# Generated or vendored: never hand-format
+node_modules/
+dist/
+.expo/
+.sst/
+coverage/
+package-lock.json
+sst-env.d.ts
+docs/design/stylebook.html
+apps/mobile/locales/
+apps/mobile/public/
+apps/mobile/ios/
+apps/mobile/android/
+*.png
+.claude/.cache/
+apps/mobile/expo-env.d.ts
