@@ -149,7 +149,16 @@ export default $config({
     });
 
     const api = new sst.aws.ApiGatewayV2('Api', {
-      cors: false, // handled in the app so errors carry CORS headers too
+      // CORS is enforced by API Gateway. Note: SST turns `cors: false` into an *empty* CORS config,
+      // which makes the gateway answer preflights itself and strip the app's CORS headers, so
+      // browsers see every call fail. Keep this list in sync with the app's cors() in app.ts.
+      cors: {
+        allowOrigins: [webOrigin, 'http://localhost:8081', 'http://localhost:19006'],
+        allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowHeaders: ['authorization', 'content-type', 'x-household-id'],
+        exposeHeaders: ['x-refreshed-token'],
+        maxAge: '1 day',
+      },
       transform: {
         stage: (args) => {
           // Baseline abuse/cost protection. Per-IP limits for public routes live in the app.

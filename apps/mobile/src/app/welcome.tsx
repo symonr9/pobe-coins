@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { ONBOARDING } from '@pobe/core';
-import { DEV_AUTH, OAUTH_ENABLED } from '@/config';
+import { APPLE_WEB_ENABLED, DEV_AUTH, OAUTH_ENABLED } from '@/config';
 import { useSignIn } from '@/auth/signin';
 import { useTranslation } from '@/i18n';
 import { usePrefs } from '@/lib/prefs-context';
@@ -16,6 +16,7 @@ import { Card, Row, Screen, Stack } from '@/ui/layout';
 import { Text } from '@/ui/Text';
 
 export default function Welcome() {
+  const appleAvailable = Platform.OS === 'ios' || APPLE_WEB_ENABLED;
   const { t } = useTranslation();
   const theme = useTheme();
   const { prefs, update } = usePrefs();
@@ -89,7 +90,11 @@ export default function Welcome() {
         </Row>
         <Card style={{ gap: 12 }}>
           <Text variant="h3">{t('Sign in')}</Text>
-          <Text color="soft">{t('Start or manage a household with your Apple or Google account.')}</Text>
+          <Text color="soft">
+            {appleAvailable
+              ? t('Start or manage a household with your Apple or Google account.')
+              : t('Start or manage a household with your Google account.')}
+          </Text>
           {OAUTH_ENABLED ? (
             <>
               {Platform.OS === 'ios' ? (
@@ -104,14 +109,14 @@ export default function Welcome() {
                   style={{ height: 50 }}
                   onPress={() => done(signIn.apple())}
                 />
-              ) : (
+              ) : APPLE_WEB_ENABLED ? (
                 <Button
                   kind="soft"
                   title={t('Continue with Apple')}
                   loading={signIn.busy === 'apple'}
                   onPress={() => done(signIn.apple())}
                 />
-              )}
+              ) : null}
               <Button
                 kind="soft"
                 title={t('Continue with Google')}

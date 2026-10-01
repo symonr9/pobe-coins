@@ -162,5 +162,5 @@ For one household, expect about **$0–1/month**. Everything is pay-per-use and 
 ## Later
 
 - **Phone apps:** EAS builds and TestFlight (see skill `release-mobile` / README "Phone apps").
-- **Sign in with Apple:** needs an Apple Services ID and key; then redeploy with `ENABLE_APPLE=true`.
+- **Sign in with Apple:** needs an Apple Services ID and key; then redeploy with `ENABLE_APPLE=true` and add `EXPO_PUBLIC_APPLE_ENABLED=1` in Netlify to show the Apple button on the web. (The iPhone app always offers Apple, using the native sheet.)
 - **Custom domain:** add it in Netlify, then redeploy SST with the new `WEB_ORIGIN`. Add the new Cognito redirect URI in Google if `AUTH_PREFIX` changes.
