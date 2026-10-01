@@ -1,0 +1,56 @@
+# Deploys the backend (SST → AWS) from GitHub. No AWS keys are stored: the job assumes the
+# "pobe-coins-github-deploy" role through GitHub OIDC (created by `npm run deploy:setup-ci`).
+# - Every push to main deploys `dev` (main only receives merged PRs whose checks passed).
+# - Production: Actions → Deploy → Run workflow → stage: prod. Protect the `prod` environment with
+#   required reviewers in the repo settings.
+# The job is skipped until the repository variable AWS_DEPLOY_ROLE_ARN exists (set by setup-ci).
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: Stage to deploy
+        type: choice
+        options: [dev, prod]
+        default: dev
+
+permissions:
+  id-token: write # to request the OIDC token for AWS
+  contents: read
+
+concurrency:
+  group: deploy-${{ inputs.stage || 'dev' }}
+  cancel-in-progress: false # never interrupt a deploy halfway
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.stage || 'dev' }}
+    if: ${{ vars.AWS_DEPLOY_ROLE_ARN != '' }}
+    timeout-minutes: 30
+    env:
+      STAGE: ${{ inputs.stage || 'dev' }}
+      WEB_ORIGIN: ${{ vars.WEB_ORIGIN }}
+      AUTH_PREFIX: ${{ vars.AUTH_PREFIX }}
+      BUDGET_EMAIL: ${{ vars.BUDGET_EMAIL }}
+      AWS_REGION: ${{ vars.AWS_REGION || 'us-west-2' }}
+      SST_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install
+        run: npx -y npm@11.20.0 ci
+      - name: AWS credentials (OIDC, no stored keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+          role-session-name: pobe-coins-deploy-${{ github.run_id }}
+      - name: Deploy and verify
+        run: node scripts/deploy/ship.mjs --stage "$STAGE" --yes --skip-pull --any-branch ${{ (inputs.stage || 'dev') == 'prod' && '--confirm-prod' || '' }}

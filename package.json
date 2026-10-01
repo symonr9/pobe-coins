@@ -21,7 +21,8 @@
     "screens": "node apps/mobile/e2e/screens.mjs",
     "deploy:check": "node scripts/deploy/check.mjs",
     "deploy:secrets": "node scripts/deploy/secrets.mjs",
-    "check:secrets": "node scripts/check-secrets.mjs"
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "deploy:setup-ci": "node scripts/deploy/setup-ci.mjs"
   },
   "engines": {
     "node": ">=22"

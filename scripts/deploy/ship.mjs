@@ -19,7 +19,7 @@
  *        --web-origin, --auth-prefix, --aws-profile, --region, --budget-email (saved for next time)
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { createInterface } from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
@@ -92,8 +92,11 @@ writeFileSync(settingsFile, JSON.stringify(settings, null, 2) + '\n');
 for (const [k, v] of Object.entries(settings)) ok(`${k}: ${v ?? '(not set)'}`);
 console.log(`  (saved in .deploy/${stage}.json, which is not committed)`);
 
+// In CI (GitHub Actions OIDC) credentials arrive as environment variables; a named profile would
+// override them, so only set AWS_PROFILE when no credentials are already in the environment.
+const ambientCredentials = !!(process.env.AWS_ACCESS_KEY_ID || process.env.AWS_WEB_IDENTITY_TOKEN_FILE);
 const env = {
-  AWS_PROFILE: settings.awsProfile,
+  ...(ambientCredentials ? {} : { AWS_PROFILE: settings.awsProfile }),
   AWS_REGION: settings.region,
   WEB_ORIGIN: settings.webOrigin,
   AUTH_PREFIX: settings.authPrefix,
@@ -232,6 +235,17 @@ else {
   for (const k of changed.length ? changed : Object.keys(netlify)) console.log(`    ${k} = ${netlify[k]}`);
 }
 writeFileSync(lastFile, JSON.stringify(netlify, null, 2) + '\n');
+
+// GitHub Actions: show the result and the Netlify values on the run's summary page.
+if (process.env.GITHUB_STEP_SUMMARY) {
+  const rows = Object.entries(netlify)
+    .map(([k, v]) => `| \`${k}\` | \`${v}\` |`)
+    .join('\n');
+  appendFileSync(
+    process.env.GITHUB_STEP_SUMMARY,
+    `## ${problems ? '✗' : '✓'} Deployed \`${stage}\`\n\nAPI: ${api}\n\n${problems ? `${problems} live check(s) failed; see the log.\n\n` : ''}Netlify environment variables for this stage:\n\n| Key | Value |\n|---|---|\n${rows}\n`,
+  );
+}
 
 console.log(
   problems

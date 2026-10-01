@@ -1,6 +1,6 @@
 ---
 name: ship
-description: Deploy the Pobe Coins backend from the user's own computer and verify it live — pre-flight, secrets check, sst deploy to dev or prod, health and CORS checks, and the Netlify follow-up. Use when the user says deploy, ship, release or redeploy the API/backend, or asks Claude to "deploy from my local". Only works where Claude Code runs on the user's machine with their AWS profile.
+description: Deploy the Pobe Coins backend and verify it live, either from the user's own computer (npm run deploy:dev) or from the cloud through the GitHub Actions Deploy workflow (OIDC, no stored keys). Covers pre-flight, secrets check, sst deploy to dev or prod, health and CORS checks, and the Netlify follow-up. Use when the user says deploy, ship, release or redeploy the API/backend.
 ---
 
 # Ship (deploy from the user's machine)
@@ -15,10 +15,15 @@ One command does the whole run: `npm run deploy:dev` (or `deploy:prod`). It is `
 6. checks `/health`, CORS from the web origin, and the 401 without sign-in;
 7. prints exactly which Netlify variables need changing.
 
-## 0. Where am I?
+## 0. Where am I? Pick the route
 
-- **Cloud sandbox** (`CLAUDE_CODE_REMOTE=true`, or `aws` is missing, or the AWS profile doesn't work): stop. Deploys run only on the user's computer, and AWS keys never go into the sandbox or the chat. Tell the user to open Claude Code on their PC in the repo folder and run `/ship` there. Alternatively, they can run `npm run deploy:dev` themselves and paste the output.
-- **User's computer:** continue.
+- **Cloud sandbox (Claude Code on the web):** deploy through GitHub Actions; no AWS keys are involved.
+  - `.github/workflows/deploy.yml` deploys `dev` on every push to `main`.
+  - Stage `prod` runs through `workflow_dispatch` (input `stage`). Trigger it with the GitHub MCP `actions_run_trigger` tool (workflow `deploy.yml`, ref `main`), only after the user's explicit go-ahead.
+  - Follow the run with `actions_list` and `get_job_logs`. The run's summary page lists the API URL and the Netlify values.
+  - The job is skipped until the repo variable `AWS_DEPLOY_ROLE_ARN` exists. If it's missing, ask the user to run `npm run deploy:setup-ci` on their computer once. It creates the OIDC role and the GitHub environments and variables.
+  - Never ask for AWS keys, and never put them in the sandbox.
+- **User's computer:** run the script directly, as below.
 
 ## 1. Before deploying
 

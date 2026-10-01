@@ -21,6 +21,7 @@ npm test                      # core + API + app unit tests (vitest)
 npm run typecheck             # all workspaces
 npm run lint                  # prettier --check (npm run format to fix)
 npm run deploy:dev            # deploy + live-check the backend from YOUR computer (skill `ship`; prod: deploy:prod -- --confirm-prod)
+                              # cloud: GitHub Actions `deploy.yml` deploys dev on every push to main (OIDC; setup once: npm run deploy:setup-ci)
 npm run check:secrets         # the repo is PUBLIC: fails on anything credential-shaped (CI + stop hook run it too)
 SEED=1 npm run dev:api        # in-memory API on :3001 with demo household "The Cozy Burrow" (sam = admin, alex)
 npm run dev:web               # Expo web on :8081 → Dev sign-in as sam/alex
