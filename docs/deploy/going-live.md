@@ -86,6 +86,14 @@ npm run deploy:secrets -- --stage dev         # paste the Google client ID + sec
 npx sst deploy --stage dev
 ```
 
+**Windows (PowerShell):** set the variables like this instead of `export`, then run the same three npm/npx commands. They only last for that PowerShell window, so keep it open.
+
+```powershell
+git pull
+$env:AWS_PROFILE = "pobe"; $env:AWS_REGION = "us-west-2"
+$env:WEB_ORIGIN = "https://<site>.netlify.app"; $env:AUTH_PREFIX = "pobe-<you>-dev"; $env:BUDGET_EMAIL = "<email>"
+```
+
 - `deploy:secrets` prints `EXPO_PUBLIC_VAPID_PUBLIC_KEY=…`. Copy it for step 5. It's not secret.
 - The first deploy downloads SST's engine and takes a while. At the end it prints outputs like:
   ```
@@ -138,6 +146,8 @@ npm run deploy:check
 npm run deploy:secrets -- --stage prod        # new keys + the same Google client
 npx sst deploy --stage prod
 ```
+
+On Windows: `$env:AUTH_PREFIX = "pobe-<you>-prod"` instead of the `export` line.
 
 1. In Netlify, replace the five variables with the **prod** outputs and the new VAPID public key, then trigger a deploy.
 2. Sign in again and create your real household. Dev data doesn't carry over.

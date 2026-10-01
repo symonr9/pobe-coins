@@ -29,10 +29,13 @@ const flag = (name) => {
 const stage = flag('stage');
 const dryRun = args.includes('--dry-run');
 const only = flag('only')?.split(',');
-if (!stage) {
+if (!stage || !/^[a-z0-9-]+$/.test(stage)) {
   console.error('Usage: npm run deploy:secrets -- --stage <dev|prod> [--only device,vapid,google] [--dry-run]');
   process.exit(1);
 }
+// On Windows, npx is npx.cmd, which Node can only start through a shell. The arguments are fixed
+// names plus a validated stage, and the secret value goes over stdin, so the shell never sees it.
+const isWindows = process.platform === 'win32';
 const want = (group) => !only || only.includes(group);
 
 /** Asks questions without echoing the answers. One interface, so pasted/piped lines aren't lost. */
@@ -66,14 +69,17 @@ function setSecret(name, value) {
     console.log(`  would set ${name} (${value.length} chars)`);
     return;
   }
-  const r = spawnSync('npx', ['sst', 'secret', 'set', name, '--stage', stage], {
+  const r = spawnSync(isWindows ? 'npx.cmd' : 'npx', ['sst', 'secret', 'set', name, '--stage', stage], {
     cwd: ROOT,
+    shell: isWindows,
     input: value,
     encoding: 'utf8',
     env: { ...process.env, SST_TELEMETRY_DISABLED: '1' },
   });
-  if (r.status !== 0) {
-    console.error(`  ✗ ${name}: ${(r.stderr || r.stdout).trim().split('\n').slice(-3).join(' ')}`);
+  if (r.error || r.status !== 0) {
+    const output = `${r.stderr ?? ''}${r.stdout ?? ''}`.trim();
+    const why = r.error ? r.error.message : output.split('\n').slice(-3).join(' ') || `exit code ${r.status}`;
+    console.error(`  ✗ ${name}: ${why}`);
     process.exit(1);
   }
   console.log(`  ✓ ${name}`);
