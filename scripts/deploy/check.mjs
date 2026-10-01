@@ -46,6 +46,19 @@ else if (!/^[a-z0-9-]{3,63}$/.test(process.env.AUTH_PREFIX) || /aws|amazon|cogni
   fail('AUTH_PREFIX: lowercase letters, digits and dashes only, and it must not contain aws/amazon/cognito');
 else ok(`AUTH_PREFIX ${process.env.AUTH_PREFIX}`);
 
+try {
+  run('node', ['scripts/check-sst-names.mjs']);
+  ok('sst.config.ts component names');
+} catch (e) {
+  fail(
+    String(e.stderr ?? e.message)
+      .trim()
+      .split('\n')
+      .slice(1)
+      .join(' ') || 'sst.config.ts component names are invalid',
+  );
+}
+
 process.env.BUDGET_EMAIL ? ok(`Budget alerts to ${process.env.BUDGET_EMAIL}`) : warn('BUDGET_EMAIL not set: no AWS spending alerts');
 
 try {

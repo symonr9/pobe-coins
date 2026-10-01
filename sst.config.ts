@@ -103,7 +103,7 @@ export default $config({
       });
       providers.push(apple.providerName);
     }
-    const userPoolClient = userPool.addClient('App', {
+    const userPoolClient = userPool.addClient('WebClient', {
       providers,
       callbackUrls: [`${webOrigin}/auth/callback`, `${appScheme}://auth/callback`, 'http://localhost:8081/auth/callback'],
       transform: {

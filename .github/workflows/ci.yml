@@ -21,6 +21,8 @@ jobs:
         run: npm run lint
       - name: No secrets in the repo
         run: npm run check:secrets
+      - name: SST component names
+        run: node scripts/check-sst-names.mjs
       - name: Typecheck
         run: npm run typecheck
       - name: Web build (PWA)
